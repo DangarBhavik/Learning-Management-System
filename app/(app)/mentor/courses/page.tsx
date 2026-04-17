@@ -10,19 +10,23 @@ type Course = {
   description: string;
   thumbnail: string;
   author: string;
+  status: string;
+  authorId: string;
+  thumbnailId: string | null;
+  createdAt: string;
+  updatedAt: string;
+  modulesCount: number;
 };
 
 function Page() {
-  const { data: course = [], isPending } = useQuery<Course[]>({
-    queryKey: ['courses'],
+  const { data: courses = [], isPending } = useQuery<Course[]>({
+    queryKey: ['mentor-courses'],
     queryFn: fetchCourses,
   });
 
   if (isPending) {
     return <p>Loading</p>;
   }
-
-
 
   return (
     <div className="mx-8 space-y-5 mt-4">
@@ -32,7 +36,7 @@ function Page() {
           <button className="bg-blue-500 text-white rounded-md px-2 py-1 ">+ Add Course</button>
         </Link>
       </div>
-      <Courses btnText="Manage Course" courses={course} />
+      <Courses btnText="Manage Course" courses={courses} />
     </div>
   );
 }

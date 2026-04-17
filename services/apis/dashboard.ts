@@ -10,6 +10,9 @@ export const getDashBoardData = async () => {
       throw new Error(result.message);
     }
 
+    console.log(result);
+    
+
     return result.data;
   } catch (error) {
     console.error('DashBaord Data fetching done:', error);

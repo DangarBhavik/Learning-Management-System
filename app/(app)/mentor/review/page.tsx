@@ -1,5 +1,5 @@
 const ReviewAssignment = () => {
-  return <h2> Review</h2>;
+  return <h2> All Submisson</h2>;
 };
 
 export default ReviewAssignment;

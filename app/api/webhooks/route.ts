@@ -19,16 +19,16 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         );
       }
-
+  
       await prisma.user.create({
         data: {
           clerkId: id!,
           email,
           image: image_url,
-          name: username,
+          username: username!,
         },
       });
-
+      
       return NextResponse.json(
         { success: true, message: 'User synced successfully' },
         { status: 200 }

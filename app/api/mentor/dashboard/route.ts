@@ -64,10 +64,12 @@ export const GET = async () => {
       where: { mentorId: user.id },
     });
 
+    const courseCount = await prisma.course.count({ where: { authorId: user.id } });
+
     const dashboardData = {
       courses: formattedCourses,
       stats: {
-        courses: latestCourses.length,
+        courses: courseCount,
         students: studentCount,
         pendingReviews: 0,
       },

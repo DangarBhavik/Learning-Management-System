@@ -5,6 +5,7 @@ import NewModule from '@/components/course/NewModule';
 import { Role } from '@/generated/prisma/enums';
 import { getCourseById, saveCourse } from '@/services/apis/courses';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 
 type Lesson = {
@@ -67,9 +68,12 @@ const AddContent = ({ role }: { role: Role }) => {
         </div>
 
         <div className="flex justify-end mt-4  gap-4">
-          <button className="py-1 px-2 rounded-md border text-gray-500 bg-gray-300/20 border-gray-400">
+          <Link
+            href={`/add-course/${courseId}/`}
+            className="py-1 px-2 rounded-md border text-gray-500 bg-gray-300/20 border-gray-400"
+          >
             Back
-          </button>
+          </Link>
           <button
             onClick={handleSaveCourse}
             className="py-1 px-2 rounded-md border text-green-500 bg-green-300/20 border-green-400"

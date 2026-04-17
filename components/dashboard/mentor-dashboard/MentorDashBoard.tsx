@@ -34,7 +34,7 @@ function MentorDashBoard() {
       pendingReviews: number;
     };
   }>({
-    queryKey: ['courses'],
+    queryKey: ['mentor-dashboard'],
     queryFn: getDashBoardData,
   });
 
