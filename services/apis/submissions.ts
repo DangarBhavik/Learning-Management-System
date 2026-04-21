@@ -5,6 +5,10 @@ export type SubmissionType = {
   feedback?: string | null;
   status: string;
   isActive: boolean;
+  fileUrl: string;
+  score?: number | null;
+  feedback?: string | null;
+  status: 'PENDING' | 'GRADED' | 'RESUBMITTED';
   submittedAt: string;
   gradedAt?: string | null;
   assignmentId: string;
@@ -36,6 +40,18 @@ export const getAllSubmissions = async () => {
   const res = await fetch(`/api/submission`);
   const data = await res.json();
   return data.data;
+
+  assignment: {
+    id: string;
+    title: string;
+    maxScore: number;
+    module: {
+      course: {
+        id: string;
+        title: string;
+      }
+    }
+  }
 };
 
 export const getSubmissionsByAssignment = async (id: string) => {
@@ -92,6 +108,28 @@ export const getSubmissionsByTrainee = async () => {
 // services/apis/submissions.ts
 
 export const getAllSubmissionsAdmin = async () => {
+  const res = await fetch('/api/admin/submissions', {
+    method: 'GET',
+    credentials: 'include',
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch submissions');
+  }
+
+  const result = await res.json();
+  return result.data;
+};
+
+export const getSubmissionsByTrainee = async () => {
+  const res = await fetch(`/api/submission/trainee`);
+  const data = await res.json();
+  return data.data;
+};
+
+// services/apis/submissions.ts
+
+export const getAllSubmissions = async () => {
   const res = await fetch('/api/admin/submissions', {
     method: 'GET',
     credentials: 'include',
