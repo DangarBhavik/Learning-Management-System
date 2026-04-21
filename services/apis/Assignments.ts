@@ -8,12 +8,14 @@ export type AssignmentType = {
   maxScore: number;
   submissions: Submission[];
 };
-type SubmissionStatus = 'PENDING' | 'SUBMITTED' | 'GRADED';
 
 type Submission = {
   id: string;
-  SubmissionStatus: SubmissionStatus;
-  score: number | null;
+  fileUrl: string;
+  score?: number | null;
+  feedback?: string | null;
+  status: 'PENDING' | 'SUBMITTED' | 'RESUBMITTED' | 'GRADED';
+  submittedAt: string;
 };
 
 export const createAssignment = async ({

@@ -34,6 +34,10 @@ export async function GET() {
           where: {
             studentId: user.id,
           },
+          orderBy: {
+            submittedAt: 'desc', 
+          },
+          take: 1, 
         },
       },
       orderBy: {
@@ -41,7 +45,7 @@ export async function GET() {
       },
     });
 
-    const formatted = assignments.map(a => ({
+    const formatted = assignments.map((a) => ({
       id: a.id,
       title: a.title,
       description: a.description,
@@ -49,7 +53,7 @@ export async function GET() {
       maxScore: a.maxScore,
       moduleTitle: a.module.title,
       courseTitle: a.module.course.title,
-      submission: a.submissions[0] || null,
+      submission: a.submissions[0] ?? null, 
     }));
 
     return NextResponse.json(new ApiResponse(200, 'Assignments fetched', formatted), {
