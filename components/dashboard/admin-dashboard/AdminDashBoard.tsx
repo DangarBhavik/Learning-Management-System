@@ -22,7 +22,14 @@ function AdminDashBoard() {
   });
 
   if (isLoading) {
-    return <p className="text-sm text-gray-500 dark:text-gray-400">Loading dashboard…</p>;
+    return (
+      <div className="absolute inset-0 flex items-center justify-center z-10">
+        <div className="flex items-center gap-3 text-gray-500">
+          <div className="w-5 h-5 border-2 border-black/30 border-t-white rounded-full animate-spin" />
+          Loading Dashboard...
+        </div>
+      </div>
+    );
   }
 
   if (isError || !dashboardData) {
