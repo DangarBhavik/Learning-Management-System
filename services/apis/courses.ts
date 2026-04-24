@@ -5,6 +5,7 @@ export type Course = {
   description: string;
   thumbnail: string;
   author: string;
+  image: string;
   status: string;
   authorId: string;
   thumbnailId: string | null;

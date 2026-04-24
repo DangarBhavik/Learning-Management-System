@@ -1,5 +1,6 @@
 'use client';
 import Courses from '@/components/ui/Courses';
+import Loading from '@/components/ui/loading';
 import { fetchCourses } from '@/services/apis/courses';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
@@ -10,6 +11,7 @@ type Course = {
   description: string;
   thumbnail: string;
   author: string;
+  image: string;
   status: string;
   authorId: string;
   thumbnailId: string | null;
@@ -25,7 +27,7 @@ function Page() {
   });
 
   if (isPending) {
-    return <p>Loading</p>;
+    return <Loading text="Courses" />;
   }
 
   return (

@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { getAllSubmissions } from '@/services/apis/submissions';
 import SubmissionsTable from '@/components/submissions/SubmissionsTable';
+import Loading from '@/components/ui/loading';
 
 export default function SubmissionsPage() {
   const {
@@ -15,7 +16,7 @@ export default function SubmissionsPage() {
   });
 
   if (isLoading) {
-    return <p className="p-6 text-gray-500 dark:text-gray-400">Loading submissions...</p>;
+    return <Loading text="Submissions" />;
   }
 
   if (isError) {

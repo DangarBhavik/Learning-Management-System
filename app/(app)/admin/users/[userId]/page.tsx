@@ -1,4 +1,5 @@
 'use client';
+import Loading from '@/components/ui/loading';
 import UserDetails from '@/components/users/UserDetails';
 import { getUserById } from '@/services/apis/users';
 import { useQuery } from '@tanstack/react-query';
@@ -19,14 +20,7 @@ export default function UsersDetailsPage() {
   });
 
   if (usersLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="flex items-center gap-3 text-gray-500">
-          <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-          Loading user Details...
-        </div>
-      </div>
-    );
+    return <Loading text="User Details" />;
   }
 
   if (usersError) {

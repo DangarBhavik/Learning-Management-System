@@ -11,6 +11,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import Link from 'next/link';
+import Loading from '@/components/ui/loading';
 
 const ReviewAssignment = () => {
   const {
@@ -23,7 +24,7 @@ const ReviewAssignment = () => {
   });
 
   if (loading) {
-    return <div className="p-8 text-center">Loading submissions...</div>;
+    return <Loading text="Submissions" />;
   }
 
   if (error) {
@@ -82,7 +83,7 @@ const ReviewAssignment = () => {
                   {new Date(submission.submittedAt).toLocaleDateString()}
                 </TableCell>
                 <TableCell className="text-gray-600 dark:text-gray-400">
-                  <Link href={`/mentor/review/${submission.id}`} >
+                  <Link href={`/mentor/review/${submission.id}`}>
                     {submission.score ? 'View' : 'Review'}
                   </Link>
                 </TableCell>

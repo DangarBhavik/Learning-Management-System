@@ -5,8 +5,8 @@ import NewModule from '@/components/course/NewModule';
 import { Role } from '@/generated/prisma/enums';
 import { getCourseById, saveCourse } from '@/services/apis/courses';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
+import Loading from '../ui/loading';
 
 type Lesson = {
   id: string;
@@ -34,10 +34,9 @@ const AddContent = ({ role }: { role: Role }) => {
   });
 
   console.log(data);
-  
 
   if (isLoading) {
-    return <p>Loading....</p>;
+    return <Loading text="Course Content" />;
   }
 
   const handleSaveCourse = async () => {

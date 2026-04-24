@@ -1,6 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import Loading from '@/components/ui/loading';
 import { getCourseById, updateCourse } from '@/services/apis/courses';
 import { courseFormData } from '@/types/types';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -107,7 +108,7 @@ function AddCourse() {
   };
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <Loading text="Course Details" />;
   }
 
   if (isError || !course) {

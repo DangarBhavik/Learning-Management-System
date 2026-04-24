@@ -20,7 +20,12 @@ export const GET = async () => {
     }
 
     const include = {
-      author: { select: { username: true } },
+      author: {
+        select: {
+          username: true,
+          image: true,
+        },
+      },
       thumbnail: { select: { url: true } },
       _count: {
         select: {
@@ -60,6 +65,7 @@ export const GET = async () => {
       description: c.description,
       thumbnail: c.thumbnail?.url ?? '',
       author: c.author.username,
+      image: c.author.image,
       status: c.status,
       authorId: c.authorId,
       thumbnailId: c.thumbnailId,

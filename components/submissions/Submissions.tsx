@@ -161,22 +161,7 @@ const Submissions: React.FC<{ submissions: SubmissionType[] }> = ({ submissions 
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap gap-3 mb-1">
-        {[
-          { dot: 'bg-emerald-500', count: graded, label: 'graded' },
-          { dot: 'bg-amber-500', count: pending, label: 'pending' },
-          { dot: 'bg-gray-400', count: submissions.length, label: 'total' },
-        ].map(({ dot, count, label }) => (
-          <div
-            key={label}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-gray-200/70 dark:border-gray-800 bg-white/70 dark:bg-gray-900/40 text-[11px] text-gray-500 dark:text-gray-400"
-          >
-            <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />
-            <b className="text-gray-700 dark:text-gray-200 font-semibold">{count}</b> {label}
-          </div>
-        ))}
-      </div>
-
+    
       <div className="space-y-2.5">
         {submissions.map((item, i) => (
           <SubmissionCard key={item.id} item={item} index={i} />

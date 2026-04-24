@@ -17,6 +17,7 @@ export async function GET() {
             author: {
               select: {
                 username: true,
+                image: true,
               },
             },
             modules: {
@@ -35,6 +36,7 @@ export async function GET() {
       description: e.course.description,
       thumbnail: e.course.thumbnail?.url || '/default.jpg',
       author: e.course.author.username,
+      image: e.course.author.image,
       status: e.course.status,
       createdAt: e.course.createdAt,
       modulesCount: e.course.modules.length,

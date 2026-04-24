@@ -5,6 +5,7 @@ import Assignments from '@/components/assignments/Assignments';
 import { useQuery } from '@tanstack/react-query';
 import { getTraineeAssignments } from '@/services/apis/Assignments';
 import { BsFileEarmarkText, BsClockHistory, BsCheckCircleFill } from 'react-icons/bs';
+import { useState } from 'react';
 
 type AssignmentType = {
   id: string;
@@ -31,6 +32,24 @@ export default function AssignmentPage() {
     a => !a.submission || a.submission.status === 'PENDING'
   ).length;
   const completed = assignments.filter(a => a.submission?.status === 'GRADED').length;
+
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'PENDING' | 'GRADED' | 'RESUBMITTED'>(
+    'ALL'
+  );
+
+  const filteredAssignments = assignments.filter(a => {
+    const matchesSearch =
+      a.title.toLowerCase().includes(search.toLowerCase()) ||
+      a.courseTitle.toLowerCase().includes(search.toLowerCase()) ||
+      a.moduleTitle.toLowerCase().includes(search.toLowerCase());
+
+    const status = a.submission?.status ?? 'PENDING';
+
+    const matchesFilter = statusFilter === 'ALL' ? true : status === statusFilter;
+
+    return matchesSearch && matchesFilter;
+  });
 
   if (isLoading) {
     return (
@@ -99,10 +118,34 @@ export default function AssignmentPage() {
         <span className="text-xs font-semibold tracking-wide text-gray-500 dark:text-gray-400 uppercase whitespace-nowrap">
           All assignments
         </span>
+
         <div className="flex-1 h-px bg-gray-200 dark:bg-gray-800" />
+        <div className="flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+          <input
+            type="text"
+            placeholder="Search assignments..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="w-full md:w-72 px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-800 
+          bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 
+          focus:ring-indigo-500"
+          />
+
+          <select
+            value={statusFilter}
+            onChange={e => setStatusFilter(e.target.value as typeof statusFilter)}
+            className="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-800 
+          bg-white dark:bg-gray-900 text-sm focus:outline-none"
+          >
+            <option value="ALL">All</option>
+            <option value="PENDING">Pending</option>
+            <option value="GRADED">Completed</option>
+            <option value="RESUBMITTED">Resubmitted</option>
+          </select>
+        </div>
       </div>
 
-      <Assignments assignments={assignments} />
+      <Assignments assignments={filteredAssignments} />
     </section>
   );
 }

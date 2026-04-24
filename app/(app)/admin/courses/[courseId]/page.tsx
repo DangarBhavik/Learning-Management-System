@@ -7,6 +7,7 @@ import ApproveButton from '@/components/ui/ApproveButton';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getEmbedUrl } from '@/utils/embeded-url';
+import Loading from '@/components/ui/loading';
 
 const isYouTubeUrl = (url: string) => url.includes('youtube.com') || url.includes('youtu.be');
 
@@ -75,14 +76,7 @@ export default function CourseDetailsPage({ params }: Props) {
   const totalLessons = course?.modules.reduce((acc, m) => acc + m.lessons.length, 0) ?? 0;
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="flex items-center gap-3 text-gray-500">
-          <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-          Loading course...
-        </div>
-      </div>
-    );
+    return <Loading text="Course Details" />;
   }
 
   if (error || !course) {
@@ -277,9 +271,13 @@ export default function CourseDetailsPage({ params }: Props) {
                 </svg>
                 Edit
               </Link>
-              {course.status === 'PENDING' ? (
-                <ApproveButton courseId={course.id} />
-              ) : (
+              {course.status === 'DRAFT' && (
+                <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-medium hover:bg-white/20 transition">
+                  Draft
+                </div>
+              )}
+              {course.status === 'PENDING' && <ApproveButton courseId={course.id} />}
+              {course.status === 'APPROVED' && (
                 <div className="flex items-center justify-center gap-2 px-4 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
                   <svg
                     className="w-5 h-5 text-green-600 dark:text-green-400"

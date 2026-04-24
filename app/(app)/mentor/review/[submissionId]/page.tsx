@@ -8,6 +8,7 @@ import FeedbackSection from '@/components/submissions/FeedbackSection';
 import queryClient from '@/utils/query-client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
+import Loading from '@/components/ui/loading';
 
 const SubmissionReviewPage = () => {
   const params = useParams();
@@ -24,12 +25,7 @@ const SubmissionReviewPage = () => {
   });
 
   if (loading) {
-    return (
-      <div className="p-8 text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-        <p className="mt-4">Loading submission...</p>
-      </div>
-    );
+    return <Loading text="Submission" />;
   }
 
   if (error) {

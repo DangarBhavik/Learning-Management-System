@@ -10,6 +10,7 @@ import Users from '@/components/users/UsersTable';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { getAdminDashboard } from '@/services/apis/dashboard';
+import Loading from '@/components/ui/loading';
 
 function AdminDashBoard() {
   const {
@@ -22,14 +23,7 @@ function AdminDashBoard() {
   });
 
   if (isLoading) {
-    return (
-      <div className="absolute inset-0 flex items-center justify-center z-10">
-        <div className="flex items-center gap-3 text-gray-500">
-          <div className="w-5 h-5 border-2 border-black/30 border-t-white rounded-full animate-spin" />
-          Loading Dashboard...
-        </div>
-      </div>
-    );
+    return <Loading text="Dashboard Data" />;
   }
 
   if (isError || !dashboardData) {

@@ -10,7 +10,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getTraineeCourses } from '@/services/apis/courses';
 import { AssignmentType, getTraineeAssignments } from '@/services/apis/Assignments';
 import Link from 'next/link';
-
+import Loading from '@/components/ui/loading';
 
 type Course = {
   id: string;
@@ -37,7 +37,7 @@ function TraineeDashBoard() {
   });
 
   if (coursesLoading || assignmentsLoading) {
-    return <p className="text-sm text-gray-500 dark:text-gray-400">Loading dashboard…</p>;
+    return <Loading text="Dashboard Data" />;
   }
 
   const totalCourses = courses.length;

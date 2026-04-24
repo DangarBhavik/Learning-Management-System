@@ -1,5 +1,6 @@
 'use client';
 import Courses from '@/components/ui/Courses';
+import Loading from '@/components/ui/loading';
 import { getTraineeCourses } from '@/services/apis/courses';
 import { useQuery } from '@tanstack/react-query';
 
@@ -10,7 +11,7 @@ export default function CoursesPage() {
   });
 
   if (coursesLoading) {
-    return <div className="p-6">Loading...</div>;
+    return <Loading text="Courses" />;
   }
 
   return (

@@ -200,30 +200,8 @@ function EmptyState() {
 const Assignments: React.FC<{ assignments: AssignmentType[] }> = ({ assignments }) => {
   if (assignments.length === 0) return <EmptyState />;
 
-  const graded = assignments.filter(a => a.submission?.status === 'GRADED').length;
-  const pending = assignments.filter(
-    a => a.submission?.status === 'PENDING' || !a.submission
-  ).length;
-  
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap gap-3 mb-1">
-        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-gray-200/70 dark:border-gray-800 bg-white/70 dark:bg-gray-900/40 text-[11px] text-gray-500 dark:text-gray-400">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-          <b className="text-gray-700 dark:text-gray-200">{graded}</b> graded
-        </div>
-
-        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-gray-200/70 dark:border-gray-800 bg-white/70 dark:bg-gray-900/40 text-[11px] text-gray-500 dark:text-gray-400">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-          <b className="text-gray-700 dark:text-gray-200">{pending}</b> pending
-        </div>
-
-        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-gray-200/70 dark:border-gray-800 bg-white/70 dark:bg-gray-900/40 text-[11px] text-gray-500 dark:text-gray-400">
-          <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
-          <b className="text-gray-700 dark:text-gray-200">{assignments.length}</b> total
-        </div>
-      </div>
-
       <div className="space-y-2.5">
         {assignments.map((item, i) => (
           <AssignmentCard key={item.id} item={item} index={i} />

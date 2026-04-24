@@ -97,7 +97,6 @@ export default function AssignmentDetailsPage({ params }: Props) {
     assignment?.dueDate &&
     new Date(assignment.dueDate) < new Date();
 
-  // ── Loading skeleton ───────────────────────────────────────────────────────
   if (isLoading) {
     return (
       <section className="mx-8 mt-7 mb-12 space-y-6 animate-pulse">
@@ -134,11 +133,10 @@ export default function AssignmentDetailsPage({ params }: Props) {
       </section>
     );
   }
+ 
 
   return (
     <section className="mx-8 mt-7 mb-12 space-y-7">
-
-      {/* ── Page header ─────────────────────────────────────────────────────── */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div className="space-y-1 min-w-0">
           <Link
@@ -158,11 +156,10 @@ export default function AssignmentDetailsPage({ params }: Props) {
         </div>
       </div>
 
-      {/* ── Stat cards ──────────────────────────────────────────────────────── */}
       <div className="grid md:grid-cols-3 gap-4">
         <AssignmentCards
           title="Due Date"
-          value={formatDate(assignment.dueDate)}
+          value={assignment?.dueDate ? formatDate(assignment.dueDate) : 'No Due Date'}
           icon={<BiCalendar />}
           color={isOverdue ? 'amber' : 'gray'}
         />
@@ -180,7 +177,6 @@ export default function AssignmentDetailsPage({ params }: Props) {
         />
       </div>
 
-      {/* ── Description ─────────────────────────────────────────────────────── */}
       <div className="rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white dark:bg-gray-950/50 px-6 py-5 shadow-sm space-y-2">
         <div className="flex items-center gap-2 mb-1">
           <HiOutlineDocumentText className="text-gray-400 dark:text-gray-500 text-base" />
@@ -193,7 +189,6 @@ export default function AssignmentDetailsPage({ params }: Props) {
         </p>
       </div>
 
-      {/* ── Submit panel ────────────────────────────────────────────────────── */}
       <div className="rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white dark:bg-gray-950/50 px-6 py-5 shadow-sm space-y-4">
         <div className="flex items-center gap-2">
           <HiOutlineCloudArrowUp className="text-gray-400 dark:text-gray-500 text-base" />
@@ -202,21 +197,24 @@ export default function AssignmentDetailsPage({ params }: Props) {
           </h2>
         </div>
 
-        {/* Drop zone */}
         <div
           onClick={() => fileInputRef.current?.click()}
-          onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+          onDragOver={e => {
+            e.preventDefault();
+            setDragOver(true);
+          }}
           onDragLeave={() => setDragOver(false)}
           onDrop={handleDrop}
           className={`
             relative flex flex-col items-center justify-center gap-2
             rounded-xl border-2 border-dashed px-6 py-8 cursor-pointer
             transition-all duration-200 select-none
-            ${dragOver
-              ? 'border-indigo-400 bg-indigo-50 dark:bg-indigo-950/30'
-              : selectedFile
-              ? 'border-emerald-400 bg-emerald-50/60 dark:bg-emerald-950/20'
-              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50/50 dark:hover:bg-gray-900/30'
+            ${
+              dragOver
+                ? 'border-indigo-400 bg-indigo-50 dark:bg-indigo-950/30'
+                : selectedFile
+                  ? 'border-emerald-400 bg-emerald-50/60 dark:bg-emerald-950/20'
+                  : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50/50 dark:hover:bg-gray-900/30'
             }
           `}
         >
@@ -235,13 +233,9 @@ export default function AssignmentDetailsPage({ params }: Props) {
               <HiOutlineCloudArrowUp className="text-2xl text-gray-300 dark:text-gray-600" />
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400 text-center">
                 Drag & drop a file here, or{' '}
-                <span className="text-indigo-500 dark:text-indigo-400 font-semibold">
-                  browse
-                </span>
+                <span className="text-indigo-500 dark:text-indigo-400 font-semibold">browse</span>
               </p>
-              <p className="text-[11px] text-gray-400 dark:text-gray-500">
-                {ACCEPTED_LABEL}
-              </p>
+              <p className="text-[11px] text-gray-400 dark:text-gray-500">{ACCEPTED_LABEL}</p>
             </>
           )}
 
@@ -255,7 +249,6 @@ export default function AssignmentDetailsPage({ params }: Props) {
           />
         </div>
 
-        {/* Actions row */}
         <div className="flex items-center gap-3 flex-wrap">
           <button
             onClick={handleSubmit}
@@ -297,7 +290,6 @@ export default function AssignmentDetailsPage({ params }: Props) {
         </div>
       </div>
 
-      {/* ── Submission history ───────────────────────────────────────────────── */}
       {submissions.length > 0 && (
         <div className="rounded-2xl border border-gray-200/70 dark:border-gray-800 bg-white dark:bg-gray-950/50 px-6 py-5 shadow-sm">
           <div className="flex items-center gap-2 mb-4">

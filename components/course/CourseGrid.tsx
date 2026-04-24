@@ -2,6 +2,7 @@
 import Courses from '@/components/ui/Courses';
 import { fetchCourses } from '@/services/apis/courses';
 import { useQuery } from '@tanstack/react-query';
+import Loading from '../ui/loading';
 
 export default function CourseGrid() {
   const {
@@ -16,14 +17,7 @@ export default function CourseGrid() {
   const courseCount = courses.length;
 
   if (coursesLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="flex items-center gap-3 text-gray-500">
-          <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-          Loading courses...
-        </div>
-      </div>
-    );
+    return <Loading text="Courses" />;
   }
 
   if (coursesError) {

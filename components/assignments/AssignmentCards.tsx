@@ -69,7 +69,7 @@ const AssignmentCards: React.FC<{
         <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 truncate">
           {title}
         </p>
-        <p className={`text-2xl font-extrabold tabular-nums leading-tight ${p.value}`}>{value}</p>
+        <p className={`text-2xl font-extrabold leading-tight ${p.value}`}>{value}</p>
       </div>
     </div>
   );
