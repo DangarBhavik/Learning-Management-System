@@ -57,10 +57,10 @@ const Lessons: React.FC<LessonEditFormProps> = ({ lesson, moduleId }) => {
   };
 
   return (
-    <div className="flex justify-center bg-white  items-center">
+    <div className="flex justify-center bg-white dark:bg-[#1e2939]  items-center">
       <Card className="max-w-[500px] flex-1 border border-gray-400/30 p-4 ">
         <div className="flex justify-between items-center px-2  ">
-          <div className="flex items-center gap-2 font-medium">{lesson.title}</div>
+          <div className=" font-medium">{lesson.title}</div>
 
           <div className="flex gap-4">
             <button

@@ -3,6 +3,7 @@ import React, { useRef, useState } from 'react';
 import { BiLinkAlt, BiVideo } from 'react-icons/bi';
 import { CiSaveUp2 } from 'react-icons/ci';
 import { Card, CardTitle } from '../ui/card';
+import { Input } from '../ui/input';
 
 type LessonAddFormProps = {
   moduleId: string;
@@ -58,7 +59,7 @@ const LessonForm: React.FC<LessonAddFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleAddLesson} className="bg-white w-full max-w-[600px] ">
+    <form onSubmit={handleAddLesson} className=" w-full max-w-[600px] ">
       <Card className="p-4 border border-gray-400/30">
         <CardTitle className=" text-lg font-semibold text-gray-700 ">{formTitle}</CardTitle>
 
@@ -90,7 +91,7 @@ const LessonForm: React.FC<LessonAddFormProps> = ({
           </button>
         </div>
 
-        <input
+        <Input
           type="text"
           placeholder="Enter lesson title"
           value={title}
@@ -100,7 +101,7 @@ const LessonForm: React.FC<LessonAddFormProps> = ({
         />
 
         {showStringForm ? (
-          <input
+          <Input
             type="url"
             placeholder="https://example.com/video"
             value={link}
