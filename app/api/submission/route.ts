@@ -85,6 +85,7 @@ export async function GET() {
         title: s.assignment.module.course.title,
       },
       assignment: {
+        id: s.assignment.id,
         title: s.assignment.title,
       },
     }));

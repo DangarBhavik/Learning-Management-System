@@ -3,9 +3,17 @@ import { Course } from '@/types/types';
 import queryClient from '@/utils/query-client';
 import { useMutation } from '@tanstack/react-query';
 
-export const useModifyAssignment = (courseId: string, moduleId: string) => {
+export const useModifyAssignment = (courseId: string, moduleId: string, assignmentId: string) => {
   const { mutateAsync, isPending, isError, error } = useMutation({
-    mutationFn: editAssignment,
+    mutationFn: ({
+      description,
+      maxScore,
+      title,
+    }: {
+      description: string;
+      maxScore: number;
+      title: string;
+    }) => editAssignment({ assignmentId, courseId, description, maxScore, moduleId, title }),
     onSuccess: updatedAssignment => {
       queryClient.setQueryData(['courses', courseId], (oldCourse: Course) => {
         if (!oldCourse) return oldCourse;

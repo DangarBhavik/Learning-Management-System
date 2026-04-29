@@ -2,7 +2,7 @@
 
 import Modules from '@/components/course/module/Modules';
 import NewModule from '@/components/course/module/NewModule';
-import { Role } from '@/generated/prisma/enums';
+import { CourseStatus, Role } from '@/generated/prisma/enums';
 import { useParams, useRouter } from 'next/navigation';
 import Loading from '../ui/loading';
 import Link from 'next/link';
@@ -33,18 +33,18 @@ const AddContent = ({ role }: { role: Role }) => {
   const router = useRouter();
   const { id: courseId } = useParams<{ id: string }>();
 
+  const { course, isLoading } = useCourse(courseId);
   const { saveCourse, isSaving } = useSaveCourse();
 
-  const { course, isLoading } = useCourse(courseId);
-
-  console.log(course);
-
   const handleSaveCourse = async () => {
-    await saveCourse(courseId, {
-      onSuccess: () => {
-        router.push(`/${role.toLowerCase()}/courses`);
-      },
-    });
+    await saveCourse(
+      { courseId },
+      {
+        onSuccess: () => {
+          router.push(`/${role.toLowerCase()}/courses`);
+        },
+      }
+    );
   };
 
   if (isLoading) {
@@ -61,13 +61,15 @@ const AddContent = ({ role }: { role: Role }) => {
           >
             Back
           </Link>
-          <button
-            onClick={handleSaveCourse}
-            className="py-1 px-2 text-md border border-gray-600/80 text-gray-600/80 rounded-md "
-            disabled={isSaving}
-          >
-            {isSaving ? 'Saving' : 'Save'}
-          </button>
+          {course.status == CourseStatus.DRAFT && (
+            <button
+              onClick={handleSaveCourse}
+              className="py-1 px-2 text-md border border-gray-600/80 text-gray-600/80 rounded-md "
+              disabled={isSaving}
+            >
+              {isSaving ? 'Saving' : 'Save'}
+            </button>
+          )}
         </div>
         <div className="absolute left-1/2 h-full -z-10 rounded-3xl border-l-2 border-dashed " />
         <div className="space-y-5 mt-4 overflow-auto">

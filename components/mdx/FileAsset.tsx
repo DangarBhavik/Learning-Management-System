@@ -2,6 +2,8 @@
 
 import * as React from 'react';
 
+import { Button } from '@/components/ui/button';
+
 type FileAssetProps = {
   id: string;
   url: string;
@@ -29,15 +31,17 @@ export default function FileAsset({ id, url, name, size }: FileAssetProps) {
 
   return (
     <div data-asset-id={id} className="not-prose">
-      <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-background p-3">
+      <div className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-background p-4">
         <div className="min-w-0">
           <div className="truncate text-sm font-medium">{name}</div>
-          {size != null ? <div className="text-xs text-muted-foreground">{formatBytes(size)}</div> : null}
+          {size != null ? (
+            <div className="text-xs text-muted-foreground">{formatBytes(size)}</div>
+          ) : null}
         </div>
 
-        <button type="button" onClick={handleOpen} className="text-sm underline">
+        <Button type="button" variant="link" size="xs" onClick={handleOpen}>
           Open
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -47,7 +47,7 @@ function AddCourse() {
     mutationFn: (payload: courseFormData) => updateCourse(courseId, payload),
     onSuccess: response => {
       if (response.success) {
-        router.push(`/add-course/${courseId}/content`);
+        router.push(`/app/add-course/${courseId}/content`);
       }
     },
   });

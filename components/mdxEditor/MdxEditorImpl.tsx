@@ -7,20 +7,16 @@ import '@mdxeditor/editor/style.css';
 import {
   BlockTypeSelect,
   BoldItalicUnderlineToggles,
+  ButtonWithTooltip,
   CodeToggle,
   CreateLink,
-  InsertImage,
   InsertTable,
   InsertThematicBreak,
   ListsToggle,
   MDXEditor,
   type MDXEditorMethods,
   type JsxComponentDescriptor,
-  type LexicalVisitor,
-  addImportVisitor$,
-  type MdastImportVisitor,
   UndoRedo,
-  addExportVisitor$,
   codeBlockPlugin,
   codeMirrorPlugin,
   headingsPlugin,
@@ -31,99 +27,54 @@ import {
   listsPlugin,
   markdownShortcutPlugin,
   quotePlugin,
-  realmPlugin,
   tablePlugin,
   thematicBreakPlugin,
   toolbarPlugin,
 } from '@mdxeditor/editor';
 
-import { $createLineBreakNode, $createTextNode, $isLineBreakNode, $isTextNode } from 'lexical';
-
 import { cn } from '@/lib/utils';
 
 import type { MarkdownEditorProps } from './types';
 import { createJsxComponentDescriptors } from './jsxEditors';
+import { BsYoutube } from 'react-icons/bs';
 
-const hardBreakExportVisitor: LexicalVisitor = {
-  priority: 100,
-  testLexicalNode: $isLineBreakNode,
-  visitLexicalNode: ({ mdastParent, actions }) => {
-    actions.appendToParent(mdastParent, { type: 'break' });
-  },
-};
+function escapeJsxAttr(value: string) {
+  return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
 
-const softBreakTextExportVisitor: LexicalVisitor = {
-  priority: 101,
-  testLexicalNode: (
-    lexicalNode
-  ): lexicalNode is Parameters<NonNullable<LexicalVisitor['testLexicalNode']>>[0] => {
-    return $isTextNode(lexicalNode) && lexicalNode.getTextContent().includes('\n');
-  },
-  visitLexicalNode: ({ lexicalNode, mdastParent, actions }) => {
-    if (!$isTextNode(lexicalNode)) {
-      actions.nextVisitor();
-      return;
-    }
+function InsertYouTubeButton({
+  disabled,
+  onInsert,
+}: {
+  disabled: boolean;
+  onInsert: (markdown: string) => void;
+}) {
+  return (
+    <ButtonWithTooltip
+      title="YouTube Link"
+      disabled={disabled}
+      onClick={() => {
+        const url = window.prompt('Paste YouTube link');
+        if (!url) return;
 
-    const parts = lexicalNode.getTextContent().split('\n');
-    for (let index = 0; index < parts.length; index += 1) {
-      const part = parts[index];
-      if (part.length > 0) {
-        actions.appendToParent(mdastParent, { type: 'text', value: part });
-      }
-      if (index < parts.length - 1) {
-        actions.appendToParent(mdastParent, { type: 'break' });
-      }
-    }
-  },
-};
+        const safeUrl = escapeJsxAttr(url.trim());
+        if (safeUrl === '') return;
 
-const softBreakTextImportVisitor: MdastImportVisitor<{ type: 'text'; value: string }> = {
-  priority: 100,
-  testNode: 'text',
-  visitNode({ mdastNode, actions }) {
-    if (!mdastNode.value.includes('\n')) {
-      actions.nextVisitor();
-      return;
-    }
-
-    const parts = mdastNode.value.split('\n');
-    const format = actions.getParentFormatting();
-    const style = actions.getParentStyle();
-
-    for (let index = 0; index < parts.length; index += 1) {
-      const part = parts[index];
-
-      if (part.length > 0) {
-        const textNode = $createTextNode(part);
-        textNode.setFormat(format);
-        if (style !== '') textNode.setStyle(style);
-        actions.addAndStepInto(textNode);
-      }
-
-      if (index < parts.length - 1) {
-        actions.addAndStepInto($createLineBreakNode());
-      }
-    }
-  },
-};
-
-const preserveHardLineBreaksPlugin = realmPlugin({
-  init(realm) {
-    realm.pubIn({
-      [addImportVisitor$]: softBreakTextImportVisitor,
-      [addExportVisitor$]: [softBreakTextExportVisitor, hardBreakExportVisitor],
-    });
-  },
-});
+        onInsert(`\n\n<YouTube url="${safeUrl}" />\n\n`);
+      }}
+    >
+      <BsYoutube className="text-red-300 " />
+    </ButtonWithTooltip>
+  );
+}
 
 function buildPlugins(
   imageUploadHandler: (file: File) => Promise<string>,
   jsxComponentDescriptors: JsxComponentDescriptor[],
-  isEditing: boolean
+  isEditing: boolean,
+  toolbarExtra?: React.ReactNode
 ) {
   return [
-    preserveHardLineBreaksPlugin(),
     headingsPlugin(),
     listsPlugin(),
     quotePlugin(),
@@ -156,7 +107,7 @@ function buildPlugins(
                 <CodeToggle />
                 <ListsToggle />
                 <CreateLink />
-                <InsertImage />
+                {toolbarExtra}
                 <InsertTable />
                 <InsertThematicBreak />
               </>
@@ -241,8 +192,17 @@ function MarkdownEditorImpl({
   const [plugins, setPlugins] = React.useState<ReturnType<typeof buildPlugins> | null>(null);
 
   React.useEffect(() => {
-    setPlugins(buildPlugins(imageUploadHandler, jsxComponentDescriptors, isEditing));
-  }, [imageUploadHandler, jsxComponentDescriptors, isEditing]);
+    const toolbarExtra = (
+      <InsertYouTubeButton
+        disabled={readOnly}
+        onInsert={markdown => {
+          editorRef.current?.focus(() => editorRef.current?.insertMarkdown(markdown));
+        }}
+      />
+    );
+
+    setPlugins(buildPlugins(imageUploadHandler, jsxComponentDescriptors, isEditing, toolbarExtra));
+  }, [imageUploadHandler, jsxComponentDescriptors, isEditing, readOnly]);
 
   const handleChange = React.useCallback(
     (nextMarkdown: string) => {
@@ -270,7 +230,7 @@ function MarkdownEditorImpl({
   return (
     <div
       className={cn(
-        'rounded-2xl border bg-input/50 p-2',
+        'rounded-2xl border bg-gray-100/20 p-2',
         readOnly && 'cursor-not-allowed',
         className
       )}

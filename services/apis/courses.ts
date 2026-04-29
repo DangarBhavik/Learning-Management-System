@@ -182,7 +182,7 @@ export const getApprovedCourses = async (courseId: string) => {
   }
 };
 
-export const saveCourse = async (courseId: string) => {
+export const saveCourse = async ({ courseId }: { courseId: string }) => {
   const response = await fetch(`/api/course/${courseId}/submit`, {
     method: 'PATCH',
   });

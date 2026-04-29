@@ -10,6 +10,7 @@ import { useMutation } from '@tanstack/react-query';
 import { RiLoader4Fill } from 'react-icons/ri';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import Pending from '../Pending';
 
 type LessonFormProps = {
   submitText: string;
@@ -33,14 +34,13 @@ const LessonForm: React.FC<LessonFormProps> = ({
   const { id: courseId } = useParams<{ id: string }>();
 
   const [title, setTitle] = useState<string>(incomingTitle || '');
-
   const [markDown, setMarkDown] = useState<string>(content || '');
 
   const { mutateAsync, isPending: uploading } = useMutation({
     mutationFn: uploadFile,
   });
 
-  const handleUploadImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUploadResource = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -91,14 +91,14 @@ const LessonForm: React.FC<LessonFormProps> = ({
         <CardContent className="flex items-center justify-between gap-4 ">
           <div className="shrink-0">
             {uploading ? (
-              <RiLoader4Fill className="animate-spin" />
+              <Pending />
             ) : (
               <>
                 <label htmlFor="resource">
                   <Upload />
                 </label>
                 <input
-                  onChange={handleUploadImage}
+                  onChange={handleUploadResource}
                   className="hidden"
                   type="file"
                   accept="image/*,video/*,application/pdf,.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip"

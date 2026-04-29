@@ -15,7 +15,7 @@ import Loading from '@/components/ui/loading';
 import { SubmissionStatus } from '@/generated/prisma/enums';
 
 type submission = {
-  assignment: { title: string };
+  assignment: { id: string; title: string };
   course: { title: string };
   fileUrl: string;
   id: string;
@@ -95,7 +95,7 @@ const ReviewAssignment = () => {
                   {new Date(submission.submittedAt).toLocaleDateString()}
                 </TableCell>
                 <TableCell className="text-gray-600 dark:text-gray-400">
-                  <Link href={`/app/review-submission/${submission.id}`}>
+                  <Link href={`/app/assignments/${submission.assignment.id}`}>
                     {submission.score ? 'View' : 'Review'}
                   </Link>
                 </TableCell>

@@ -155,7 +155,7 @@ const SubmissionReviewPage = () => {
           <CardContent>
             <h2 className="text-xl font-semibold mb-4">Submitted File</h2>
             <Link
-              href={submission.fileUrl}
+              href={submission.fileUrl || submission.githubLink}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition"

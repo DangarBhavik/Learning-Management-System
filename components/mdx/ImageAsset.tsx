@@ -13,8 +13,10 @@ export default function ImageAsset({ id, url, alt, title }: ImageAssetProps) {
   return (
     <div data-asset-id={id} className="not-prose">
       {title ? <div className="mb-2 text-sm font-medium">{title}</div> : null}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={url} alt={alt ?? ''} loading="lazy" style={{ width: '100%', height: 'auto' }} />
+      <div className="overflow-hidden rounded-2xl border border-border bg-background">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={url} alt={alt ?? ''} loading="lazy" style={{ width: '100%', height: 'auto' }} />
+      </div>
     </div>
   );
 }

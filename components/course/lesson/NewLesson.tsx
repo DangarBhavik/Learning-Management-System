@@ -1,11 +1,8 @@
 'use client';
 
-import { addLesson } from '@/services/apis/lesson';
-import { useMutation } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
-import queryClient from '@/utils/query-client';
 import LessonForm from './LessonForm';
-import { Course } from '@/types/types';
+import { useCreateLesson } from '@/hooks/lesson/useCreateLesson';
 
 type LessonAddFormProps = {
   moduleId: string;
@@ -15,41 +12,11 @@ type LessonAddFormProps = {
 const NewLesson: React.FC<LessonAddFormProps> = ({ moduleId, onClose }) => {
   const { id: courseId } = useParams<{ id: string }>();
 
-  const { mutateAsync, isPending } = useMutation({
-    mutationFn: addLesson,
-    onSuccess: (data, variables) => {
-      try {
-        const newLesson = {
-          id: data.id,
-          title: data.title,
-          content: data.content,
-        };
-
-        queryClient.setQueryData(['courses', courseId], (oldData: Course) => {
-          if (!oldData) return oldData;
-
-          return {
-            ...oldData,
-            modules: oldData.modules.map(module =>
-              module.id === variables.moduleId
-                ? {
-                    ...module,
-                    lessons: [...(module.lessons || []), newLesson],
-                  }
-                : module
-            ),
-          };
-        });
-        onClose();
-      } catch (error) {
-        console.log(error);
-      }
-    },
-  });
+  const { createLesson, isCreating } = useCreateLesson({ courseId, moduleId });
 
   const handleAddLesson = async ({ title, content }: { title: string; content: string }) => {
     try {
-      await mutateAsync({ courseId, moduleId, title, content });
+      await createLesson({ title, content });
       onClose();
     } catch (error) {
       console.error('Upload error:', error);
@@ -57,16 +24,14 @@ const NewLesson: React.FC<LessonAddFormProps> = ({ moduleId, onClose }) => {
   };
 
   return (
-    <>
-      <LessonForm
-        submitText="Add"
-        onClose={onClose}
-        formTitle="Add new Lesson"
-        func={handleAddLesson}
-        isPending={isPending}
-        moduleId={moduleId}
-      />
-    </>
+    <LessonForm
+      submitText="Add"
+      onClose={onClose}
+      formTitle="Add new Lesson"
+      func={handleAddLesson}
+      isPending={isCreating}
+      moduleId={moduleId}
+    />
   );
 };
 

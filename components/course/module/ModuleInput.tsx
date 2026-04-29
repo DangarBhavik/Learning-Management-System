@@ -1,9 +1,7 @@
 'use client';
 
-import { deleteModule, editModule } from '@/services/apis/module';
-import { Course } from '@/types/types';
-import queryClient from '@/utils/query-client';
-import { useMutation } from '@tanstack/react-query';
+import { useDeleteModule } from '@/hooks/module/useDeleteModule';
+import { useModifyModule } from '@/hooks/module/useModifyModule';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import { BiSave, BiTrash } from 'react-icons/bi';
@@ -18,56 +16,23 @@ const ModuleInput: React.FC<{ title?: string; moduleId: string; index: number }>
 }) => {
   const { id: courseId } = useParams<{ id: string }>();
 
-  const { mutateAsync, isPending } = useMutation({
-    mutationFn: editModule,
-    onSuccess: (data, variable) => {
-      try {
-        queryClient.setQueryData(['courses', courseId], (old: Course) => {
-          if (!old) return old;
-
-          return {
-            ...old,
-            modules: old.modules.map(module =>
-              module.id === variable.moduleId ? { ...module, title: variable.title } : module
-            ),
-          };
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    },
-  });
+  const { isModifying, modifyModule } = useModifyModule({ courseId, moduleId });
+  const { deleteModule, isDeleting } = useDeleteModule({ courseId, moduleId });
 
   const [text, setText] = useState<string>(title ?? '');
   const [showEditForm, setShowEditForm] = useState(false);
-
-  const { mutateAsync: deleteModuleFunc, isPending: isDeleting } = useMutation({
-    mutationFn: deleteModule,
-    onSuccess: () => {
-      queryClient.setQueryData(['courses', courseId], (old: Course) => {
-        if (!old) {
-          return old;
-        }
-
-        return {
-          ...old,
-          modules: old.modules.filter(module => module.id != moduleId),
-        };
-      });
-    },
-  });
 
   const handleEditTitle = async () => {
     if (text.trim() == '') {
       return;
     }
 
-    await mutateAsync({ courseId, title: text, moduleId });
+    await modifyModule({ title: text });
     setShowEditForm(false);
   };
 
   const handleDelete = async () => {
-    await deleteModuleFunc({ courseId, moduleId });
+    await deleteModule();
   };
 
   return (
@@ -79,14 +44,14 @@ const ModuleInput: React.FC<{ title?: string; moduleId: string; index: number }>
           value={text}
           onChange={event => setText(event.target.value)}
           type="text"
-          disabled={!showEditForm || isPending}
+          disabled={!showEditForm || isModifying}
         />
 
         {showEditForm ? (
           <div className="flex gap-4">
             <button
               onClick={() => setShowEditForm(false)}
-              disabled={isPending}
+              disabled={isModifying}
               className="bg-red-500/20 p-2 rounded-lg hover:bg-red-500/30 transition disabled:opacity-80 disabled:cursor-not-allowed"
             >
               <MdClose className="text-red-400" />
@@ -94,10 +59,10 @@ const ModuleInput: React.FC<{ title?: string; moduleId: string; index: number }>
 
             <button
               onClick={handleEditTitle}
-              disabled={isPending}
+              disabled={isModifying}
               className="bg-blue-500/20 p-2 rounded-lg hover:bg-blue-500/30 transition disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {isPending ? (
+              {isModifying ? (
                 <RiLoader4Fill className=" border-blue-400 animate-spin" />
               ) : (
                 <BiSave className="text-blue-500 " />

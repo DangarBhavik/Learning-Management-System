@@ -7,10 +7,26 @@ import {
   useLexicalNodeRemove,
 } from '@mdxeditor/editor';
 
+import { cn } from '@/lib/utils';
 import { BiTrash } from 'react-icons/bi';
 import { deleteFile } from '@/services/apis/file';
 import { useMutation } from '@tanstack/react-query';
 import { RiLoader4Fill } from 'react-icons/ri';
+import YouTubeEmbed from '@/components/mdx/YouTube';
+import { Button } from '@/components/ui/button';
+
+function blockShellClass(readOnly?: boolean) {
+  return cn(
+    'not-prose',
+    readOnly
+      ? 'rounded-none border-0 bg-transparent p-0'
+      : 'rounded-2xl border border-border bg-background p-4'
+  );
+}
+
+function blockHeaderClass(readOnly?: boolean) {
+  return cn('flex items-center justify-between gap-3', readOnly ? 'mb-2' : 'mb-3');
+}
 
 function getJsxStringProp(mdastNode: unknown, propName: string): string | undefined {
   const attributes = (mdastNode as { attributes?: Array<{ name?: string; value?: unknown }> })
@@ -44,46 +60,52 @@ function createFileAssetJsxEditor({
     const disableRemove = Boolean(readOnly) || isPending;
 
     return (
-      <div className="not-prose rounded-lg border bg-background p-3">
-        <div className="flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <div className="truncate text-sm font-medium">{name ?? 'File'}</div>
-            {/* {url ? <div className="truncate text-xs text-muted-foreground">{url}</div> : null} */}
-          </div>
-          <div className="flex items-center gap-3">
-            <button
+      <div className={blockShellClass(readOnly)}>
+        <div className={blockHeaderClass(readOnly)}>
+          {!readOnly && (
+            <div className="min-w-0">
+              <div className="truncate text-sm font-medium">{name ?? 'File'}</div>
+            </div>
+          )}
+          <div className="flex items-center gap-2">
+            <Button
               type="button"
+              variant="link"
+              size="xs"
               onClick={() => {
                 if (!url) return;
                 window.open(url, '_blank', 'noopener,noreferrer');
               }}
-              className="text-sm underline"
               disabled={!url}
             >
               Open
-            </button>
-            <button
-              type="button"
-              onClick={async () => {
-                if (disableRemove) return;
+            </Button>
 
-                if (courseId && moduleId && fileId) {
-                  try {
-                    await mutateAsync({ courseId, moduleId, fileId });
-                  } catch (err) {
-                    console.error('Failed to delete file asset', err);
+            {!readOnly && (
+              <Button
+                type="button"
+                variant="destructive"
+                size="icon-sm"
+                onClick={async () => {
+                  if (disableRemove) return;
+
+                  if (courseId && moduleId && fileId) {
+                    try {
+                      await mutateAsync({ courseId, moduleId, fileId });
+                    } catch (err) {
+                      console.error('Failed to delete file asset', err);
+                    }
                   }
-                }
 
-                removeNode();
-              }}
-              className="rounded-md bg-red-300/20 p-1 text-xl"
-              aria-label="Remove file asset"
-              title="Remove"
-              disabled={disableRemove}
-            >
-              <BiTrash className="text-red-400" />
-            </button>
+                  removeNode();
+                }}
+                aria-label="Remove file asset"
+                title="Remove"
+                disabled={disableRemove}
+              >
+                {isPending ? <RiLoader4Fill className="animate-spin" /> : <BiTrash />}
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -110,43 +132,68 @@ function createVideoAssetJsxEditor({
     const disableRemove = Boolean(readOnly) || isPending;
 
     return (
-      <div className="not-prose rounded-lg border bg-background p-3">
-        <div className="mb-2 flex items-center justify-between gap-3">
+      <div className={blockShellClass(readOnly)}>
+        <div className={blockHeaderClass(readOnly)}>
           <div className="min-w-0">
             {title ? <div className="truncate text-sm font-medium">{title}</div> : null}
-            {/* {url ? <div className="truncate text-xs text-muted-foreground">{url}</div> : null} */}
           </div>
-          {!readOnly && (
-            <button
+
+          <div className="flex items-center gap-2">
+            <Button
               type="button"
-              onClick={async () => {
-                if (disableRemove) return;
-
-                if (courseId && moduleId && fileId) {
-                  try {
-                    await mutateAsync({ courseId, moduleId, fileId });
-                  } catch (err) {
-                    console.error('Failed to delete video asset', err);
-                  }
-                }
-
-                removeNode();
+              variant="link"
+              size="xs"
+              onClick={() => {
+                if (!url) return;
+                window.open(url, '_blank', 'noopener,noreferrer');
               }}
-              className="rounded-md bg-red-300/20 p-1 text-xl"
-              aria-label="Remove video asset"
-              title="Remove"
-              disabled={disableRemove}
+              disabled={!url}
             >
-              {isPending ? (
-                <RiLoader4Fill className="animate-spin text-xl" />
-              ) : (
-                <BiTrash className="text-red-400" />
-              )}
-            </button>
-          )}
+              Open
+            </Button>
+
+            {!readOnly && (
+              <Button
+                type="button"
+                variant="destructive"
+                size="icon-sm"
+                onClick={async () => {
+                  if (disableRemove) return;
+
+                  if (courseId && moduleId && fileId) {
+                    try {
+                      await mutateAsync({ courseId, moduleId, fileId });
+                    } catch (err) {
+                      console.error('Failed to delete video asset', err);
+                    }
+                  }
+
+                  removeNode();
+                }}
+                aria-label="Remove video asset"
+                title="Remove"
+                disabled={disableRemove}
+              >
+                {isPending ? <RiLoader4Fill className="animate-spin" /> : <BiTrash />}
+              </Button>
+            )}
+          </div>
         </div>
+
         {url ? (
-          <video controls preload="metadata" poster={poster} src={url} style={{ width: '100%' }} />
+          <div
+            className={cn(
+              !readOnly && 'overflow-hidden rounded-2xl border border-border bg-background'
+            )}
+          >
+            <video
+              controls
+              preload="metadata"
+              poster={poster}
+              src={url}
+              style={{ width: '100%' }}
+            />
+          </div>
         ) : (
           <div className="text-sm text-muted-foreground">Video URL missing</div>
         )}
@@ -174,27 +221,31 @@ function createImageAssetJsxEditor({
     const disableRemove = Boolean(readOnly) || isPending;
 
     return (
-      <div className="not-prose rounded-lg border bg-background p-3">
-        <div className="mb-2 flex items-center justify-between gap-3">
+      <div className={blockShellClass(readOnly)}>
+        <div className={blockHeaderClass(readOnly)}>
           <div className="min-w-0">
             {title ? <div className="truncate text-sm font-medium">{title}</div> : null}
-            {/* {url ? <div className="truncate text-xs text-muted-foreground">{url}</div> : null} */}
           </div>
-          <div className="flex items-center gap-3">
-            <button
+
+          <div className="flex items-center gap-2">
+            <Button
               type="button"
+              variant="link"
+              size="xs"
               onClick={() => {
                 if (!url) return;
                 window.open(url, '_blank', 'noopener,noreferrer');
               }}
-              className="text-sm underline"
               disabled={!url}
             >
               Open
-            </button>
+            </Button>
+
             {!readOnly && (
-              <button
+              <Button
                 type="button"
+                variant="destructive"
+                size="icon-sm"
                 onClick={async () => {
                   if (disableRemove) return;
 
@@ -208,26 +259,82 @@ function createImageAssetJsxEditor({
 
                   removeNode();
                 }}
-                className="rounded-md bg-red-300/20 p-1 text-xl"
                 aria-label="Remove image asset"
                 title="Remove"
                 disabled={disableRemove}
               >
-                {isPending ? (
-                  <RiLoader4Fill className="animate-spin text-xl" />
-                ) : (
-                  <BiTrash className="text-red-400" />
-                )}
-              </button>
+                {isPending ? <RiLoader4Fill className="animate-spin" /> : <BiTrash />}
+              </Button>
             )}
           </div>
         </div>
 
         {url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={url} alt={alt ?? ''} loading="lazy" style={{ width: '100%', height: 'auto' }} />
+          <div
+            className={cn(
+              !readOnly && 'overflow-hidden rounded-2xl border border-border bg-background'
+            )}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={url}
+              alt={alt ?? ''}
+              loading="lazy"
+              style={{ width: '100%', height: 'auto' }}
+            />
+          </div>
         ) : (
           <div className="text-sm text-muted-foreground">Image URL missing</div>
+        )}
+      </div>
+    );
+  };
+}
+
+function createYouTubeJsxEditor({ readOnly }: CreateJsxComponentDescriptorsOptions) {
+  return function YouTubeJsxEditor({ mdastNode }: JsxEditorProps) {
+    const url = getJsxStringProp(mdastNode, 'url');
+    const title = getJsxStringProp(mdastNode, 'title');
+    const removeNode = useLexicalNodeRemove();
+
+    return (
+      <div className={blockShellClass(readOnly)}>
+        <div className={blockHeaderClass(readOnly)}>
+          <div className="min-w-0">
+            {!readOnly && <div className="truncate text-sm font-medium">{title ?? 'YouTube'}</div>}
+          </div>
+          <div className="flex items-center gap-3">
+            <Button
+              type="button"
+              variant="link"
+              size="xs"
+              onClick={() => {
+                if (!url) return;
+                window.open(url, '_blank', 'noopener,noreferrer');
+              }}
+              disabled={!url}
+            >
+              Open
+            </Button>
+            {!readOnly && (
+              <Button
+                type="button"
+                onClick={() => removeNode()}
+                variant="destructive"
+                size="icon-sm"
+                aria-label="Remove YouTube embed"
+                title="Remove"
+              >
+                <BiTrash />
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {url ? (
+          <YouTubeEmbed url={url} title={title} />
+        ) : (
+          <div className="text-sm text-muted-foreground">YouTube URL missing</div>
         )}
       </div>
     );
@@ -288,6 +395,18 @@ function createJsxComponentDescriptors(options: CreateJsxComponentDescriptorsOpt
       ],
       hasChildren: false,
       Editor: createImageAssetJsxEditor(options),
+    },
+    {
+      name: 'YouTube',
+      kind: 'flow' as const,
+      source: '@/components/mdx/YouTube',
+      defaultExport: true,
+      props: [
+        { name: 'url', type: 'string' as const, required: true },
+        { name: 'title', type: 'string' as const },
+      ],
+      hasChildren: false,
+      Editor: createYouTubeJsxEditor(options),
     },
   ];
 

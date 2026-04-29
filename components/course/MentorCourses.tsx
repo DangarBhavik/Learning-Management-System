@@ -22,7 +22,7 @@ export default function MentorCoursesPage() {
         </Link>
       }
     >
-      <Courses btnText="Manage Course" courses={courses} />
+      <Courses btnText="View Course" courses={courses} />
     </CoursesLayout>
   );
 }

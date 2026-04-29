@@ -1,15 +1,15 @@
 'use client';
 
 import NewLesson from '../lesson/NewLesson';
-import Lessons from '../lesson/Lessons';
 import ModuleInput from './ModuleInput';
 import AssignmentForm from '../assignment/AssignmentForm';
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { BiPlus } from 'react-icons/bi';
 import Assignments from '../assignment/Asssignments';
-import { useCreateAssignment } from '@/hooks/courses/assignment/useCreateAssignment';
+import { useCreateAssignment } from '@/hooks/assignment/useCreateAssignment';
 import DropDown from '@/components/ui/DropDown';
+import Lessons from '../lesson/Lessons';
 type Lesson = {
   id: string;
   title: string;
@@ -32,7 +32,7 @@ type ModuleFormEditProps = {
 };
 
 const Modules: React.FC<ModuleFormEditProps> = ({ id, index, title, lessons, assignments }) => {
-  const [showLessonForm, setShowLessonForm] = useState(false);
+  const [showForm, setShowForm] = useState(false);
   const [formName, setFormName] = useState('');
   const { id: courseId } = useParams<{ id: string }>();
 
@@ -47,29 +47,22 @@ const Modules: React.FC<ModuleFormEditProps> = ({ id, index, title, lessons, ass
     description: string;
     maxScore: number;
   }) => {
-    await createAssignment({ courseId, moduleId: id, title, description, maxScore });
+    await createAssignment({ title, description, maxScore });
   };
 
   const handleCloseForm = () => {
-    setShowLessonForm(false);
+    setShowForm(false);
     setFormName('');
   };
 
   return (
-    <div className="mt-4 space-y-4  ">
+    <div className="mt-4 space-y-4 ">
       <ModuleInput index={index} title={title} moduleId={id} />
-
-      <div className="flex justify-center ">
-        <h5 className="bg-white text-sm"> Lessons</h5>
-      </div>
-
-      {lessons.length > 0 &&
-        lessons.map(lesson => <Lessons moduleId={id} key={`${lesson.id}+${id}`} lesson={lesson} />)}
-
-      {assignments.length > 0 && <Assignments assignments={assignments} moduleId={id} />}
+      <Lessons lessons={lessons} moduleId={id} />
+      <Assignments assignments={assignments} moduleId={id} />
 
       <div className="flex justify-center items-center">
-        {!showLessonForm ? (
+        {!showForm ? (
           <DropDown
             trigger={
               <div className="bg-white">
@@ -81,7 +74,7 @@ const Modules: React.FC<ModuleFormEditProps> = ({ id, index, title, lessons, ass
             options={['Assignment', 'Lesson']}
             onSelect={val => {
               setFormName(val);
-              setShowLessonForm(true);
+              setShowForm(true);
             }}
           />
         ) : (

@@ -4,9 +4,9 @@ import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import { BsThreeDotsVertical } from 'react-icons/bs';
 import AssignmentForm from './AssignmentForm';
-import { useModifyAssignment } from '@/hooks/courses/assignment/useModifyAssignment';
+import { useModifyAssignment } from '@/hooks/assignment/useModifyAssignment';
 import DropDown from '@/components/ui/DropDown';
-import { useDeleteAssignment } from '@/hooks/courses/assignment/useDeleteAssignment';
+import { useDeleteAssignment } from '@/hooks/assignment/useDeleteAssignment';
 import { RiLoader4Fill } from 'react-icons/ri';
 
 type Assignment = {
@@ -20,8 +20,8 @@ const Assignment = ({ assignment, moduleId }: { assignment: Assignment; moduleId
   const { id: courseId } = useParams<{ id: string }>();
   const [showEditForm, setShowEditForm] = useState(false);
 
-  const { updateAssignment, isUpdating } = useModifyAssignment(courseId, moduleId);
-  const { deleteAssignment, isDeleting } = useDeleteAssignment(courseId, moduleId);
+  const { updateAssignment, isUpdating } = useModifyAssignment(courseId, moduleId, assignment.id);
+  const { deleteAssignment, isDeleting } = useDeleteAssignment(courseId, moduleId, assignment.id);
 
   const handleUpdateAssignment = async ({
     title,
@@ -33,9 +33,6 @@ const Assignment = ({ assignment, moduleId }: { assignment: Assignment; moduleId
     maxScore: number;
   }) => {
     await updateAssignment({
-      assignmentId: assignment.id,
-      courseId,
-      moduleId,
       description,
       maxScore,
       title,
@@ -56,13 +53,15 @@ const Assignment = ({ assignment, moduleId }: { assignment: Assignment; moduleId
       />
     );
   }
+
   const handleSelectDropDown = async (val: string) => {
     if (val == 'Edit') {
       setShowEditForm(true);
     } else if (val == 'Delete') {
-      await deleteAssignment({ assignmentId: assignment.id, courseId, moduleId });
+      await deleteAssignment();
     }
   };
+
   return (
     <div
       key={assignment.id}

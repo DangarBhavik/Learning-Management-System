@@ -2,50 +2,24 @@
 
 import { BiPlus } from 'react-icons/bi';
 import { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { createModule } from '@/services/apis/module';
 import { useParams } from 'next/navigation';
-import queryClient from '@/utils/query-client';
-import { RiLoader4Fill } from 'react-icons/ri';
-import { Course } from '@/types/types';
+import { useCreateModule } from '@/hooks/module/useCreateModule';
+import Pending from '../Pending';
 
-const NewModule = ({}) => {
+const NewModule = () => {
   const [inputText, setInputText] = useState<string>('');
 
   const { id: courseId } = useParams<{ id: string }>();
 
-  const { mutateAsync, isPending } = useMutation({
-    mutationFn: createModule,
-    onSuccess: data => {
-      try {
-        queryClient.setQueryData(['courses', courseId], (oldData: Course) => {
-          if (!oldData) return oldData;
+  const { createModule, isCreating } = useCreateModule({ courseId });
 
-          const newModule = {
-            id: data.id,
-            title: data.title,
-            order: data.order,
-            lessons: [],
-          };
-
-          return {
-            ...oldData,
-            modules: [...(oldData.modules ?? []), newModule],
-          };
-        });
-      } catch {
-        console.log('failed to Add Module');
-      }
-    },
-  });
   const handleModuleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (inputText.trim() == '') {
       return;
     }
-
-    await mutateAsync({ title: inputText, courseId });
+    await createModule({ title: inputText });
 
     setInputText('');
   };
@@ -66,10 +40,10 @@ const NewModule = ({}) => {
           />
 
           <button
-            disabled={isPending}
-            className={`bg-red-400/20 text-red-400 p-2 ${isPending ? 'animate-spin rounded-full' : 'rounded-md '}`}
+            disabled={isCreating}
+            className={`bg-red-400/20 text-red-400 p-2 ${isCreating ? 'animate-spin rounded-full' : 'rounded-md '}`}
           >
-            {!isPending ? <BiPlus /> : <RiLoader4Fill />}
+            {!isCreating ? <BiPlus /> : <Pending />}
           </button>
         </div>
       </form>

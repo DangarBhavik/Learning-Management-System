@@ -3,9 +3,9 @@ import { Course } from '@/types/types';
 import queryClient from '@/utils/query-client';
 import { useMutation } from '@tanstack/react-query';
 
-export const useDeleteAssignment = (courseId: string, moduleId: string) => {
+export const useDeleteAssignment = (courseId: string, moduleId: string, assignmentId: string) => {
   const { mutateAsync, isError, error, isPending } = useMutation({
-    mutationFn: deleteAssignment,
+    mutationFn: () => deleteAssignment({ assignmentId, courseId, moduleId }),
     onSuccess: deletedAssignment => {
       const deletedAssignmentId = deletedAssignment?.id;
       if (!deletedAssignmentId) return;
