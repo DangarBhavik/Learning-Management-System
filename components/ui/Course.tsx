@@ -119,7 +119,7 @@ const Course: React.FC<{
         <h2 className="text-[18px] font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2">
           {title}
         </h2>
-        <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">{description}</p>
+        <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 ">{description}</p>
 
         {progress !== undefined && (
           <div>
