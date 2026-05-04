@@ -142,6 +142,33 @@ export const getCourseById = async ({ courseId, userId }: { courseId: string; us
   return formattedCourse;
 };
 
+export const getCourseDetails = async ({ courseId }: { courseId: string }) => {
+  const courseDetails = await prisma.course.findUnique({
+    where: { id: courseId },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      thumbnail: {
+        select: { url: true },
+      },
+    },
+  });
+
+  if (!courseDetails) {
+    throw new Error('Course not found');
+  }
+
+  const formattedCourseDetails = {
+    id: courseDetails.id,
+    title: courseDetails.title,
+    description: courseDetails.description,
+    thumbnail: courseDetails.thumbnail?.url || null,
+  };
+
+  return formattedCourseDetails;
+};
+
 export const getEnrolledStudentIds = async ({ courseId }: { courseId: string }) => {
   const courseDetails = await prisma.course.findUnique({
     where: { id: courseId },

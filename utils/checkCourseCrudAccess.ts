@@ -7,6 +7,5 @@ export const checkCourseCrudAccess = async ({
   user: { id: string; role: string };
 }) => {
   const authorId = await getCourseAuthorId({ courseId });
-
   return authorId === user.id || user.role === 'ADMIN';
 };

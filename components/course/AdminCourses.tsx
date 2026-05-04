@@ -6,6 +6,8 @@ import { fetchCourses } from '@/services/apis/courses';
 import { useQuery } from '@tanstack/react-query';
 import CoursesLayout from './CoursesLayout';
 import CustomSelect from '../ui/CustomSelect';
+import { useCourse } from '@/hooks/courses/useCourse';
+import { useCourses } from '@/hooks/courses/useCourses';
 
 type Course = {
   id: string;
@@ -23,14 +25,8 @@ type Course = {
 };
 
 export default function AdminCoursesPage() {
-  const {
-    data: courses = [],
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ['admin', 'courses'],
-    queryFn: fetchCourses,
-  });
+
+  const { courses , isFetching , isError , error} = useCourses()
 
   const [search, setSearch] = useState('');
 
@@ -51,7 +47,7 @@ export default function AdminCoursesPage() {
       title="Courses"
       subtitle="Manage and review all courses"
       count={filteredCourses.length}
-      isLoading={isLoading}
+      isLoading={isFetching}
       isError={isError}
     >
       <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl p-4 mb-6 shadow-sm">
@@ -79,7 +75,7 @@ export default function AdminCoursesPage() {
               { label: 'Pending', value: 'PENDING' },
               { label: 'Approved', value: 'APPROVED' },
             ]}
-            className="min-w-[160px]"
+            className="min-w-40"
           />
         </div>
       </div>

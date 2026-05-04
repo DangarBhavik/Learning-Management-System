@@ -1,6 +1,6 @@
 'use client';
 import { BiBook } from 'react-icons/bi';
-import DashBoardCard from './DashboardCard';
+import DashBoardCard from '../DashboardCard';
 import { PiStudent } from 'react-icons/pi';
 import { IoDocumentTextOutline } from 'react-icons/io5';
 import Courses from '@/components/ui/Courses';

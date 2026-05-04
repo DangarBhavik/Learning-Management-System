@@ -1,18 +1,4 @@
-import { courseFormData, CourseType } from '@/types/types';
-export type Course = {
-  id: string;
-  title: string;
-  description: string;
-  thumbnail: string;
-  author: string;
-  image: string;
-  status: string;
-  authorId: string;
-  thumbnailId: string | null;
-  createdAt: string;
-  updatedAt: string;
-  modulesCount: number;
-};
+import { CourseCardProps, courseFormData, CourseType } from '@/types/types';
 
 export type Lesson = {
   id: string;
@@ -30,8 +16,10 @@ export type Module = {
   title: string;
 };
 
-export async function fetchCourses({ limit }: { limit?: number }): Promise<Course[]> {
-  const limitParam = limit ? `?limit=${limit}` : '';
+export async function fetchCourses(
+  { limit } = {} as { limit?: number }
+): Promise<CourseCardProps[]> {
+  const limitParam = limit !== undefined ? `?limit=${limit}` : '';
   const res = await fetch(`/api/course${limitParam}`);
   const json = await res.json();
 
@@ -39,7 +27,7 @@ export async function fetchCourses({ limit }: { limit?: number }): Promise<Cours
     throw new Error(json.message ?? 'Failed to fetch courses');
   }
 
-  return json.data as Course[];
+  return json.data as CourseCardProps[];
 }
 
 export async function getPendingCourses(): Promise<CourseType[]> {
@@ -123,7 +111,8 @@ export const createCourse = async (course: courseFormData) => {
     throw new Error('Failed to create courses');
   }
 
-  return await response.json();
+  const result = await response.json();
+  return result.data;
 };
 
 export const getCourseById = async (courseId: string) => {
@@ -159,7 +148,8 @@ export const updateCourse = async (courseId: string, course: courseFormData) => 
     throw new Error('Failed to update course');
   }
 
-  return await response.json();
+  const result = await response.json();
+  return result.data;
 };
 
 export const saveCourse = async ({ courseId }: { courseId: string }) => {
@@ -172,7 +162,8 @@ export const saveCourse = async ({ courseId }: { courseId: string }) => {
     throw new Error('course Saved Failes');
   }
 
-  return await response.json();
+  const result = await response.json();
+  return result.data;
 };
 
 export const getTraineeCourses = async () => {
@@ -261,4 +252,18 @@ export const approveCourse = async (courseId: string) => {
   }
 
   return data;
+};
+
+export const getCourseDetails = async (courseId: string) => {
+  const response = await fetch(`/api/course/${courseId}/details`, {
+    method: 'GET',
+  });
+
+  if (!response.ok) {
+    console.log(response);
+  }
+
+  const result = await response.json();
+
+  return result.data;
 };

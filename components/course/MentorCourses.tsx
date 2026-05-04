@@ -1,21 +1,16 @@
 'use client';
 
 import Courses from '@/components/ui/Courses';
-import { fetchCourses } from '@/services/apis/courses';
-import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import CoursesLayout from './CoursesLayout';
+import { useCourses } from '@/hooks/courses/useCourses';
 
 export default function MentorCoursesPage() {
-  const { data: courses = [], isPending } = useQuery({
-    queryKey: ['mentor-courses'],
-    queryFn: fetchCourses,
-  });
-
+  const { courses, isFetching } = useCourses();
   return (
     <CoursesLayout
       title="Your Courses"
-      isLoading={isPending}
+      isLoading={isFetching}
       headerRight={
         <Link href="/app/add-course">
           <button className="bg-blue-500 text-white px-3 py-1 rounded-md">+ Add Course</button>
