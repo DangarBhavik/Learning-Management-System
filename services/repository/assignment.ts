@@ -1,4 +1,3 @@
-import { getCourseAuthorId } from '@/services/repository/course';
 import { prisma } from '@/utils/prisma-client';
 
 export const createAssignment = async ({

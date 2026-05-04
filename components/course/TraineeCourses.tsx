@@ -1,21 +1,17 @@
 'use client';
 
 import Courses from '@/components/ui/Courses';
-import { fetchCourses } from '@/services/apis/courses';
-import { useQuery } from '@tanstack/react-query';
 import CoursesLayout from './CoursesLayout';
+import { useCourses } from '@/hooks/courses/useCourses';
 
 export default function TraineeCoursesPage() {
-  const { data: courses = [], isLoading } = useQuery({
-    queryKey: ['trainee-courses'],
-    queryFn: fetchCourses,
-  });
+  const { courses, isFetching } = useCourses();
 
   return (
     <CoursesLayout
       title="My Courses"
       subtitle="Track, submit, and review your course work"
-      isLoading={isLoading}
+      isLoading={isFetching}
     >
       <Courses btnText="Continue Learning" courses={courses} />
     </CoursesLayout>

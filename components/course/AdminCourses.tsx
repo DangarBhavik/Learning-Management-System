@@ -2,10 +2,9 @@
 
 import { useState, useMemo } from 'react';
 import Courses from '@/components/ui/Courses';
-import { fetchCourses } from '@/services/apis/courses';
-import { useQuery } from '@tanstack/react-query';
 import CoursesLayout from './CoursesLayout';
 import CustomSelect from '../ui/CustomSelect';
+import { useCourses } from '@/hooks/courses/useCourses';
 import Link from 'next/link';
 
 type Course = {
@@ -24,14 +23,7 @@ type Course = {
 };
 
 export default function AdminCoursesPage() {
-  const {
-    data: courses = [],
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ['admin', 'courses'],
-    queryFn: fetchCourses,
-  });
+  const { courses, isFetching, isError, error } = useCourses();
 
   const [search, setSearch] = useState('');
 
@@ -52,7 +44,7 @@ export default function AdminCoursesPage() {
       title="Courses"
       subtitle="Manage and review all courses"
       count={filteredCourses.length}
-      isLoading={isLoading}
+      isLoading={isFetching}
       isError={isError}
       headerRight={
         <Link href="/app/add-course">
@@ -85,7 +77,7 @@ export default function AdminCoursesPage() {
               { label: 'Pending', value: 'PENDING' },
               { label: 'Approved', value: 'APPROVED' },
             ]}
-            className="min-w-[160px]"
+            className="min-w-40"
           />
         </div>
       </div>
