@@ -1,13 +1,8 @@
 import getUserDetails from '@/lib/isAuth';
 import { deleteFromCloud } from '@/services/external/cloudinary';
-import { deleteAssignment } from '@/services/repository/assignment';
-import { deleteFiles } from '@/services/repository/file';
-import { deleteLesson } from '@/services/repository/lesson';
 import { deleteModule, getModuleById, updateModule } from '@/services/repository/module';
 import ApiResponse from '@/utils/api-response';
 import { checkCourseCrudAccess } from '@/utils/checkCourseCrudAccess';
-import { FileTypeToResourceType } from '@/utils/file-type-map';
-import { extractEmbeddedFileIds } from '@/utils/getIdsFromMarkdown';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const PATCH = async (
@@ -80,40 +75,13 @@ export const DELETE = async (
       });
     }
 
-    await deleteModule({ moduleId });
+    const deletedFilesFromDb = await deleteModule({ moduleId });
 
-    await Promise.allSettled(
-      moduleData.lessons.map(lesson => deleteLesson({ lessonId: lesson.id }))
-    );
-
-    await Promise.allSettled(
-      moduleData.assignments.map(assignment => deleteAssignment({ assignmentId: assignment.id }))
-    );
-
-    const filesToDelete = [
-      ...(moduleData.lessons?.flatMap(lesson => extractEmbeddedFileIds(lesson.content)) || []),
-      ...(moduleData.assignments?.flatMap(assignment =>
-        extractEmbeddedFileIds(assignment.description)
-      ) || []),
-    ];
-
-    if (filesToDelete.length > 0) {
-      const deletedFilesFromDb = await deleteFiles(filesToDelete);
-
+    if (deletedFilesFromDb.length > 0) {
       await Promise.allSettled(
-        deletedFilesFromDb.map(file =>
-          deleteFromCloud(file.public_id, FileTypeToResourceType[file.type])
-        )
+        deletedFilesFromDb.map(file => deleteFromCloud(file.public_id, file.type))
       );
     }
-
-    await Promise.allSettled(
-      moduleData.lessons.map(lesson => deleteLesson({ lessonId: lesson.id }))
-    );
-
-    await Promise.allSettled(
-      moduleData.assignments.map(assignment => deleteAssignment({ assignmentId: assignment.id }))
-    );
 
     return NextResponse.json(new ApiResponse(200, 'Module Deleted Successfully', {}), {
       status: 200,

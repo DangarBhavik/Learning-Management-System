@@ -3,7 +3,7 @@
 import Modules from '@/components/course/module/Modules';
 import NewModule from '@/components/course/module/NewModule';
 import { CourseStatus, Role } from '@/generated/prisma/enums';
-import { useParams, useRouter } from 'next/navigation';
+import { notFound, useParams, useRouter } from 'next/navigation';
 import Loading from '../ui/loading';
 import Link from 'next/link';
 import { useCourse } from '@/hooks/courses/useCourse';
@@ -29,7 +29,7 @@ type Module = {
   assignments: Assignment[];
 };
 
-const AddContent = ({ role }: { role: Role }) => {
+const AddContent = () => {
   const router = useRouter();
   const { id: courseId } = useParams<{ id: string }>();
 
@@ -41,7 +41,7 @@ const AddContent = ({ role }: { role: Role }) => {
       { courseId },
       {
         onSuccess: () => {
-          router.push(`/${role.toLowerCase()}/courses`);
+          router.push(`/app/courses`);
         },
       }
     );
@@ -51,9 +51,13 @@ const AddContent = ({ role }: { role: Role }) => {
     return <Loading text="Course Content" />;
   }
 
+  if (!isLoading && !course) {
+    notFound();
+  }
+
   return (
     <>
-      <div className="relative h-full w-full overflow-hidden ">
+      <div className="relative h-full  w-full overflow-hidden ">
         <div className="flex justify-end gap-4 ">
           <Link
             href={`/add-course/${courseId}/`}
@@ -73,8 +77,7 @@ const AddContent = ({ role }: { role: Role }) => {
         </div>
         <div className="absolute left-1/2 h-full -z-10 rounded-3xl border-l-2 border-dashed " />
         <div className="space-y-5 mt-4 overflow-auto">
-          {course &&
-            course.modules &&
+          {course.modules &&
             course.modules.map((module: Module, index: number) => (
               <Modules
                 key={module.id}

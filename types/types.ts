@@ -44,3 +44,18 @@ export type Course = {
   thumbnail: string | null;
   modules: Module[];
 };
+
+export type CourseCardProps = {
+  id: string;
+  title: string;
+  description: string;
+  thumbnail: string;
+  author: string;
+  image: string;
+  status: string;
+  authorId: string;
+  thumbnailId: string | null;
+  createdAt: string;
+  updatedAt: string;
+  modulesCount: number;
+};

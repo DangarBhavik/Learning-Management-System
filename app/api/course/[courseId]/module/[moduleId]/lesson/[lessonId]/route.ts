@@ -103,9 +103,7 @@ export const DELETE = async (
       status: 200,
     });
   } catch (error) {
-    console.error('Failed To Delete Lesson', error);
-    return NextResponse.json(new ApiResponse(500, 'Internal Server Error', {}), {
-      status: 500,
-    });
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json(new ApiResponse(500, errorMessage, {}), { status: 500 });
   }
 };

@@ -27,7 +27,7 @@ export const GET = async (req: NextRequest) => {
 
 export const POST = async (req: NextRequest) => {
   try {
-    let user = await getUserDetails();
+    const user = await getUserDetails();
 
     if (user.role === 'TRAINEE') {
       return NextResponse.json(new ApiResponse(403, 'Unauthorised', {}), { status: 403 });

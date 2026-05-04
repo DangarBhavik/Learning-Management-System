@@ -1,6 +1,6 @@
 'use client';
 import { BiBook } from 'react-icons/bi';
-import DashBoardCard from '../mentor-dashboard/DashboardCard';
+import DashBoardCard from '../DashboardCard';
 import { FaRegFileAlt } from 'react-icons/fa';
 import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
 import { FaArrowTrendUp } from 'react-icons/fa6';

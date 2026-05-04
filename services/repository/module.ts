@@ -1,4 +1,5 @@
 import { prisma } from '@/utils/prisma-client';
+import { extractEmbeddedFileIds } from '@/utils/getIdsFromMarkdown';
 
 export const getLastModuleCount = async ({ courseId }: { courseId: string }) => {
   const lastModuleCount = await prisma.module.findFirst({
@@ -52,9 +53,50 @@ export const getModuleById = async ({
 };
 
 export const deleteModule = async ({ moduleId }: { moduleId: string }) => {
-  const deletedModule = await prisma.module.delete({
-    where: { id: moduleId },
+  let deletedFilesFromDb: { id: string; public_id: string; type: any }[] = [];
+
+  await prisma.$transaction(async tx => {
+    const lessons = await tx.lesson.findMany({
+      where: { moduleId },
+      select: { id: true, content: true },
+    });
+
+    const assignments = await tx.assignment.findMany({
+      where: { moduleId },
+      select: { id: true, description: true },
+    });
+
+    const filesToDelete = [
+      ...(lessons?.flatMap(lesson => extractEmbeddedFileIds(lesson.content)) || []),
+      ...(assignments?.flatMap(assignment => extractEmbeddedFileIds(assignment.description)) || []),
+    ];
+
+    if (filesToDelete.length > 0) {
+      const foundFiles = await tx.file.findMany({
+        where: { id: { in: filesToDelete } },
+        select: { id: true, public_id: true, type: true },
+      });
+
+      deletedFilesFromDb = foundFiles;
+
+      if (foundFiles.length > 0) {
+        await tx.file.deleteMany({ where: { id: { in: foundFiles.map(f => f.id) } } });
+      }
+    }
+
+    const lessonIds = lessons.map(l => l.id);
+    const assignmentIds = assignments.map(a => a.id);
+
+    if (lessonIds.length > 0) {
+      await tx.lesson.deleteMany({ where: { id: { in: lessonIds } } });
+    }
+
+    if (assignmentIds.length > 0) {
+      await tx.assignment.deleteMany({ where: { id: { in: assignmentIds } } });
+    }
+
+    await tx.module.delete({ where: { id: moduleId } });
   });
 
-  return deletedModule;
+  return deletedFilesFromDb;
 };
