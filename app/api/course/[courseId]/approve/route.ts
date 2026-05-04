@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/utils/prisma-client';
 import ApiResponse from '@/utils/api-response';
 import getUserDetails from '@/lib/isAuth';
 import { approveCourse } from '@/services/repository/course';

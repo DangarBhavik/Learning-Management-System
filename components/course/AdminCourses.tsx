@@ -6,6 +6,7 @@ import { fetchCourses } from '@/services/apis/courses';
 import { useQuery } from '@tanstack/react-query';
 import CoursesLayout from './CoursesLayout';
 import CustomSelect from '../ui/CustomSelect';
+import Link from 'next/link';
 
 type Course = {
   id: string;
@@ -53,6 +54,11 @@ export default function AdminCoursesPage() {
       count={filteredCourses.length}
       isLoading={isLoading}
       isError={isError}
+      headerRight={
+        <Link href="/app/add-course">
+          <button className="bg-blue-500 text-white px-3 py-1 rounded-md">+ Add Course</button>
+        </Link>
+      }
     >
       <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl p-4 mb-6 shadow-sm">
         <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">

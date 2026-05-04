@@ -599,3 +599,21 @@ export const approveCourse = async ({ courseId }: { courseId: string }) => {
 
   return updatedCourse;
 };
+
+export const getTraineesByMentor = async (mentorId: string) => {
+  const users = await prisma.user.findMany({
+    where: { role: 'TRAINEE', mentorId },
+  });
+  return users;
+};
+
+export const getAllUsersForAdmin = async () => {
+  const users = await prisma.user.findMany({
+    where: {
+      role: {
+        in: ['TRAINEE', 'MENTOR'],
+      },
+    },
+  });
+  return users;
+};

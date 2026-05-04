@@ -1,7 +1,7 @@
 'use client';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-import { getAllTrainee } from '@/services/apis/users';
+import { getAssignableUsers } from '@/services/apis/users';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import TraineeSelector from '@/components/course-assignment/TraineeSelector';
@@ -10,11 +10,11 @@ import AssignableCourses from '@/components/course-assignment/AssignableCourses'
 import AssignedCourses from '@/components/course-assignment/AssignedCourses';
 import queryClient from '@/utils/query-client';
 
-type Trainee = {
+type UserType = {
   id: string;
   clerkId: string;
   mentorId: string | null;
-  role: string;
+  role: 'TRAINEE' | 'MENTOR';
   username: string;
   email: string;
   image: string | null;
@@ -22,21 +22,23 @@ type Trainee = {
   updatedAt: string;
 };
 
-const Page = () => {
-  const [selectedTraineeId, setSelectedTraineeId] = useState('');
-  const [selectedTrainee, setSelectedTrainee] = useState<Trainee | null>(null);
+const AssignCoursePage = () => {
+  const [selectedUserId, setSelectedUserId] = useState('');
+  const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
+  const [selectedUserRole, setSelectedUserRole] = useState<'TRAINEE' | 'MENTOR' | null>(null);
   const [loading, setLoading] = useState(false);
+
   const {
-    data: traineeData,
+    data: usersData,
     isLoading,
     isError,
     error,
-  } = useQuery<Trainee[], Error>({
+  } = useQuery<UserType[], Error>({
     queryKey: ['users'],
-    queryFn: getAllTrainee,
+    queryFn: getAssignableUsers,
   });
 
-  const trainees: Trainee[] = traineeData ?? [];
+  const users: UserType[] = usersData ?? [];
 
   if (isLoading) {
     return (
@@ -58,9 +60,9 @@ const Page = () => {
       <div className="p-8">
         <Card className="shadow-md border border-border">
           <CardHeader>
-            <CardTitle>Unable to load trainees</CardTitle>
+            <CardTitle>Unable to load users</CardTitle>
             <CardDescription>
-              {error.message || 'Something went wrong while fetching trainees.'}
+              {error.message || 'Something went wrong while fetching users.'}
             </CardDescription>
           </CardHeader>
         </Card>
@@ -68,53 +70,64 @@ const Page = () => {
     );
   }
 
-  const handleSelectTrainee = (value: string) => {
+  const handleSelectUser = (value: string) => {
     setLoading(true);
-    const trainee = trainees.find(user => user.id === value) ?? null;
-    setSelectedTraineeId(value);
-    setSelectedTrainee(trainee);
-    queryClient.invalidateQueries({
-      queryKey: ['assignable-courses', value],
-    });
-    queryClient.invalidateQueries({
-      queryKey: ['assigned-courses', value],
-    });
+
+    const user = users.find(u => u.id === value) ?? null;
+
+    setSelectedUserId(value);
+    setSelectedUser(user);
+    setSelectedUserRole(user?.role ?? null);
+
+    if (user?.role) {
+      queryClient.invalidateQueries({
+        queryKey: ['assignable-courses', value, user.role],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ['assigned-courses', value, user.role],
+      });
+    }
+
     setLoading(false);
   };
 
   return (
-    <div className="space-y-4 dark:bg-[#101828] min-h-screen  p-8">
+    <div className="space-y-4 dark:bg-[#101828] min-h-screen p-8">
       <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight">My Trainees</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Assign Courses</h1>
         <p className="text-sm text-muted-foreground">
-          Select a trainee to view their details and manage their assignments.
+          Select a user (trainee or mentor) to manage course assignments.
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <TraineeSelector
-          trainees={trainees}
-          selectedTraineeId={selectedTraineeId}
-          onTraineeSelect={handleSelectTrainee}
+          trainees={users}
+          selectedTraineeId={selectedUserId}
+          onTraineeSelect={handleSelectUser}
         />
-        <TraineeDetails traineeDetails={selectedTrainee} />
+
+        <TraineeDetails traineeDetails={selectedUser} />
       </div>
 
-      {!loading && !!selectedTraineeId && (
+      {!loading && selectedUserId && selectedUserRole && (
         <AssignableCourses
-          key={`assignable-courses-${selectedTraineeId}`}
-          selectedTraineeId={selectedTraineeId}
+          key={`assignable-${selectedUserId}-${selectedUserRole}`}
+          selectedUserId={selectedUserId}
+          role={selectedUserRole}
         />
       )}
 
-      {!loading && !!selectedTraineeId && (
+      {!loading && selectedUserId && selectedUserRole && (
         <AssignedCourses
-          key={`assigned-courses-${selectedTraineeId}`}
-          traineeId={selectedTraineeId}
+          key={`assigned-${selectedUserId}-${selectedUserRole}`}
+          selectedUserId={selectedUserId}
+          role={selectedUserRole}
         />
       )}
     </div>
   );
 };
 
-export default Page;
+export default AssignCoursePage;

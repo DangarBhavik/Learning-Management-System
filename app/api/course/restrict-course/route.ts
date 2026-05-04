@@ -1,36 +1,38 @@
 import getUserDetails from '@/lib/isAuth';
-import { restrictCoursesForTrainee } from '@/services/repository/course';
-import { getTraineeMentorId } from '@/services/repository/user';
 import ApiResponse from '@/utils/api-response';
+import { prisma } from '@/utils/prisma-client';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const DELETE = async (req: NextRequest) => {
   try {
-    const user = await getUserDetails();
+    const currentUser = await getUserDetails();
+    const { courseIds, userId, role } = await req.json();
 
-    if (user.role !== 'MENTOR') {
-      return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
+    if (!userId || !courseIds?.length) {
+      return NextResponse.json(new ApiResponse(400, 'Invalid payload', {}), { status: 400 });
     }
 
-    const body = await req.json();
+    if (currentUser.role === 'MENTOR' && role === 'TRAINEE') {
+      const trainee = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { mentorId: true },
+      });
 
-    const { courseIds, traineeId }: { courseIds: string[]; traineeId: string } = body;
-
-    const mentorId = await getTraineeMentorId(traineeId);
-
-    if (mentorId != user.id) {
-      return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
+      if (trainee?.mentorId !== currentUser.id) {
+        return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
+      }
     }
 
-    await restrictCoursesForTrainee({ traineeId, courseIds });
-
-    return NextResponse.json(new ApiResponse(201, 'Courses restricted successfully', {}), {
-      status: 201,
+    await prisma.enrollment.deleteMany({
+      where: {
+        studentId: userId,
+        courseId: { in: courseIds },
+      },
     });
+
+    return NextResponse.json(new ApiResponse(200, 'Courses restricted successfully', {}));
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Internal Server Error';
-    return NextResponse.json(new ApiResponse(401, errorMessage || 'Error', {}), {
-      status: 401,
-    });
+    console.error(error);
+    return NextResponse.json(new ApiResponse(500, 'Internal Server Error', {}), { status: 500 });
   }
 };

@@ -26,14 +26,14 @@ const CourseAssignGrid = ({
   submitText,
   pendingtext,
   isFetching,
-  traineeId,
+  userId,
   isLoading,
   data,
   getNextPage,
   getPreviousPage,
   func,
 }: {
-  traineeId: string;
+  userId: string;
   title: string;
   pendingtext: string;
   submitText: string;
@@ -133,7 +133,7 @@ const CourseAssignGrid = ({
         isLoading={isLoading}
         pendingText={pendingtext}
         actionLabel={submitText}
-        selectedTraineeId={traineeId}
+        userId={userId}
         selectedCourses={selectedCourses}
         onAction={handleOperation}
       />

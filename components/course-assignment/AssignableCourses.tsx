@@ -1,25 +1,36 @@
 import { useState } from 'react';
-
 import CourseAssignGrid from './CourseAssignGrid';
-import { useGetAssignableCourses } from '@/hooks/courses/useGetAssignableCourses';
 import { useAssignCourse } from '@/hooks/courses/useAssignCourses';
+import useGetAssignableCourses from '@/hooks/courses/useGetAssignableCourses';
 
-const AssignableCourses = ({ selectedTraineeId }: { selectedTraineeId: string }) => {
+const AssignableCourses = ({
+  selectedUserId,
+  role,
+}: {
+  selectedUserId: string;
+  role: 'TRAINEE' | 'MENTOR';
+}) => {
   const limit = 4;
   const [page, setPage] = useState(1);
 
   const { courseData: data, isLoading } = useGetAssignableCourses({
-    selectedTraineeId,
+    userId: selectedUserId,
+    role,
     page,
     limit,
   });
-  const { isAssigning, assignCourses } = useAssignCourse({ selectedTraineeId });
+
+  const { isAssigning, assignCourses } = useAssignCourse({
+    userId: selectedUserId,
+    role,
+  });
 
   const handleAssignCourse = async (courseIds: string[]) => {
-    if (courseIds.length == 0) {
-      return;
-    }
-    await assignCourses({ courseIds: courseIds, traineeId: selectedTraineeId });
+    if (courseIds.length === 0) return;
+
+    await assignCourses({
+      courseIds,
+    });
   };
 
   const handlePagination = (ident: 'previous' | 'next') => {
@@ -29,20 +40,20 @@ const AssignableCourses = ({ selectedTraineeId }: { selectedTraineeId: string })
       return;
     }
 
-    if (!data.pagination.hasNextPage) return;
+    if (!data?.pagination?.hasNextPage) return;
     setPage(prev => prev + 1);
   };
 
   return (
     <CourseAssignGrid
-      title={'Availabel courses to assign'}
+      title={`Available Courses for ${role}`}
       submitText="Assign"
-      pendingtext="Assigning"
+      pendingtext="Assigning..."
       isFetching={isLoading}
       data={data}
       isLoading={isAssigning}
       getNextPage={handlePagination.bind(null, 'next')}
-      traineeId={selectedTraineeId}
+      userId={selectedUserId}
       getPreviousPage={handlePagination.bind(null, 'previous')}
       func={handleAssignCourse}
     />

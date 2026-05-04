@@ -12,28 +12,42 @@ type CoursesResponse = {
   };
 };
 
-const useRestrictCourse = ({ traineeId }: { traineeId: string }) => {
+const useRestrictCourse = ({ userId, role }: { userId: string; role: 'TRAINEE' | 'MENTOR' }) => {
   const { mutateAsync, isPending } = useMutation({
     mutationFn: restrictCourse,
-    onSuccess: (data, variable) => {
+
+    onSuccess: (data, variables) => {
       queryClient.setQueriesData(
-        { queryKey: ['assigned-courses', traineeId] },
+        { queryKey: ['assigned-courses', userId, role] },
         (old: CoursesResponse | undefined) => {
           if (!old?.courses) return old;
 
           return {
             ...old,
-            courses: old.courses.filter(course => !variable.courseIds.includes(course.id)),
+            courses: old.courses.filter(course => !variables.courseIds.includes(course.id)),
           };
         }
       );
 
-      queryClient.invalidateQueries({ queryKey: ['assignable-courses', traineeId] });
+      queryClient.invalidateQueries({
+        queryKey: ['assignable-courses', userId, role],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['assigned-courses', userId, role],
+      });
     },
   });
 
+  const handleRestrictCourse = async ({ courseIds }: { courseIds: string[] }) => {
+    return mutateAsync({
+      courseIds,
+      userId,
+      role,
+    });
+  };
+
   return {
-    restrictCourse: mutateAsync,
+    restrictCourse: handleRestrictCourse,
     isTakingAccess: isPending,
   };
 };

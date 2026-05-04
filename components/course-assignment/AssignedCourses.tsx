@@ -3,16 +3,27 @@ import CourseAssignGrid from './CourseAssignGrid';
 import useGetAssignedCourses from '@/hooks/courses/useGetAssignedCourses';
 import useRestrictCourse from '@/hooks/courses/useRestrictCourse';
 
-const AssignedCourses = ({ traineeId }: { traineeId: string }) => {
+const AssignedCourses = ({
+  selectedUserId,
+  role,
+}: {
+  selectedUserId: string;
+  role: 'TRAINEE' | 'MENTOR';
+}) => {
   const [page, setPage] = useState(1);
   const limit = 4;
 
   const { courseData, isLoading } = useGetAssignedCourses({
-    selectedTraineeId: traineeId,
+    userId: selectedUserId,
+    role,
     limit,
     page,
   });
-  const { restrictCourse, isTakingAccess } = useRestrictCourse({ traineeId });
+
+  const { restrictCourse, isTakingAccess } = useRestrictCourse({
+    userId: selectedUserId,
+    role,
+  });
 
   const handlePagination = (ident: 'previous' | 'next') => {
     if (ident === 'previous') {
@@ -26,22 +37,23 @@ const AssignedCourses = ({ traineeId }: { traineeId: string }) => {
   };
 
   const handleRestrict = async (courseIds: string[]) => {
-    if (courseIds.length === 0) {
-      return;
-    }
-    await restrictCourse({ courseIds, traineeId });
+    if (courseIds.length === 0) return;
+
+    await restrictCourse({
+      courseIds,
+    });
   };
 
   return (
     <CourseAssignGrid
-      title={'Already Assigned Courses'}
+      title={`Assigned Courses (${role})`}
       submitText="Restrict"
       pendingtext="Taking Access.."
       isFetching={isLoading}
       data={courseData}
       isLoading={isTakingAccess}
       getNextPage={handlePagination.bind(null, 'next')}
-      traineeId={traineeId}
+      userId={selectedUserId}
       getPreviousPage={handlePagination.bind(null, 'previous')}
       func={handleRestrict}
     />

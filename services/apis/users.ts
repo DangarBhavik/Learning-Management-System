@@ -112,16 +112,13 @@ export const updateUserDetails = async (
   return json.data as AdminUserDetails;
 };
 
-export const getAllTrainee = async () => {
-  const res = await fetch(`/api/user/trainee`);
+export const getAssignableUsers = async () => {
+  const res = await fetch('/api/user');
 
-  const json = await res.json();
-
-  if (!res.ok || !json.success) {
-    throw new Error(json.message ?? 'Failed to update role');
+  if (!res.ok) {
+    throw new Error('Failed to fetch users');
   }
 
-  return json.data;
+  const data = await res.json();
+  return data.data;
 };
-
-

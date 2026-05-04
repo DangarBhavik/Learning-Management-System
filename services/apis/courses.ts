@@ -59,14 +59,16 @@ export async function getPendingCourses(): Promise<CourseType[]> {
 export async function getAssignableCourses({
   limit,
   page,
-  traineeId,
+  userId,
+  role,
 }: {
   limit: number;
   page: number;
-  traineeId: string;
+  userId: string;
+  role: 'TRAINEE' | 'MENTOR';
 }) {
   const res = await fetch(
-    `/api/course/assignable-courses?limit=${limit}&page=${page}&traineeId=${traineeId}`
+    `/api/course/not-assigned?limit=${limit}&page=${page}&userId=${userId}&role=${role}`
   );
 
   if (!res.ok) {
@@ -75,22 +77,22 @@ export async function getAssignableCourses({
   }
 
   const result = await res.json();
-  console.log(result);
-
   return result.data;
 }
 
 export async function getAssignedCourses({
   limit,
   page,
-  traineeId,
+  userId,
+  role,
 }: {
   limit: number;
   page: number;
-  traineeId: string;
+  userId: string;
+  role: 'TRAINEE' | 'MENTOR';
 }) {
   const res = await fetch(
-    `/api/course/assigned-courses?limit=${limit}&page=${page}&traineeId=${traineeId}`
+    `/api/course/assigned?limit=${limit}&page=${page}&userId=${userId}&role=${role}`
   );
 
   if (!res.ok) {
@@ -99,8 +101,6 @@ export async function getAssignedCourses({
   }
 
   const result = await res.json();
-  console.log(result);
-
   return result.data;
 }
 
@@ -187,10 +187,12 @@ export const getTraineeCourses = async () => {
 
 export const assignCourse = async ({
   courseIds,
-  traineeId,
+  userId,
+  role,
 }: {
   courseIds: string[];
-  traineeId: string;
+  userId: string;
+  role: 'TRAINEE' | 'MENTOR';
 }) => {
   try {
     const res = await fetch('/api/course/assign-course', {
@@ -200,7 +202,8 @@ export const assignCourse = async ({
       },
       body: JSON.stringify({
         courseIds,
-        traineeId,
+        userId,
+        role,
       }),
     });
 
@@ -219,10 +222,12 @@ export const assignCourse = async ({
 
 export const restrictCourse = async ({
   courseIds,
-  traineeId,
+  userId,
+  role,
 }: {
   courseIds: string[];
-  traineeId: string;
+  userId: string;
+  role: 'TRAINEE' | 'MENTOR';
 }) => {
   try {
     const res = await fetch('/api/course/restrict-course', {
@@ -232,7 +237,8 @@ export const restrictCourse = async ({
       },
       body: JSON.stringify({
         courseIds,
-        traineeId,
+        userId,
+        role,
       }),
     });
 
@@ -244,7 +250,7 @@ export const restrictCourse = async ({
 
     return result.data;
   } catch (error) {
-    console.error('Restrict COURSE ERROR:', error);
+    console.error('RESTRICT COURSE ERROR:', error);
     throw error;
   }
 };

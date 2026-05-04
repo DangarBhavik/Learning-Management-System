@@ -10,7 +10,7 @@ type Course = {
   title: string;
   description: string;
   thumbnail: string;
-  author: string;
+  author: string | { username: string };
   status: string;
   modulesCount: number;
 };
@@ -31,6 +31,9 @@ function SelectableCourse({
   const handleButtonClick = (e: React.MouseEvent) => {
     e.stopPropagation();
   };
+  // console.log(course.thumbnail);
+
+ 
 
   return (
     <Card
@@ -39,7 +42,7 @@ function SelectableCourse({
     >
       <div className="relative w-full h-32 overflow-hidden bg-slate-200 dark:bg-slate-700">
         <Image
-          src={course.thumbnail}
+          src={course.thumbnail || '/placeholder.png'}
           alt={course.title}
           fill
           className="w-full h-full object-cover"
@@ -66,7 +69,9 @@ function SelectableCourse({
         <h3 className="font-semibold text-sm line-clamp-2 text-foreground">{course.title}</h3>
         <p className="text-xs text-muted-foreground line-clamp-2 flex-1">{course.description}</p>
         <div className="flex items-center justify-between text-xs text-muted-foreground border-t border-border pt-2">
-          <span className="truncate">{course.author}</span>
+          <span className="truncate">
+            {typeof course.author === 'string' ? course.author : course.author?.username}
+          </span>
           <span className="bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-foreground">
             {course.modulesCount} modules
           </span>

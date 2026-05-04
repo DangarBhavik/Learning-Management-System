@@ -15,7 +15,7 @@ type Course = {
 
 type SummeryProps = {
   selectedCourses: Course[];
-  selectedTraineeId: string;
+  userId?: string;
   onAction: () => Promise<void>;
   actionLabel?: string;
   title?: string;

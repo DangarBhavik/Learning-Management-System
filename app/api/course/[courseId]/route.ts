@@ -47,7 +47,7 @@ export const PATCH = async (
   { params }: { params: Promise<{ courseId: string }> }
 ) => {
   try {
-    let user = await getUserDetails();
+    const user = await getUserDetails();
 
     const { courseId } = await params;
 

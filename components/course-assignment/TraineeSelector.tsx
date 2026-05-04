@@ -44,7 +44,9 @@ const TraineeSelector = ({
           {hasTrainees ? (
             <Select value={selectedTraineeId} onValueChange={onTraineeSelect}>
               <SelectTrigger className="w-full dark:bg-[#101828] dark:border-slate-700 dark:text-slate-100">
-                <span className="text-muted-foreground dark:text-slate-400">Choose a trainee...</span>
+                <span className="text-muted-foreground dark:text-slate-400">
+                  Choose a trainee...
+                </span>
               </SelectTrigger>
               <SelectContent className="dark:bg-[#101828] dark:border-slate-700">
                 {trainees.map(trainee => (
@@ -57,11 +59,18 @@ const TraineeSelector = ({
                     <div className="flex items-center gap-2">
                       <Avatar className="h-6 w-6">
                         <AvatarImage src={trainee.image ?? ''} alt={trainee.username} />
-                        <AvatarFallback className="dark:bg-[#0b111f] dark:text-slate-100">{trainee.username}</AvatarFallback>
+                        <AvatarFallback className="dark:bg-[#0b111f] dark:text-slate-100">
+                          {trainee.username}
+                        </AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col leading-tight">
-                        <span className="text-sm font-medium dark:text-slate-100">{trainee.username}</span>
-                        <span className="text-xs text-muted-foreground dark:text-slate-400">{trainee.email}</span>
+                        <span className="text-sm font-medium dark:text-slate-100">
+                          {trainee.username}
+                        </span>
+                        <span className="text-xs text-muted-foreground dark:text-slate-400">
+                          {trainee.email}
+                        </span>
+                        <span>{trainee.role}</span>
                       </div>
                     </div>
                   </SelectItem>
@@ -69,7 +78,9 @@ const TraineeSelector = ({
               </SelectContent>
             </Select>
           ) : (
-            <div className="text-sm text-muted-foreground dark:text-slate-400">You have not assigned any trainee</div>
+            <div className="text-sm text-muted-foreground dark:text-slate-400">
+              You have not assigned any trainee
+            </div>
           )}
         </CardContent>
       </Card>
