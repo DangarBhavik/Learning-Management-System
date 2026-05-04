@@ -8,9 +8,7 @@ export const createModule = async ({ title, courseId }: { title: string; courseI
   });
 
   if (!response.ok) {
-    console.log(response);
-
-    throw new Error('Failed to create coursess');
+    throw new Error('Failed to create Module');
   }
 
   const result = await response.json();
@@ -40,9 +38,7 @@ export const editModule = async ({
   });
 
   if (!response.ok) {
-    console.log(response);
-
-    throw new Error('Failed to create coursess');
+    throw new Error('Failed to update Module');
   }
 
   const result = await response.json();
@@ -66,9 +62,7 @@ export const deleteModule = async ({
   });
 
   if (!response.ok) {
-    console.log(response);
-
-    throw new Error('Failed to create coursess');
+    throw new Error('Failed to delete Module');
   }
 
   const result = await response.json();

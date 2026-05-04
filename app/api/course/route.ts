@@ -1,10 +1,9 @@
-// api/course/route.ts
 import { FileType } from '@/generated/prisma/enums';
 import getUserDetails from '@/lib/isAuth';
-import { uploadToCloudinary } from '@/services/external/cloudinary';
-import { getMyCourses } from '@/services/repository/course';
+import { uploadToCloud } from '@/services/external/cloudinary';
+import { createCourse, getMyCourses } from '@/services/repository/course';
+import { createFile } from '@/services/repository/file';
 import ApiResponse from '@/utils/api-response';
-import { prisma } from '@/utils/prisma-client';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = async (req: NextRequest) => {
@@ -21,21 +20,14 @@ export const GET = async (req: NextRequest) => {
       status: 200,
     });
   } catch (error) {
-    console.error('GET courses error:', error);
-
-    return NextResponse.json(new ApiResponse(500, 'Internal Server Error', {}), { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch courses';
+    return NextResponse.json(new ApiResponse(500, errorMessage, {}), { status: 500 });
   }
 };
 
 export const POST = async (req: NextRequest) => {
   try {
-    let user;
-    try {
-      user = await getUserDetails();
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Please login first';
-      return NextResponse.json(new ApiResponse(401, message, {}), { status: 401 });
-    }
+    let user = await getUserDetails();
 
     if (user.role === 'TRAINEE') {
       return NextResponse.json(new ApiResponse(403, 'Unauthorised', {}), { status: 403 });
@@ -58,7 +50,7 @@ export const POST = async (req: NextRequest) => {
       });
     }
 
-    const result = await uploadToCloudinary(thumbnail);
+    const result = await uploadToCloud(thumbnail);
 
     if (!result) {
       return NextResponse.json(new ApiResponse(500, 'Failed to upload the Thumbnail', {}), {
@@ -68,31 +60,27 @@ export const POST = async (req: NextRequest) => {
 
     const { url, public_id, bytes } = result;
 
-    const file = await prisma.file.create({
-      data: {
-        url,
-        public_id,
-        size: bytes,
-        type: FileType.IMAGE,
-        uploadedBy: user.id,
-      },
+    const file = await createFile({
+      url,
+      public_id,
+      type: FileType.IMAGE,
+      size: bytes,
+      userId: user.id,
     });
 
-    const course = await prisma.course.create({
-      data: {
-        title,
-        description,
-        thumbnailId: file.id,
-        authorId: user.id,
-      },
+    const course = await createCourse({
+      title,
+      description,
+      thumbnailId: file.id,
+      authorId: user.id,
     });
 
     return NextResponse.json(new ApiResponse(201, 'Course Created Successfully', course), {
       status: 201,
     });
   } catch (error) {
-    console.error('Error creating course:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to create course';
 
-    return NextResponse.json(new ApiResponse(500, 'Internal Server Error', {}), { status: 500 });
+    return NextResponse.json(new ApiResponse(500, errorMessage, {}), { status: 500 });
   }
 };

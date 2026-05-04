@@ -1,148 +1,127 @@
 import getUserDetails from '@/lib/isAuth';
+import { deleteFromCloud } from '@/services/external/cloudinary';
+import { deleteAssignment } from '@/services/repository/assignment';
+import { deleteFiles } from '@/services/repository/file';
+import { deleteLesson } from '@/services/repository/lesson';
+import { deleteModule, getModuleById, updateModule } from '@/services/repository/module';
 import ApiResponse from '@/utils/api-response';
-import { prisma } from '@/utils/prisma-client';
+import { checkCourseCrudAccess } from '@/utils/checkCourseCrudAccess';
+import { FileTypeToResourceType } from '@/utils/file-type-map';
+import { extractEmbeddedFileIds } from '@/utils/getIdsFromMarkdown';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const PATCH = async (
   req: NextRequest,
-  { params }: { params: Promise<{ moduleId: string }> }
+  { params }: { params: Promise<{ courseId: string; moduleId: string }> }
 ) => {
-  const user = await getUserDetails();
+  try {
+    const { courseId, moduleId } = await params;
+    const user = await getUserDetails();
 
-  if (user.role == 'TRAINEE') {
-    return NextResponse.json(new ApiResponse(403, 'Unauthorised', {}), { status: 403 });
+    const haveAccess = await checkCourseCrudAccess({ courseId, user });
+
+    if (!haveAccess) {
+      return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
+    }
+
+    const body = await req.json();
+
+    const { title } = body;
+
+    if (!title) {
+      return NextResponse.json(new ApiResponse(401, 'Provide Valid Title', {}), { status: 401 });
+    }
+
+    const moduleToUpdate = await getModuleById({ moduleId });
+
+    if (!moduleToUpdate) {
+      return NextResponse.json(new ApiResponse(404, 'Module not Found', {}), { status: 404 });
+    }
+
+    const updatedModule = await updateModule({ title, moduleId });
+
+    return NextResponse.json(new ApiResponse(200, 'Module Updated Successfully', updatedModule), {
+      status: 200,
+    });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : 'Unable to update module right now. Please try again.';
+
+    return NextResponse.json(new ApiResponse(500, errorMessage, {}), { status: 500 });
   }
-
-  const body = await req.json();
-
-  const { title } = body;
-  const { moduleId } = await params;
-
-  if (!title) {
-    return NextResponse.json(new ApiResponse(401, 'Provide Valid Title', {}), { status: 401 });
-  }
-
-  const moduleToUpdate = await prisma.module.findUnique({
-    where: {
-      id: moduleId,
-    },
-    select: {
-      course: {
-        select: {
-          authorId: true,
-        },
-      },
-    },
-  });
-
-  if (!moduleToUpdate) {
-    return NextResponse.json(new ApiResponse(403, 'Module not Found', {}), { status: 403 });
-  }
-
-  if (user.role !== 'ADMIN' && moduleToUpdate.course.authorId !== user.id) {
-    return NextResponse.json(
-      new ApiResponse(403, 'You do not have access to modify course content', {}),
-      { status: 403 }
-    );
-  }
-
-  const updatedModule = await prisma.module.update({
-    where: { id: moduleId },
-    data: {
-      title,
-    },
-  });
-
-  return NextResponse.json(new ApiResponse(200, 'Updated Module', updatedModule), { status: 200 });
 };
 
-// export const DELETE = async (
-//   req: NextRequest,
-//   { params }: { params: Promise<{ moduleId: string }> }
-// ) => {
-//   const user = await getUserDetails();
+export const DELETE = async (
+  req: NextRequest,
+  { params }: { params: Promise<{ moduleId: string; courseId: string }> }
+) => {
+  try {
+    const { moduleId, courseId } = await params;
 
-//   if (user.role == 'TRAINEE') {
-//     return NextResponse.json(new ApiResponse(403, 'Unauthorised', {}), { status: 403 });
-//   }
+    const user = await getUserDetails();
 
-//   const { moduleId } = await params;
+    const haveAccess = await checkCourseCrudAccess({ courseId, user });
 
-//   try {
-//     const moduleData = await prisma.module.findUnique({
-//       where: {
-//         id: moduleId,
-//       },
-//       select: {
-//         id: true,
-//         course: {
-//           select: {
-//             authorId: true,
-//           },
-//         },
-//         lessons: {
-//           select: {
-//             videoFile: {
-//               select: {
-//                 id: true,
-//                 public_id: true,
-//                 type: true,
-//               },
-//             },
-//           },
-//         },
-//       },
-//     });
+    if (!haveAccess) {
+      return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
+    }
 
-//     if (!moduleData) {
-//       return NextResponse.json(new ApiResponse(404, 'Please Provide Valid id', {}), {
-//         status: 404,
-//       });
-//     }
+    const moduleData = await getModuleById({
+      moduleId,
+      includeAssignments: true,
+      includeLessons: true,
+    });
 
-//     if (user.role !== 'ADMIN' && moduleData.course.authorId !== user.id) {
-//       return NextResponse.json(
-//         new ApiResponse(403, 'You do not have access to modify course content', {}),
-//         { status: 403 }
-//       );
-//     }
+    if (!moduleData) {
+      return NextResponse.json(new ApiResponse(404, 'Please Provide Valid id', {}), {
+        status: 404,
+      });
+    }
 
-//     const videoFiles = [];
-//     for (const lesson of moduleData.lessons) {
-//       if (lesson.videoFile) {
-//         videoFiles.push(lesson.videoFile);
-//       }
-//     }
+    await deleteModule({ moduleId });
 
-//     await prisma.module.delete({
-//       where: {
-//         id: moduleId,
-//       },
-//     });
+    await Promise.allSettled(
+      moduleData.lessons.map(lesson => deleteLesson({ lessonId: lesson.id }))
+    );
 
-//     for (const file of videoFiles) {
-//       try {
-//         await deleteFromCloudinary(file.public_id, FileTypeToResourceType[file.type]);
-//       } catch {}
-//     }
+    await Promise.allSettled(
+      moduleData.assignments.map(assignment => deleteAssignment({ assignmentId: assignment.id }))
+    );
 
-//     for (const file of videoFiles) {
-//       try {
-//         await prisma.file.delete({
-//           where: {
-//             id: file.id,
-//           },
-//         });
-//       } catch {}
-//     }
+    const filesToDelete = [
+      ...(moduleData.lessons?.flatMap(lesson => extractEmbeddedFileIds(lesson.content)) || []),
+      ...(moduleData.assignments?.flatMap(assignment =>
+        extractEmbeddedFileIds(assignment.description)
+      ) || []),
+    ];
 
-//     return NextResponse.json(new ApiResponse(200, 'Module Deleted Successfully', {}), {
-//       status: 200,
-//     });
-//   } catch {
-//     return NextResponse.json(
-//       new ApiResponse(500, 'Unable to delete module right now. Please try again.', {}),
-//       { status: 500 }
-//     );
-//   }
-// };
+    if (filesToDelete.length > 0) {
+      const deletedFilesFromDb = await deleteFiles(filesToDelete);
+
+      await Promise.allSettled(
+        deletedFilesFromDb.map(file =>
+          deleteFromCloud(file.public_id, FileTypeToResourceType[file.type])
+        )
+      );
+    }
+
+    await Promise.allSettled(
+      moduleData.lessons.map(lesson => deleteLesson({ lessonId: lesson.id }))
+    );
+
+    await Promise.allSettled(
+      moduleData.assignments.map(assignment => deleteAssignment({ assignmentId: assignment.id }))
+    );
+
+    return NextResponse.json(new ApiResponse(200, 'Module Deleted Successfully', {}), {
+      status: 200,
+    });
+  } catch (error) {
+    return NextResponse.json(
+      new ApiResponse(500, 'Unable to delete module right now. Please try again.', {}),
+      { status: 500 }
+    );
+  }
+};

@@ -7,7 +7,7 @@ import { courseFormData } from '@/types/types';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 type CourseDetails = {
   id: string;
@@ -76,12 +76,6 @@ function AddCourse() {
       return url;
     });
   };
-
-  useEffect(() => {
-    return () => {
-      if (preview) URL.revokeObjectURL(preview);
-    };
-  }, [preview]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -181,7 +175,13 @@ function AddCourse() {
               >
                 {formData.thumbnail ? (
                   <div className="relative w-full h-full flex items-center justify-center">
-                    <Image src={preview ?? ''} alt={formData.thumbnail.name} fill />
+                    <Image
+                      width={100}
+                      height={100}
+                      src={preview ?? ''}
+                      alt={formData.thumbnail.name}
+                      className="object-cover"
+                    />
 
                     <button
                       type="button"
@@ -207,8 +207,9 @@ function AddCourse() {
                     <Image
                       src={course.thumbnail}
                       alt="Current thumbnail"
-                      className=" w-full h-full rounded-xl"
-                      fill
+                      width={100}
+                      height={100}
+                      className="object-cover rounded-xl"
                     />
                   </div>
                 ) : (

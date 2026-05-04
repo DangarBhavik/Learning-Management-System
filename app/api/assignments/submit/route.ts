@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/utils/prisma-client';
 import getUserDetails from '@/lib/isAuth';
 import ApiResponse from '@/utils/api-response';
-import { uploadToCloudinary } from '@/services/external/cloudinary';
+import { uploadToCloud   } from '@/services/external/cloudinary';
 
 export async function POST(req: NextRequest) {
   try {
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
         });
       }
 
-      const upload = await uploadToCloudinary(file);
+      const upload = await uploadToCloud(file);
 
       const submission = await prisma.submission.create({
         data: {

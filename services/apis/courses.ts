@@ -66,18 +66,16 @@ export async function getAssignableCourses({
   traineeId: string;
 }) {
   const res = await fetch(
-    `/api/course/not-assigned?limit=${limit}&page=${page}&traineeId=${traineeId}`
+    `/api/course/assignable-courses?limit=${limit}&page=${page}&traineeId=${traineeId}`
   );
-
-  console.log(res);
 
   if (!res.ok) {
     const text = await res.text();
-    console.log('API ERROR:', text);
     throw new Error('Something went wrong');
   }
 
   const result = await res.json();
+  console.log(result);
 
   return result.data;
 }
@@ -92,16 +90,16 @@ export async function getAssignedCourses({
   traineeId: string;
 }) {
   const res = await fetch(
-    `/api/course/assigned?limit=${limit}&page=${page}&traineeId=${traineeId}`
+    `/api/course/assigned-courses?limit=${limit}&page=${page}&traineeId=${traineeId}`
   );
 
   if (!res.ok) {
     const text = await res.text();
-    console.log('API ERROR:', text);
     throw new Error('Something went wrong');
   }
 
   const result = await res.json();
+  console.log(result);
 
   return result.data;
 }
@@ -162,25 +160,6 @@ export const updateCourse = async (courseId: string, course: courseFormData) => 
   }
 
   return await response.json();
-};
-
-export const getApprovedCourses = async (courseId: string) => {
-  try {
-    const res = await fetch(`/api/course/${courseId}/not-assigned`, {
-      method: 'PATCH',
-    });
-
-    const result = await res.json();
-
-    if (!result.success) {
-      throw new Error(result.message);
-    }
-
-    return result.data;
-  } catch (error) {
-    console.error(' ', error);
-    throw error;
-  }
 };
 
 export const saveCourse = async ({ courseId }: { courseId: string }) => {

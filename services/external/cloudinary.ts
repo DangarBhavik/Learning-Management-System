@@ -8,7 +8,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET!,
 });
 
-export const uploadToCloudinary = async (file: File): Promise<UploadApiResponse> => {
+export const uploadToCloud = async (file: File): Promise<UploadApiResponse> => {
   const buffer = Buffer.from(await file.arrayBuffer());
 
   return new Promise((resolve, reject) => {
@@ -28,7 +28,7 @@ export const uploadToCloudinary = async (file: File): Promise<UploadApiResponse>
   });
 };
 
-export const deleteFromCloudinary = async (publicId: string, resourceType: string) => {
+export const deleteFromCloud = async (publicId: string, resourceType: string) => {
   try {
     const result = await cloudinary.uploader.destroy(publicId, {
       resource_type: resourceType,

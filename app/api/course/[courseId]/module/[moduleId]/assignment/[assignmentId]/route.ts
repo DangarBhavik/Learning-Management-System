@@ -1,9 +1,16 @@
 import getUserDetails from '@/lib/isAuth';
-import { deleteFromCloudinary } from '@/services/external/cloudinary';
+import { deleteFromCloud } from '@/services/external/cloudinary';
+import {
+  deleteAssignment,
+  getAssignmentById,
+  updateAssignment,
+} from '@/services/repository/assignment';
+import { deleteFiles } from '@/services/repository/file';
+import { getModuleById } from '@/services/repository/module';
 import ApiResponse from '@/utils/api-response';
+import { checkCourseCrudAccess } from '@/utils/checkCourseCrudAccess';
 import { FileTypeToResourceType } from '@/utils/file-type-map';
 import { extractEmbeddedFileIds } from '@/utils/getIdsFromMarkdown';
-import { prisma } from '@/utils/prisma-client';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const DELETE = async (
@@ -11,86 +18,41 @@ export const DELETE = async (
   { params }: { params: Promise<{ courseId: string; moduleId: string; assignmentId: string }> }
 ) => {
   try {
-    const user = await getUserDetails();
-
-    if (user.role === 'TRAINEE') {
-      return NextResponse.json(new ApiResponse(403, 'Unauthorised', {}), { status: 403 });
-    }
-
     const { courseId, moduleId, assignmentId } = await params;
 
-    const courseDetails = await prisma.course.findUnique({
-      where: { id: courseId },
-      select: { id: true, authorId: true },
-    });
+    const user = await getUserDetails();
 
-    if (!courseDetails) {
-      return NextResponse.json(new ApiResponse(404, 'Course not found', {}), { status: 404 });
+    const haveAccess = await checkCourseCrudAccess({ courseId, user });
+
+    if (!haveAccess) {
+      return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
     }
 
-    if (user.role !== 'ADMIN' && courseDetails.authorId !== user.id) {
-      return NextResponse.json(
-        new ApiResponse(403, 'You do not have access to modify course content', {}),
-        { status: 403 }
-      );
+    const moduleDetails = await getModuleById({ moduleId });
+
+    if (!moduleDetails) {
+      return NextResponse.json(new ApiResponse(403, 'Module Not Found', {}), { status: 403 });
     }
 
-    const assignmentDetails = await prisma.assignment.findUnique({
-      where: { id: assignmentId },
-      select: {
-        id: true,
-        description: true,
-        moduleId: true,
-        module: {
-          select: {
-            courseId: true,
-          },
-        },
-      },
-    });
+    const assignmentDetails = await getAssignmentById({ assignmentId });
 
-    if (
-      !assignmentDetails ||
-      assignmentDetails.module.courseId !== courseId ||
-      assignmentDetails.moduleId !== moduleId
-    ) {
+    if (!assignmentDetails) {
       return NextResponse.json(new ApiResponse(404, 'Assignment not found', {}), { status: 404 });
     }
 
     const embeddedFileIds = extractEmbeddedFileIds(assignmentDetails.description);
 
-    const deletedAssignment = await prisma.assignment.delete({
-      where: { id: assignmentId },
-      select: { id: true },
-    });
+    const deletedAssignment = await deleteAssignment({ assignmentId });
 
     if (embeddedFileIds.length > 0) {
-      const filesToDelete = await prisma.file.findMany({
-        where: {
-          id: {
-            in: embeddedFileIds,
-          },
-        },
-        select: {
-          id: true,
-          public_id: true,
-          type: true,
-        },
-      });
-
-      await Promise.allSettled(
-        filesToDelete.map(file =>
-          deleteFromCloudinary(file.public_id, FileTypeToResourceType[file.type])
-        )
-      );
-
-      await prisma.file.deleteMany({
-        where: {
-          id: {
-            in: filesToDelete.map(file => file.id),
-          },
-        },
-      });
+      const filesToDeleteFromCloud = await deleteFiles(embeddedFileIds);
+      if (filesToDeleteFromCloud.length > 0) {
+        await Promise.allSettled(
+          filesToDeleteFromCloud.map(file =>
+            deleteFromCloud(file.public_id, FileTypeToResourceType[file.type])
+          )
+        );
+      }
     }
 
     return NextResponse.json(
@@ -98,8 +60,8 @@ export const DELETE = async (
       { status: 200 }
     );
   } catch (error) {
-    console.error('Failed To Delete Assignment', error);
-    return NextResponse.json(new ApiResponse(500, 'Internal Server Error', {}), { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : 'Internal Server Error';
+    return NextResponse.json(new ApiResponse(500, errorMessage, {}), { status: 500 });
   }
 };
 
@@ -108,61 +70,23 @@ export const PATCH = async (
   { params }: { params: Promise<{ courseId: string; moduleId: string; assignmentId: string }> }
 ) => {
   try {
-    const user = await getUserDetails();
-
-    if (user.role === 'TRAINEE') {
-      return NextResponse.json(new ApiResponse(403, 'Unauthorised', {}), { status: 403 });
-    }
-
     const { courseId, moduleId, assignmentId } = await params;
 
-    const courseDetails = await prisma.course.findUnique({
-      where: { id: courseId },
-      select: { id: true, authorId: true },
-    });
+    const user = await getUserDetails();
 
-    if (!courseDetails) {
-      return NextResponse.json(new ApiResponse(404, 'Course not found', {}), { status: 404 });
+    const haveAccess = await checkCourseCrudAccess({ courseId, user });
+
+    if (!haveAccess) {
+      return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
     }
 
-    if (user.role !== 'ADMIN' && courseDetails.authorId !== user.id) {
-      return NextResponse.json(
-        new ApiResponse(403, 'You do not have access to modify course content', {}),
-        { status: 403 }
-      );
-    }
+    const assignmentDetails = await getAssignmentById({ assignmentId });
 
-    const assignmentDetails = await prisma.assignment.findUnique({
-      where: { id: assignmentId },
-      select: {
-        id: true,
-        moduleId: true,
-        module: {
-          select: {
-            courseId: true,
-          },
-        },
-      },
-    });
-
-    if (
-      !assignmentDetails ||
-      assignmentDetails.module.courseId !== courseId ||
-      assignmentDetails.moduleId !== moduleId
-    ) {
+    if (!assignmentDetails) {
       return NextResponse.json(new ApiResponse(404, 'Assignment not found', {}), { status: 404 });
     }
 
-    let body: unknown;
-    try {
-      body = await req.json();
-    } catch {
-      return NextResponse.json(new ApiResponse(400, 'Invalid JSON body', {}), { status: 400 });
-    }
-
-    if (body === null || typeof body !== 'object') {
-      return NextResponse.json(new ApiResponse(400, 'Invalid request body', {}), { status: 400 });
-    }
+    let body = await req.json();
 
     const { title, description, maxScore, dueDate } = body as {
       title?: string;
@@ -189,31 +113,21 @@ export const PATCH = async (
     };
 
     const hasAnyField = Object.values(data).some(v => v !== undefined);
+
     if (!hasAnyField) {
       return NextResponse.json(new ApiResponse(400, 'No fields provided to update', {}), {
         status: 400,
       });
     }
 
-    const updatedAssignment = await prisma.assignment.update({
-      where: { id: assignmentId },
-      data,
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        dueDate: true,
-        maxScore: true,
-        moduleId: true,
-      },
-    });
+    const updatedAssignment = await updateAssignment({ assignmentId, data });
 
     return NextResponse.json(
       new ApiResponse(200, 'Assignment Updated Successfully', updatedAssignment),
       { status: 200 }
     );
   } catch (error) {
-    console.error('Failed To Update Assignment', error);
-    return NextResponse.json(new ApiResponse(500, 'Internal Server Error', {}), { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : 'Internal Server Error';
+    return NextResponse.json(new ApiResponse(500, errorMessage, {}), { status: 500 });
   }
 };

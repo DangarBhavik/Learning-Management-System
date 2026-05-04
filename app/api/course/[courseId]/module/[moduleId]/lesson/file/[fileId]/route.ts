@@ -1,8 +1,11 @@
 import getUserDetails from '@/lib/isAuth';
-import { deleteFromCloudinary } from '@/services/external/cloudinary';
+import { deleteFromCloud } from '@/services/external/cloudinary';
+import { deleteFile, getFileById } from '@/services/repository/file';
 import ApiResponse from '@/utils/api-response';
+import { checkCourseCrudAccess } from '@/utils/checkCourseCrudAccess';
 import { FileTypeToResourceType } from '@/utils/file-type-map';
 import { prisma } from '@/utils/prisma-client';
+import { get } from 'http';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const DELETE = async (
@@ -10,42 +13,31 @@ export const DELETE = async (
   { params }: { params: Promise<{ courseId: string; fileId: string }> }
 ) => {
   try {
-    const user = await getUserDetails();
-
     const { courseId, fileId } = await params;
 
-    const courseDetails = await prisma.course.findUnique({
-      where: { id: courseId },
-      select: {
-        authorId: true,
-      },
-    });
+    const user = await getUserDetails();
 
-    if (!courseDetails) {
-      return NextResponse.json(new ApiResponse(500, 'Course Not Found', {}), { status: 500 });
+    const haveAccess = await checkCourseCrudAccess({ courseId, user });
+
+    if (!haveAccess) {
+      return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
     }
 
-    if (courseDetails.authorId != user.id && user.role !== 'ADMIN') {
-      return NextResponse.json(new ApiResponse(403, 'Unauthorised', {}), { status: 403 });
+    const file = await getFileById(fileId);
+
+    if (!file) {
+      return NextResponse.json(new ApiResponse(404, 'File Not Found', {}), { status: 404 });
     }
 
-    const fileDetails = await prisma.file.findUnique({
-      where: { id: fileId },
-    });
+    const deletedFile = await deleteFile(fileId);
 
-    if (!fileDetails) {
-      return NextResponse.json(new ApiResponse(500, 'File Not Found', {}), { status: 500 });
+    if (!deletedFile) {
+      return NextResponse.json(new ApiResponse(500, 'Failed to Delete File', {}), { status: 500 });
     }
 
-    await prisma.file.delete({
-      where: {
-        id: fileId,
-      },
-    });
+    await deleteFromCloud(deletedFile.public_id, FileTypeToResourceType[deletedFile.type]);
 
-    await deleteFromCloudinary(fileDetails.public_id, FileTypeToResourceType[fileDetails.type]);
-
-    return NextResponse.json(new ApiResponse(201, 'Resource Uploaded Successfully', {}), {
+    return NextResponse.json(new ApiResponse(201, 'Resource Deleted Successfully', {}), {
       status: 201,
     });
   } catch (error) {

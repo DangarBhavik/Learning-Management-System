@@ -41,7 +41,7 @@ function MentorDashBoard() {
             <p className="text-lg font-medium">Fetching Courses...</p>
           </div>
         ) : (
-          <Courses btnText="Manage Course" courses={courses || []} />
+          <Courses btnText="View Course" courses={courses || []} />
         )}
       </section>
     </div>

@@ -3,6 +3,54 @@ import ApiResponse from '@/utils/api-response';
 import { prisma } from '@/utils/prisma-client';
 import { NextResponse } from 'next/server';
 
+//basic CRUD operations for course
+
+export const createCourse = async ({
+  title,
+  description,
+  thumbnailId,
+  authorId,
+}: {
+  title: string;
+  description: string;
+  thumbnailId: string;
+  authorId: string;
+}) => {
+  const course = await prisma.course.create({
+    data: {
+      title,
+      description,
+      thumbnailId,
+      authorId,
+    },
+  });
+
+  return course;
+};
+
+export const updateCourse = async ({
+  courseId,
+  title,
+  description,
+  thumbnailId,
+}: {
+  courseId: string;
+  title?: string;
+  description?: string;
+  thumbnailId?: string;
+}) => {
+  const updatedCourse = await prisma.course.update({
+    where: { id: courseId },
+    data: {
+      title,
+      description,
+      thumbnailId,
+    },
+  });
+
+  return updatedCourse;
+};
+
 export const getCourseById = async ({ courseId, userId }: { courseId: string; userId: string }) => {
   const course = await prisma.course.findUnique({
     where: { id: courseId },
@@ -107,12 +155,10 @@ export const getEnrolledStudentIds = async ({ courseId }: { courseId: string }) 
   });
 
   if (!courseDetails) {
-    return NextResponse.json(new ApiResponse(404, 'Course not found', {}), {
-      status: 404,
-    });
+    throw new Error('Course not found');
   }
 
-  return courseDetails.enrollments;
+  return courseDetails.enrollments || [];
 };
 
 export const getMyCourses = async ({
@@ -188,14 +234,13 @@ export const getMyCourses = async ({
   return formattedCourse;
 };
 
-//to be used later
 export const getAllCourses = async () => {
   const courses = await prisma.course.findMany();
 
   return courses;
 };
 
-export const pendingCourses = async () => {
+export const getPendingCourses = async () => {
   const courses = await prisma.course.findMany({
     where: {
       status: 'PENDING',
@@ -238,4 +283,319 @@ export const pendingCourses = async () => {
   }));
 
   return formattedCourses;
+};
+
+export const getCourseAuthorId = async ({ courseId }: { courseId: string }) => {
+  const course = await prisma.course.findUnique({
+    where: { id: courseId },
+    select: { authorId: true },
+  });
+
+  if (!course) {
+    throw new Error('Course not found');
+  }
+
+  return course.authorId;
+};
+
+//Course Assigning to Trainee Related Repository Functions
+
+export const getAssignableCourses = async ({
+  traineeId,
+  limit,
+  skip,
+}: {
+  traineeId: string;
+  limit?: number;
+  skip?: number;
+}) => {
+  const courses = await prisma.course.findMany({
+    where: {
+      status: 'APPROVED',
+      enrollments: {
+        none: {
+          studentId: traineeId,
+        },
+      },
+    },
+    include: {
+      thumbnail: {
+        select: {
+          url: true,
+        },
+      },
+      author: {
+        select: {
+          username: true,
+        },
+      },
+      modules: {
+        select: {
+          _count: {
+            select: {
+              lessons: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+    skip: skip,
+    take: limit,
+  });
+
+  const formattedCourses = courses.map(course => ({
+    id: course.id,
+    title: course.title,
+    description: course.description,
+    thumbnail: course.thumbnail?.url ?? '',
+    author: course.author.username,
+    status: course.status,
+    modulesCount: course.modules.length,
+  }));
+
+  return formattedCourses;
+};
+
+export const getAssignableCoursesCount = async ({ traineeId }: { traineeId: string }) => {
+  const totalCourses = await prisma.course.count({
+    where: {
+      status: 'APPROVED',
+      enrollments: {
+        none: {
+          studentId: traineeId,
+        },
+      },
+    },
+  });
+
+  return totalCourses;
+};
+
+export const getFormattedAssignableCourses = async ({
+  traineeId,
+  page = 1,
+  limit,
+  skip,
+}: {
+  traineeId: string;
+  page: number;
+  limit: number;
+  skip?: number;
+}) => {
+  const assignableCourseCount = await getAssignableCoursesCount({ traineeId });
+  const courses = await getAssignableCourses({ traineeId, limit, skip });
+  const totalPages = Math.ceil(assignableCourseCount / limit);
+
+  const paginationData = {
+    courses: courses,
+    pagination: {
+      currentPage: page,
+      pageSize: limit,
+      totalItems: assignableCourseCount,
+      totalPages: totalPages,
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1,
+    },
+  };
+
+  return paginationData;
+};
+
+export const assignCoursesToTrainee = async ({
+  courseIds,
+  traineeId,
+}: {
+  courseIds: string[];
+  traineeId: string;
+}) => {
+  await Promise.all(
+    courseIds.map(courseId => {
+      prisma.course.findUnique({
+        where: { id: courseId },
+        select: {
+          id: true,
+        },
+      });
+
+      if (!courseId) {
+        throw new Error(`Course with ID ${courseId} not found`);
+      }
+
+      return prisma.enrollment.create({
+        data: {
+          courseId,
+          studentId: traineeId,
+        },
+      });
+    })
+  );
+};
+
+export const getAssignedCourses = async ({
+  traineeId,
+  limit,
+  skip,
+}: {
+  traineeId: string;
+  limit: number;
+  skip?: number;
+}) => {
+  const courses = await prisma.course.findMany({
+    where: {
+      status: 'APPROVED',
+      enrollments: {
+        some: {
+          studentId: traineeId,
+        },
+      },
+    },
+    include: {
+      thumbnail: {
+        select: {
+          url: true,
+        },
+      },
+      author: {
+        select: {
+          username: true,
+        },
+      },
+      modules: {
+        select: {
+          _count: {
+            select: {
+              lessons: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+    skip: skip,
+    take: limit,
+  });
+
+  const formattedCourses = courses.map(course => ({
+    id: course.id,
+    title: course.title,
+    description: course.description,
+    thumbnail: course.thumbnail?.url ?? '',
+    author: course.author.username,
+    status: course.status,
+    modulesCount: course.modules.length,
+  }));
+
+  return formattedCourses;
+};
+
+export const getAssignedCoursesCount = async ({ traineeId }: { traineeId: string }) => {
+  const totalCourses = await prisma.course.count({
+    where: {
+      enrollments: {
+        some: {
+          studentId: traineeId,
+        },
+      },
+    },
+  });
+
+  return totalCourses;
+};
+
+export const getFormattedAssignedCourses = async ({
+  traineeId,
+  page = 1,
+  limit,
+  skip,
+}: {
+  traineeId: string;
+  page: number;
+  limit: number;
+  skip?: number;
+}) => {
+  const assignedCourseCount = await getAssignedCoursesCount({ traineeId });
+  const courses = await getAssignedCourses({ traineeId, limit, skip });
+  const totalPages = Math.ceil(assignedCourseCount / limit);
+
+  const paginationData = {
+    courses: courses,
+    pagination: {
+      currentPage: page,
+      pageSize: limit,
+      totalItems: assignedCourseCount,
+      totalPages: totalPages,
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1,
+    },
+  };
+
+  return paginationData;
+};
+
+export const restrictCoursesForTrainee = async ({
+  courseIds,
+  traineeId,
+}: {
+  courseIds: string[];
+  traineeId: string;
+}) => {
+  await Promise.all(
+    courseIds.map(async courseId => {
+      const course = await prisma.course.findUnique({
+        where: { id: courseId },
+        select: { id: true },
+      });
+
+      if (!course) {
+        throw new Error(`Course with ID ${courseId} not found`);
+      }
+
+      return prisma.enrollment.deleteMany({
+        where: {
+          studentId: traineeId,
+          courseId: courseId,
+        },
+      });
+    })
+  );
+};
+
+export const changeCourseStatusToPending = async ({ courseId }: { courseId: string }) => {
+  const updatedCourse = await prisma.course.update({
+    where: {
+      id: courseId,
+    },
+    data: {
+      status: 'PENDING',
+    },
+  });
+
+  return updatedCourse;
+};
+
+export const getCourseThumbnail = async ({ courseId }: { courseId: string }) => {
+  const course = await prisma.course.findUnique({
+    where: { id: courseId },
+    select: { thumbnail: true },
+  });
+
+  return course?.thumbnail;
+};
+
+//admin specific repository functions
+
+export const approveCourse = async ({ courseId }: { courseId: string }) => {
+  const updatedCourse = await prisma.course.update({
+    where: { id: courseId },
+    data: {
+      status: 'APPROVED',
+    },
+  });
+
+  return updatedCourse;
 };

@@ -22,8 +22,6 @@ export default function CourseDetailsPage({ role, userId, params }: Props) {
     queryFn: () => getCourseById(courseId),
   });
 
-  console.log(course);
-
   if (isLoading || !course) return <Loading text="Course Details" />;
 
   return (
@@ -34,7 +32,7 @@ export default function CourseDetailsPage({ role, userId, params }: Props) {
           {(userId == course.authorId || role == 'ADMIN') && (
             <>
               <Link
-                href={`/add-course/${course.id}`}
+                href={`/app/add-course/${course.id}`}
                 className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-semibold text-sm hover:bg-gray-800 dark:hover:bg-gray-100 transition"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

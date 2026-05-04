@@ -1,6 +1,8 @@
 import getUserDetails from '@/lib/isAuth';
+import { createAssignment } from '@/services/repository/assignment';
+import { getModuleById } from '@/services/repository/module';
 import ApiResponse from '@/utils/api-response';
-import { prisma } from '@/utils/prisma-client';
+import { checkCourseCrudAccess } from '@/utils/checkCourseCrudAccess';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const POST = async (
@@ -8,59 +10,35 @@ export const POST = async (
   { params }: { params: Promise<{ courseId: string; moduleId: string }> }
 ) => {
   try {
-    const user = await getUserDetails();
-
     const { moduleId, courseId } = await params;
 
-    const courseDetails = await prisma.course.findUnique({
-      where: {
-        id: courseId,
-      },
-    });
+    const user = await getUserDetails();
 
-    if (!courseDetails) {
-      return NextResponse.json(new ApiResponse(404, 'Course not found', {}), {
-        status: 404,
-      });
-    }
+    const haveAccess = await checkCourseCrudAccess({ courseId, user });
 
-    if (user.role !== 'ADMIN' && courseDetails.authorId !== user.id) {
-      return NextResponse.json(
-        new ApiResponse(403, 'You do not have access to Add Assignmnets', {}),
-        { status: 403 }
-      );
-    }
-
-    const moduleDetails = await prisma.module.findUnique({
-      where: { id: moduleId },
-      select: {
-        course: {
-          select: {
-            authorId: true,
-          },
-        },
-      },
-    });
-
-    if (user.role != 'ADMIN' && moduleDetails?.course.authorId != user.id) {
+    if (!haveAccess) {
       return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
+    }
+
+    const moduleDetails = await getModuleById({ moduleId });
+
+    if (!moduleDetails) {
+      return NextResponse.json(new ApiResponse(403, 'Module Not Found', {}), { status: 403 });
     }
 
     const body = await req.json();
     const { title, description, maxScore } = await body;
 
-    if (!title || !description || !maxScore) {
+    if (!title && !description && !maxScore) {
       return NextResponse.json(new ApiResponse(401, 'Provide All Details', {}), { status: 401 });
     }
 
-    const createdAssignment = await prisma.assignment.create({
-      data: {
-        title,
-        description,
-        maxScore: Number(maxScore),
-        moduleId: moduleId,
-        createdById: user.id,
-      },
+    const createdAssignment = await createAssignment({
+      title,
+      description,
+      maxScore,
+      moduleId,
+      userId: user.id,
     });
 
     return NextResponse.json(

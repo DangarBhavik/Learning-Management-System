@@ -1,8 +1,9 @@
-import { FileType } from '@/generated/prisma/enums';
 import getUserDetails from '@/lib/isAuth';
-import {  uploadToCloudinary } from '@/services/external/cloudinary';
+import { uploadToCloud } from '@/services/external/cloudinary';
+import { createFile } from '@/services/repository/file';
 import ApiResponse from '@/utils/api-response';
-import { prisma } from '@/utils/prisma-client';
+import { checkCourseCrudAccess } from '@/utils/checkCourseCrudAccess';
+import { ResourceTypeToPrisma } from '@/utils/file-type-map';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const POST = async (
@@ -10,23 +11,13 @@ export const POST = async (
   { params }: { params: Promise<{ courseId: string }> }
 ) => {
   try {
+    const { courseId } = await params;
     const user = await getUserDetails();
 
-    const { courseId } = await params;
+    const haveAccess = await checkCourseCrudAccess({ courseId, user });
 
-    const courseDetails = await prisma.course.findUnique({
-      where: { id: courseId },
-      select: {
-        authorId: true,
-      },
-    });
-
-    if (!courseDetails) {
-      return NextResponse.json(new ApiResponse(500, 'Course Not Found', {}), { status: 500 });
-    }
-
-    if (courseDetails?.authorId != user.id && user.role !== 'ADMIN') {
-      return NextResponse.json(new ApiResponse(403, 'Unauthorised', {}), { status: 403 });
+    if (!haveAccess) {
+      return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
     }
 
     const formData = await req.formData();
@@ -39,32 +30,21 @@ export const POST = async (
       });
     }
 
-    const result = await uploadToCloudinary(file);
+    const result = await uploadToCloud(file);
 
     const { url, bytes, public_id, resource_type } = result;
 
-    let fileType: FileType;
+    const fileType =
+      resource_type in ResourceTypeToPrisma
+        ? ResourceTypeToPrisma[resource_type as keyof typeof ResourceTypeToPrisma]
+        : ResourceTypeToPrisma.raw;
 
-    if (resource_type === 'image') {
-      fileType = FileType.IMAGE;
-    } else if (resource_type === 'video') {
-      fileType = FileType.VIDEO;
-    } else {
-      fileType = FileType.DOCUMENT;
-    }
-
-    const createdFile = await prisma.file.create({
-      data: {
-        url,
-        public_id,
-        size: bytes,
-        type: fileType,
-        uploadedBy: user.id,
-      },
-      select: {
-        url: true,
-        id: true,
-      },
+    const createdFile = await createFile({
+      url,
+      size: bytes,
+      public_id,
+      type: fileType,
+      userId: user.id,
     });
 
     return NextResponse.json(new ApiResponse(201, 'Resource Uploaded Successfully', createdFile), {
@@ -77,4 +57,3 @@ export const POST = async (
     });
   }
 };
-

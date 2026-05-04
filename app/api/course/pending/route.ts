@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import ApiResponse from '@/utils/api-response';
 import getUserDetails from '@/lib/isAuth';
-import { getPendingCourses } from '@/services/apis/courses';
+import { getPendingCourses } from '@/services/repository/course';
 
 export const GET = async () => {
   try {
@@ -20,7 +20,7 @@ export const GET = async () => {
       }
     );
   } catch (error) {
-    console.error(error);
-    return NextResponse.json(new ApiResponse(500, 'Internal Server Error', {}), { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : 'Internal Server Error';
+    return NextResponse.json(new ApiResponse(500, errorMessage, {}), { status: 500 });
   }
 };
