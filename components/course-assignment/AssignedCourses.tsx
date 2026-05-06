@@ -38,7 +38,7 @@ const AssignedCourses = ({ selectedUserId }: { selectedUserId: string }) => {
 
   return (
     <CourseAssignGrid
-      title={`Assigned Courses User`}
+      title={`Assigned Courses `}
       submitText="Restrict"
       pendingtext="Taking Access.."
       isFetching={isLoading}

@@ -4,7 +4,8 @@ import { HiUserGroup } from 'react-icons/hi';
 import { BiBook, BiBell } from 'react-icons/bi';
 import { FiUser } from 'react-icons/fi';
 import { UserRole } from '@/types/types';
-import { MdReviews } from 'react-icons/md';
+import { MdOutlineAssignment, MdReviews } from 'react-icons/md';
+import { LuBookText } from 'react-icons/lu';
 
 type MenuItem = {
   label: string;
@@ -53,14 +54,35 @@ export const sidebarMenu: Record<UserRole, MenuItem[]> = {
       icon: <RiDashboard2Line />,
     },
     {
-      label: 'My Courses',
-      href: 'app/courses',
-      icon: <BiBook />,
+      label: 'My Learning',
+      href: 'app/assigned-courses',
+      icon: <LuBookText />,
     },
+    {
+      label: 'My Courses',
+      href: 'app/my-courses',
+      icon: <LuBookText />,
+    },
+
     {
       label: 'Students',
       href: 'app/assign-course',
       icon: <HiUserGroup />,
+    },
+    {
+      label: 'All Courses',
+      href: 'app/courses',
+      icon: <BiBook />,
+    },
+    {
+      label: 'Assignments',
+      href: 'app/assignments',
+      icon: <MdOutlineAssignment />,
+    },
+    {
+      label: 'Submissions',
+      href: 'app/submissions',
+      icon: <BiBell />,
     },
     {
       label: 'Reviews',

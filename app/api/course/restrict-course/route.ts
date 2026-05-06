@@ -1,30 +1,26 @@
 import getUserDetails from '@/lib/isAuth';
 
 import { restrictCoursesForTrainee } from '@/services/repository/course';
-
-import { getTraineeMentorId, getUserRoleById } from '@/services/repository/user';
-
+import { getTraineeMentorId, getUserById } from '@/services/repository/user';
 import ApiResponse from '@/utils/api-response';
-
 import { NextRequest, NextResponse } from 'next/server';
 
 export const DELETE = async (req: NextRequest) => {
   try {
     const user = await getUserDetails();
-
     const { courseIds, userId } = await req.json();
 
     if (!userId || !courseIds?.length) {
       return NextResponse.json(new ApiResponse(400, 'Invalid payload', {}), { status: 400 });
     }
 
-    const targetUserRole = await getUserRoleById(userId);
+    const selectedUser = await getUserById(userId);
 
-    if (!targetUserRole) {
+    if (!selectedUser) {
       return NextResponse.json(new ApiResponse(404, 'User not found', {}), { status: 404 });
     }
 
-    if (user.role === 'MENTOR' && targetUserRole === 'TRAINEE') {
+    if (user.role === 'MENTOR' && selectedUser.role === 'TRAINEE') {
       const mentorId = await getTraineeMentorId(userId);
 
       if (mentorId !== user.id) {

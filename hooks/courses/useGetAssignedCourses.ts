@@ -33,12 +33,10 @@ const emptyAssignableCoursesData = (page: number): AssignableCoursesData => ({
 
 export const useGetAssignedCourses = ({
   userId,
-
   limit,
   page,
 }: {
   userId: string;
-
   limit: number;
   page: number;
 }) => {

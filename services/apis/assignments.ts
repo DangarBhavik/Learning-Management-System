@@ -1,3 +1,5 @@
+import { AssignmentFilter } from '@/types/types';
+
 export type AssignmentType = {
   id: string;
   courseId: string;
@@ -55,8 +57,8 @@ export const createAssignment = async ({
   return result.data;
 };
 
-export const getTraineeAssignments = async () => {
-  const res = await fetch('/api/assignments');
+export const getTraineeAssignments = async ({ search, statusFilter }: AssignmentFilter) => {
+  const res = await fetch(`/api/assignments?search=${search}&filter=${statusFilter}`);
 
   if (!res.ok) throw new Error('Failed');
 

@@ -1,32 +1,29 @@
 'use client';
 
 import Loading from '@/components/ui/loading';
+import { PrismaUserRole } from '@/types/types';
 
 type CoursesLayoutProps = {
   title: string;
   subtitle?: string;
   count?: number;
-  isLoading?: boolean;
   isError?: boolean;
   errorText?: string;
   headerRight?: React.ReactNode;
   children: React.ReactNode;
+  role: PrismaUserRole;
 };
 
 export default function CoursesLayout({
   title,
   subtitle,
   count,
-  isLoading,
   isError,
   errorText,
   headerRight,
   children,
+  role,
 }: CoursesLayoutProps) {
-  if (isLoading) {
-    return <Loading text="Courses" />;
-  }
-
   if (isError) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -79,13 +76,11 @@ export default function CoursesLayout({
                   </span>
                 </div>
               )}
-
-              {headerRight}
+              {role !== 'TRAINEE' && <>{headerRight}</>}
             </div>
           </div>
         </div>
       </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</div>
     </div>
   );

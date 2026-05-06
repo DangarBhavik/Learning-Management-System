@@ -11,6 +11,8 @@ import { RiLoader4Fill } from 'react-icons/ri';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Pending from '../Pending';
+import { useUploadFile } from '@/hooks/file/useUploadFile';
+import CourseModal from '@/components/modal/CourseModal';
 
 type LessonFormProps = {
   submitText: string;
@@ -36,15 +38,13 @@ const LessonForm: React.FC<LessonFormProps> = ({
   const [title, setTitle] = useState<string>(incomingTitle || '');
   const [markDown, setMarkDown] = useState<string>(content || '');
 
-  const { mutateAsync, isPending: uploading } = useMutation({
-    mutationFn: uploadFile,
-  });
+  const { uploadFile, isUploading } = useUploadFile();
 
   const handleUploadResource = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const result = await mutateAsync({ courseId, moduleId, resource: file });
+    const result = await uploadFile({ courseId, moduleId, resource: file });
 
     const { id: assetId, url } = result;
 
@@ -64,9 +64,9 @@ const LessonForm: React.FC<LessonFormProps> = ({
     await func({ content: markDown, title });
   };
   return (
-    <div className="flex justify-center mb-2 ">
-      <Card className="max-w-200">
-        <CardContent className="flex flex-col gap-4">
+    <div className="flex justify-center my-2 flex-1 min-h-0">
+      <Card className="max-w-3/5 flex-1 overflow-hidden rounded-2xl border border-slate-300/70 bg-slate-100/20 shadow-lg dark:border-slate-700 dark:bg-slate-900/95">
+        <CardContent className="flex flex-col gap-4 border-b border-slate-300/60 pb-4 dark:border-slate-700">
           <Label htmlFor="title">Title</Label>
           <Input
             value={title}
@@ -76,21 +76,21 @@ const LessonForm: React.FC<LessonFormProps> = ({
             id="title"
           />
         </CardContent>
-        <CardContent className="  flex justify-center  min-h-0  ">
+        <CardContent className="flex min-h-0 justify-center py-2">
           <MarkdownEditor
             value={markDown}
             onChange={setMarkDown}
             courseId={courseId}
             moduleId={moduleId}
-            className="h-full max-w-175 w-full"
-            contentEditableClassName="h-full min-h-0 w-full overflow-y-auto"
-            readOnly={uploading}
+            className=" h-full w-full"
+            contentEditableClassName="h-90 min-h-0 w-full overflow-y-auto rounded-lg"
+            readOnly={isUploading}
           />
         </CardContent>
 
-        <CardContent className="flex items-center justify-between gap-4 ">
+        <CardContent className="flex items-center justify-between gap-4 border-t border-slate-300/60 pt-4 dark:border-slate-700">
           <div className="shrink-0">
-            {uploading ? (
+            {isUploading ? (
               <Pending />
             ) : (
               <>
@@ -103,7 +103,7 @@ const LessonForm: React.FC<LessonFormProps> = ({
                   type="file"
                   accept="image/*,video/*,application/pdf,.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip"
                   name=""
-                  disabled={uploading}
+                  disabled={isUploading}
                   id="resource"
                 />
               </>
@@ -111,10 +111,10 @@ const LessonForm: React.FC<LessonFormProps> = ({
           </div>
 
           <div className="flex gap-4">
-            <button disabled={isPending || uploading} type="button" onClick={onClose}>
+            <button disabled={isPending || isUploading} type="button" onClick={onClose}>
               Cancel
             </button>
-            <button disabled={isPending || uploading} onClick={handleAddLesson} type="button">
+            <button disabled={isPending || isUploading} onClick={handleAddLesson} type="button">
               {!isPending ? submitText : <RiLoader4Fill className="animate-spin" />}
             </button>
           </div>

@@ -6,14 +6,12 @@ import {
   type JsxComponentDescriptor,
   useLexicalNodeRemove,
 } from '@mdxeditor/editor';
-
 import { cn } from '@/lib/utils';
 import { BiTrash } from 'react-icons/bi';
-import { deleteFile } from '@/services/apis/file';
-import { useMutation } from '@tanstack/react-query';
 import { RiLoader4Fill } from 'react-icons/ri';
 import YouTubeEmbed from '@/components/mdx/YouTube';
 import { Button } from '@/components/ui/button';
+import { useDeleteFile } from '@/hooks/file/useDeleteFile';
 
 function blockShellClass(readOnly?: boolean) {
   return cn(
@@ -53,11 +51,9 @@ function createFileAssetJsxEditor({
     const fileId = getJsxStringProp(mdastNode, 'id');
     const removeNode = useLexicalNodeRemove();
 
-    const { mutateAsync, isPending } = useMutation({
-      mutationFn: deleteFile,
-    });
+    const { deleteFile, isDeleting } = useDeleteFile();
 
-    const disableRemove = Boolean(readOnly) || isPending;
+    const disableRemove = Boolean(readOnly) || isDeleting;
 
     return (
       <div className={blockShellClass(readOnly)}>
@@ -91,7 +87,7 @@ function createFileAssetJsxEditor({
 
                   if (courseId && moduleId && fileId) {
                     try {
-                      await mutateAsync({ courseId, moduleId, fileId });
+                      await deleteFile({ courseId, moduleId, fileId });
                     } catch (err) {
                       console.error('Failed to delete file asset', err);
                     }
@@ -103,7 +99,7 @@ function createFileAssetJsxEditor({
                 title="Remove"
                 disabled={disableRemove}
               >
-                {isPending ? <RiLoader4Fill className="animate-spin" /> : <BiTrash />}
+                {isDeleting ? <RiLoader4Fill className="animate-spin" /> : <BiTrash />}
               </Button>
             )}
           </div>
@@ -125,11 +121,9 @@ function createVideoAssetJsxEditor({
     const fileId = getJsxStringProp(mdastNode, 'id');
     const removeNode = useLexicalNodeRemove();
 
-    const { mutateAsync, isPending } = useMutation({
-      mutationFn: deleteFile,
-    });
+    const { deleteFile, isDeleting } = useDeleteFile();
 
-    const disableRemove = Boolean(readOnly) || isPending;
+    const disableRemove = Boolean(readOnly) || isDeleting;
 
     return (
       <div className={blockShellClass(readOnly)}>
@@ -162,7 +156,7 @@ function createVideoAssetJsxEditor({
 
                   if (courseId && moduleId && fileId) {
                     try {
-                      await mutateAsync({ courseId, moduleId, fileId });
+                      await deleteFile({ courseId, moduleId, fileId });
                     } catch (err) {
                       console.error('Failed to delete video asset', err);
                     }
@@ -174,7 +168,7 @@ function createVideoAssetJsxEditor({
                 title="Remove"
                 disabled={disableRemove}
               >
-                {isPending ? <RiLoader4Fill className="animate-spin" /> : <BiTrash />}
+                {isDeleting ? <RiLoader4Fill className="animate-spin" /> : <BiTrash />}
               </Button>
             )}
           </div>
@@ -214,20 +208,14 @@ function createImageAssetJsxEditor({
     const fileId = getJsxStringProp(mdastNode, 'id');
     const removeNode = useLexicalNodeRemove();
 
-    const { mutateAsync, isPending } = useMutation({
-      mutationFn: deleteFile,
-    });
+    const { deleteFile, isDeleting } = useDeleteFile();
 
-    const disableRemove = Boolean(readOnly) || isPending;
+    const disableRemove = Boolean(readOnly) || isDeleting;
 
     return (
       <div className={blockShellClass(readOnly)}>
         <div className={blockHeaderClass(readOnly)}>
-          <div className="min-w-0">
-            {title ? <div className="truncate text-sm font-medium">{title}</div> : null}
-          </div>
-
-          <div className="flex items-center gap-2">
+          <div className="flex w-full justify-end items-center gap-2">
             <Button
               type="button"
               variant="link"
@@ -251,7 +239,7 @@ function createImageAssetJsxEditor({
 
                   if (courseId && moduleId && fileId) {
                     try {
-                      await mutateAsync({ courseId, moduleId, fileId });
+                      await deleteFile({ courseId, moduleId, fileId });
                     } catch (err) {
                       console.error('Failed to delete image asset', err);
                     }
@@ -263,7 +251,7 @@ function createImageAssetJsxEditor({
                 title="Remove"
                 disabled={disableRemove}
               >
-                {isPending ? <RiLoader4Fill className="animate-spin" /> : <BiTrash />}
+                {isDeleting ? <RiLoader4Fill className="animate-spin" /> : <BiTrash />}
               </Button>
             )}
           </div>
@@ -298,7 +286,7 @@ function createYouTubeJsxEditor({ readOnly }: CreateJsxComponentDescriptorsOptio
     const removeNode = useLexicalNodeRemove();
 
     return (
-      <div className={blockShellClass(readOnly)}>
+      <div className={cn(blockShellClass(readOnly), 'my-2')}>
         <div className={blockHeaderClass(readOnly)}>
           <div className="min-w-0">
             {!readOnly && <div className="truncate text-sm font-medium">{title ?? 'YouTube'}</div>}

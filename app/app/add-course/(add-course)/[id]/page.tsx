@@ -8,13 +8,6 @@ import { useModifyCourseDetails } from '@/hooks/courses/useModifyCourseDetails';
 import { courseFormData } from '@/types/types';
 import { useParams, useRouter } from 'next/navigation';
 
-type CourseDetails = {
-  id: string;
-  title: string;
-  description: string;
-  thumbnail: string | null;
-};
-
 type CourseDraft = {
   title?: string;
   description?: string;
@@ -38,7 +31,7 @@ function AddCourse() {
       course.description == formData.description &&
       formData.thumbnail == null
     ) {
-      return router.push(`/app/add-course/${courseId}/content`);
+      return;
     }
 
     const payload: courseFormData = {
@@ -61,24 +54,27 @@ function AddCourse() {
   }
 
   return (
-    <Card className="w-full bg-white dark:bg-gray-900 rounded-2xl shadow-lg dark:shadow-black/40 p-8 border  dark:border-gray-800 text-sm">
-      <CardHeader className="">
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Edit Course</h2>
-        <p className="text-gray-500 dark:text-gray-400 mt-2">
-          Update your course details and continue adding content.
-        </p>
-      </CardHeader>
+    <div className='px-8'>
+      <Card className="w-full bg-white  dark:bg-gray-900 rounded-2xl shadow-lg dark:shadow-black/40 p-8 border  dark:border-gray-800 text-sm">
+        <CardHeader className="">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Edit Course</h2>
+          <p className="text-gray-500 dark:text-gray-400 mt-2">
+            Update your course details and continue adding content.
+          </p>
+        </CardHeader>
 
-      <CardContent>
-        <CourseCreateForm
-          func={handleSubmit}
-          title={course.title}
-          description={course.description}
-          url={course.thumbnail ?? ''}
-          isLoading={isModifying}
-        />
-      </CardContent>
-    </Card>
+        <CardContent>
+          <CourseCreateForm
+            func={handleSubmit}
+            id={courseId}
+            title={course.title}
+            description={course.description}
+            url={course.thumbnail ?? ''}
+            isLoading={isModifying}
+          />
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 

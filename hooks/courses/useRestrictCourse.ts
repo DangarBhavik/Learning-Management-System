@@ -1,4 +1,5 @@
-import { Course, restrictCourse } from '@/services/apis/courses';
+import {  restrictCourse } from '@/services/apis/courses';
+import { Course } from '@/types/types';
 import queryClient from '@/utils/query-client';
 import { useMutation } from '@tanstack/react-query';
 
@@ -12,13 +13,13 @@ type CoursesResponse = {
   };
 };
 
-const useRestrictCourse = ({ userId }: { userId: string }) => {
+const useRestrictCourse = ({ userId,  }: { userId: string;}) => {
   const { mutateAsync, isPending } = useMutation({
     mutationFn: restrictCourse,
 
     onSuccess: (data, variables) => {
       queryClient.setQueriesData(
-        { queryKey: ['assigned-courses', userId] },
+        { queryKey: ['assigned-courses', userId,] },
         (old: CoursesResponse | undefined) => {
           if (!old?.courses) return old;
 

@@ -6,6 +6,8 @@ export type courseFormData = {
 
 export type UserRole = 'admin' | 'mentor' | 'trainee';
 
+export type PrismaUserRole = 'ADMIN' | 'MENTOR' | 'TRAINEE';
+
 export type CourseType = {
   id: string;
   title: string;
@@ -20,7 +22,7 @@ export type CourseType = {
 export type Lesson = {
   id: string;
   title: string;
-  url: string | null;
+  content: string;
 };
 
 export type Module = {
@@ -30,7 +32,7 @@ export type Module = {
   assignments: Assignment[];
 };
 
-type Assignment = {
+export type Assignment = {
   id: string;
   title: string;
   description: string;
@@ -40,6 +42,7 @@ type Assignment = {
 export type Course = {
   id: string;
   title: string;
+  status: string;
   description: string;
   thumbnail: string | null;
   modules: Module[];
@@ -58,4 +61,28 @@ export type CourseCardProps = {
   createdAt: string;
   updatedAt: string;
   modulesCount: number;
+};
+
+export type AssignmentFormProps = {
+  submitText: string;
+  title?: string;
+  description?: string;
+  maxScore?: number;
+  moduleId: string;
+  isPending: boolean;
+  onClose: () => void;
+  func: ({
+    title,
+    description,
+    maxScore,
+  }: {
+    title: string;
+    description: string;
+    maxScore: number;
+  }) => Promise<void>;
+} & Record<string, unknown>;
+
+export type AssignmentFilter = {
+  search: string;
+  statusFilter: 'ALL' | 'PENDING' | 'GRADED' | 'RESUBMITTED';
 };

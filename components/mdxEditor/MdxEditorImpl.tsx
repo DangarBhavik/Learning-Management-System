@@ -215,14 +215,30 @@ function MarkdownEditorImpl({
 
   if (!plugins) {
     return (
-      <div className={cn('rounded-2xl border bg-input/50 p-2', readOnly, className)}>
+      <div
+        style={{
+          fontFamily:
+            'Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"',
+        }}
+        className={cn('rounded-2xl border bg-input/50 p-2', readOnly, className)}
+      >
         <div className="text-sm text-muted-foreground">Loading editor…</div>
       </div>
     );
   }
 
   return (
-    <div className={cn('rounded-2xl border bg-gray-100/20 p-2', readOnly, className)}>
+    <div
+      style={{
+        fontFamily:
+          'Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"',
+      }}
+      className={cn(
+        `rounded-2xl text-lg font-mono   ${!readOnly && 'border'}  p-2`,
+        readOnly,
+        className
+      )}
+    >
       <MDXEditor
         key={editorKey}
         ref={editorRef}

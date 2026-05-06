@@ -1,17 +1,23 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import getUserDetails from '@/lib/isAuth';
 import ApiResponse from '@/utils/api-response';
 import { getAssignmentsWithSubmissions } from '@/services/repository/assignment';
+import { AssignmentFilter } from '@/types/types';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     const user = await getUserDetails();
 
-    if (!user) {
-      return NextResponse.json(new ApiResponse(401, 'Unauthorized', null), { status: 401 });
-    }
+    const searchParams = req.nextUrl.searchParams;
+    const search = searchParams.get('search') || '';
+    const filter = (searchParams.get('filter') as AssignmentFilter['statusFilter']) || 'ALL';
 
-    const assignments = await getAssignmentsWithSubmissions(user.id, user.role);
+    const assignments = await getAssignmentsWithSubmissions({
+      userId: user.id,
+      role: user.role,
+      search,
+      filter,
+    });
 
     return NextResponse.json(new ApiResponse(200, 'Assignments fetched', assignments), {
       status: 200,

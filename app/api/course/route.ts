@@ -1,7 +1,7 @@
-import { FileType } from '@/generated/prisma/enums';
+import { CourseStatus, FileType } from '@/generated/prisma/enums';
 import getUserDetails from '@/lib/isAuth';
 import { uploadToCloud } from '@/services/external/cloudinary';
-import { createCourse, getMyCourses } from '@/services/repository/course';
+import { createCourse, getAllCourses } from '@/services/repository/course';
 import { createFile } from '@/services/repository/file';
 import ApiResponse from '@/utils/api-response';
 import { NextRequest, NextResponse } from 'next/server';
@@ -12,9 +12,17 @@ export const GET = async (req: NextRequest) => {
 
     const searchParams = req.nextUrl.searchParams;
     const limitParam = searchParams.get('limit');
+    const search = searchParams.get('search') || '';
+    const statusFilter = (searchParams.get('status') as CourseStatus | 'ALL') || 'ALL';
     const limit = limitParam === null ? undefined : Math.floor(Number(limitParam));
 
-    const courses = await getMyCourses({ userId: user.id, userRole: user.role, limit });
+    const courses = await getAllCourses({
+      userId: user.id,
+      userRole: user.role,
+      limit,
+      search,
+      statusFilter,
+    });
 
     return NextResponse.json(new ApiResponse(200, 'Courses fetched successfully', courses), {
       status: 200,

@@ -3,7 +3,11 @@ import CourseAssignGrid from './CourseAssignGrid';
 import { useAssignCourse } from '@/hooks/courses/useAssignCourses';
 import useGetAssignableCourses from '@/hooks/courses/useGetAssignableCourses';
 
-const AssignableCourses = ({ selectedUserId }: { selectedUserId: string }) => {
+const AssignableCourses = ({
+  selectedUserId,
+}: {
+  selectedUserId: string;
+}) => {
   const limit = 4;
   const [page, setPage] = useState(1);
 
@@ -38,7 +42,7 @@ const AssignableCourses = ({ selectedUserId }: { selectedUserId: string }) => {
 
   return (
     <CourseAssignGrid
-      title={`Available Courses for User`}
+      title={`Available Courses `}
       submitText="Assign"
       pendingtext="Assigning..."
       isFetching={isLoading}

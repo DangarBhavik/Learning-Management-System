@@ -8,7 +8,7 @@ import { useCourses } from '@/hooks/courses/useCourses';
 import Loading from '@/components/ui/loading';
 
 function MentorDashBoard() {
-  const { courses, isFetching } = useCourses(3);
+  const { courses, isFetching } = useCourses({ limit: 3 });
 
   if (isFetching) {
     return <Loading text="Fetching Courses" />;

@@ -25,6 +25,10 @@ export default function CourseDetailsPage({ role, userId, params }: Props) {
 
   if (isLoading || !course) return <Loading text="Course Details" />;
 
+  if (!isLoading && !course) {
+    return <p>Unable to load course details.</p>;
+  }
+
   return (
     <CourseDetailsLayout
       course={course}

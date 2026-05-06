@@ -17,10 +17,27 @@ export type Module = {
 };
 
 export async function fetchCourses(
-  { limit } = {} as { limit?: number }
+  { limit, filters } = {} as { limit?: number; filters?: { search: string; statusFilter: string } }
 ): Promise<CourseCardProps[]> {
-  const limitParam = limit !== undefined ? `?limit=${limit}` : '';
-  const res = await fetch(`/api/course${limitParam}`);
+  const params = new URLSearchParams();
+  if (limit !== undefined) {
+    params.set('limit', String(limit));
+  }
+
+  if (filters) {
+    const { search, statusFilter } = filters;
+    if (search) {
+      params.set('search', search);
+    }
+    if (statusFilter && statusFilter !== 'ALL') {
+      params.set('status', statusFilter);
+    }
+  }
+
+  const query = params.toString();
+  const url = query ? `/api/course?${query}` : '/api/course';
+
+  const res = await fetch(url);
   const json = await res.json();
 
   if (!res.ok || !json.success) {
@@ -265,4 +282,17 @@ export const inactiveCourse = async (courseId: string) => {
   }
 
   return data;
+};
+
+export const getMyCourses = async () => {
+  const response = await fetch(`/api/course/my-courses`);
+
+  if (!response.ok) {
+    const text = await response.text();
+    console.error('API ERROR:', text);
+    throw new Error('Something went wrong');
+  }
+
+  const result = await response.json();
+  return result.data;
 };

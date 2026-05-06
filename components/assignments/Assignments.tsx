@@ -24,7 +24,7 @@ export type AssignmentType = {
   moduleTitle: string;
   courseTitle: string;
   submission: {
-    status: 'Not Submitted' | 'PENDING' | 'GRADED' | 'RESUBMITTED';
+    status: 'PENDING' | 'GRADED' | 'RESUBMITTED';
     score?: number | null;
   } | null;
 };
@@ -93,7 +93,7 @@ function AssignmentCard({ item, index }: { item: AssignmentType; index: number }
                  transition-all duration-200"
       style={{ animationDelay: `${index * 40}ms` }}
     >
-      <div className={`absolute left-0 top-3 bottom-3 w-[3px] rounded-full ${cfg.bar}`} />
+      <div className={`absolute left-0 top-3 bottom-3 w-0.75 rounded-full ${cfg.bar}`} />
 
       <div className="shrink-0 w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800/60 flex items-center justify-center text-gray-400 dark:text-gray-500 text-base">
         <BsFileEarmarkText />

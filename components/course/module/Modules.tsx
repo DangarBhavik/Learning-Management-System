@@ -1,27 +1,11 @@
 'use client';
 
-import NewLesson from '../lesson/NewLesson';
 import ModuleInput from './ModuleInput';
-import AssignmentForm from '../assignment/AssignmentForm';
-import { useState } from 'react';
-import { useParams } from 'next/navigation';
-import { BiPlus } from 'react-icons/bi';
 import Assignments from '../assignment/Asssignments';
-import DropDown from '@/components/ui/DropDown';
 import Lessons from '../lesson/Lessons';
-import { useCreateAssignment } from '@/hooks/assignment/useCreateAssignment';
-type Lesson = {
-  id: string;
-  title: string;
-  content: string;
-};
-
-type Assignment = {
-  id: string;
-  title: string;
-  description: string;
-  maxScore: number;
-};
+import { Assignment, Lesson } from '@/types/types';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import CourseAction from '../CourseAction';
 
 type ModuleFormEditProps = {
   id: string;
@@ -32,68 +16,17 @@ type ModuleFormEditProps = {
 };
 
 const Modules: React.FC<ModuleFormEditProps> = ({ id, index, title, lessons, assignments }) => {
-  const [showForm, setShowForm] = useState(false);
-  const [formName, setFormName] = useState('');
-  const { id: courseId } = useParams<{ id: string }>();
-
-  const { createAssignment, isCreating } = useCreateAssignment(courseId, id);
-
-  const handleAddAssignment = async ({
-    title,
-    description,
-    maxScore,
-  }: {
-    title: string;
-    description: string;
-    maxScore: number;
-  }) => {
-    await createAssignment({ title, description, maxScore });
-  };
-
-  const handleCloseForm = () => {
-    setShowForm(false);
-    setFormName('');
-  };
-
   return (
-    <div className="mt-4 space-y-4 ">
-      <ModuleInput index={index} title={title} moduleId={id} />
-      <Lessons lessons={lessons} moduleId={id} />
-      <Assignments assignments={assignments} moduleId={id} />
-
-      <div className="flex justify-center items-center">
-        {!showForm ? (
-          <DropDown
-            trigger={
-              <div className="bg-white">
-                <span className="block bg-red-400/20 text-red-400 p-2 rounded-md  cursor-pointer">
-                  <BiPlus />
-                </span>
-              </div>
-            }
-            options={['Assignment', 'Lesson']}
-            onSelect={val => {
-              setFormName(val);
-              setShowForm(true);
-            }}
-          />
-        ) : (
-          <>
-            {formName.toLowerCase() == 'assignment' ? (
-              <AssignmentForm
-                submitText="Add"
-                onClose={handleCloseForm}
-                func={handleAddAssignment}
-                isPending={isCreating}
-                moduleId={id}
-              />
-            ) : (
-              <NewLesson onClose={handleCloseForm} key={id} moduleId={id} />
-            )}
-          </>
-        )}
-      </div>
-    </div>
+    <Card className="border dark:bg-[#1e2939] shadow-none hover:shadow-lg dark:hover:shadow-black/40 transition mb-6">
+      <CardHeader className="border-b border-slate-300/60  dark:border-slate-700">
+        <ModuleInput index={index} title={title} moduleId={id} />
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <Lessons lessons={lessons} moduleId={id} />
+        <Assignments assignments={assignments} moduleId={id} />
+        <CourseAction moduleId={id} />
+      </CardContent>
+    </Card>
   );
 };
 

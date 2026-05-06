@@ -1,21 +1,8 @@
-import RoleBased from '@/components/RoleBased';
 import getUserDetails from '@/lib/isAuth';
+import CoursesPage from '@/components/course/CoursesPage';
 
-import AdminCoursesPage from '@/components/course/AdminCourses';
-import MentorCoursesPage from '@/components/course/MentorCourses';
-import TraineeCoursesPage from '@/components/course/TraineeCourses';
-
-export default async function CoursesPage() {
+export default async function Courses() {
   const user = await getUserDetails();
 
-  return (
-    <RoleBased
-      role={user.role}
-      components={{
-        ADMIN: AdminCoursesPage,
-        MENTOR: MentorCoursesPage,
-        TRAINEE: TraineeCoursesPage,
-      }}
-    />
-  );
+  return <CoursesPage role={user.role} />;
 }

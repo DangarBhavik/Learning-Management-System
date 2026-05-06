@@ -1,11 +1,11 @@
 import { getCourseById } from '@/services/apis/courses';
+import { Course } from '@/types/types';
 import { useQuery } from '@tanstack/react-query';
 
 export const useCourse = (courseId: string) => {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading } = useQuery<Course>({
     queryKey: ['courses', courseId],
     queryFn: () => getCourseById(courseId),
-    staleTime: 60 * 60 * 10,
   });
 
   return { course: data, isLoading };

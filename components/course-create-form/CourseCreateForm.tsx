@@ -1,16 +1,19 @@
 import { courseFormData } from '@/types/types';
 import { useState } from 'react';
 import FileHandler from '../FileHander';
+import NavLink from '../NavLink';
 
 const CourseCreateForm = ({
   func,
   isLoading,
+  id,
   title,
   description,
   url,
 }: {
   func: (formData: courseFormData) => Promise<void>;
   isLoading: boolean;
+  id?: string;
   title?: string;
   description?: string;
   url?: string;
@@ -44,6 +47,12 @@ const CourseCreateForm = ({
     }
     await func(formData);
   };
+
+  const isDisabled =
+    isLoading ||
+    formData.title == title ||
+    formData.description == description ||
+    !formData.thumbnail;
 
   return (
     <form className="space-y-6" onSubmit={handleSubmit}>
@@ -102,11 +111,12 @@ const CourseCreateForm = ({
         />
       </div>
 
-      <div className="flex justify-end pt-4">
+      <div className="flex justify-end pt-4 gap-4">
+        {id && <NavLink href={`./${id}/content`} label="Next Page" />}
         <button
-          disabled={isLoading}
+          disabled={isDisabled}
           type="submit"
-          className="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold shadow-md hover:bg-blue-700 dark:hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition"
+          className="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold disabled:opacity-50 disabled:hover:bg-blue-600 shadow-md hover:bg-blue-700 dark:hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition"
         >
           {isLoading ? 'Creating Course....' : 'Save & Continue'}
         </button>

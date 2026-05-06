@@ -1,13 +1,7 @@
 'use client';
 
 import Assignment from './Assignment';
-
-type AssignmentType = {
-  id: string;
-  title: string;
-  description: string;
-  maxScore: number;
-};
+import { Assignment as AssignmentType } from '@/types/types';
 
 const Assignments = ({
   assignments,
@@ -20,9 +14,9 @@ const Assignments = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-center ">
-        <h5 className="bg-white text-sm"> Assignmnets</h5>
-      </div>
+      {/* <div className="flex justify-center ">
+        <h5 className="dark:text-gray-300 text-black text-sm"> Assignments</h5>
+      </div> */}
       {assignments.map(assignment => (
         <Assignment moduleId={moduleId} key={assignment.id} assignment={assignment} />
       ))}

@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 
 type NavLinkProps = {
   href: string;
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   label: string;
 };
 
@@ -25,13 +25,15 @@ const NavLink: React.FC<NavLinkProps> = ({ href, icon, label }) => {
             : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:text-black dark:hover:text-white'
         }`}
       >
-        <span
-          className={`text-lg transition ${
-            isActive ? 'text-blue-600 dark:text-blue-400' : 'group-hover:scale-110'
-          }`}
-        >
-          {icon}
-        </span>
+        {icon && (
+          <span
+            className={`text-lg transition ${
+              isActive ? 'text-blue-600 dark:text-blue-400' : 'group-hover:scale-110'
+            }`}
+          >
+            {icon}
+          </span>
+        )}
 
         <span className="tracking-tight">{label}</span>
 

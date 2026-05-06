@@ -1,4 +1,5 @@
-import { assignCourse, Course } from '@/services/apis/courses';
+import { assignCourse } from '@/services/apis/courses';
+import { Course } from '@/types/types';
 import queryClient from '@/utils/query-client';
 import { useMutation } from '@tanstack/react-query';
 

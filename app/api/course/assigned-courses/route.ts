@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import ApiResponse from '@/utils/api-response';
 import getUserDetails from '@/lib/isAuth';
-
-import { getTraineeMentorId, getUserRoleById } from '@/services/repository/user';
-
+import { getTraineeMentorId, getUserById } from '@/services/repository/user';
 import { getAssignedCourses, getAssignedCoursesCount } from '@/services/repository/course';
 
 export const GET = async (req: NextRequest) => {
@@ -13,22 +11,21 @@ export const GET = async (req: NextRequest) => {
     const searchParams = req.nextUrl.searchParams;
 
     const userId = searchParams.get('userId');
-    const limit = Number(searchParams.get('limit')) || 3;
-    const page = Number(searchParams.get('page')) || 1;
-
+    const limit = Number(searchParams.get('limit'));
+    const page = Number(searchParams.get('page'));
     const skip = (page - 1) * limit;
 
     if (!userId) {
       return NextResponse.json(new ApiResponse(400, 'userId required', {}), { status: 400 });
     }
 
-    const targetUserRole = await getUserRoleById(userId);
+    const selectedUser = await getUserById(userId);
 
-    if (!targetUserRole) {
+    if (!selectedUser) {
       return NextResponse.json(new ApiResponse(404, 'User not found', {}), { status: 404 });
     }
 
-    if (user.role === 'MENTOR' && targetUserRole === 'TRAINEE') {
+    if (user.role === 'MENTOR' && selectedUser.role === 'TRAINEE') {
       const mentorId = await getTraineeMentorId(userId);
 
       if (mentorId !== user.id) {
