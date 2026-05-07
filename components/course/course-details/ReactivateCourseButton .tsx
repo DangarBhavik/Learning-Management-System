@@ -12,18 +12,17 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 
-import { Button } from '@/components/ui/button';
 import { useMutation } from '@tanstack/react-query';
 
 import queryClient from '@/utils/query-client';
-import { inactiveCourse } from '@/services/apis/courses';
+import { reactivateCourse } from '@/services/apis/courses';
 
-export default function InactiveCourseButton({ courseId }: { courseId: string }) {
+export default function ReactivateCourseButton({ courseId }: { courseId: string }) {
   const { mutate, isPending } = useMutation({
-    mutationFn: inactiveCourse,
+    mutationFn: reactivateCourse,
 
     onSuccess: () => {
-      //   toast.success('Course marked as inactive');
+      //   toast.success('Course reactivated successfully');
 
       queryClient.invalidateQueries({
         queryKey: ['courses', courseId],
@@ -46,11 +45,11 @@ export default function InactiveCourseButton({ courseId }: { courseId: string })
           className="
       flex items-center justify-center gap-2
       px-4 py-2 rounded-xl
-      bg-red-50 dark:bg-red-900/80
-      border border-red-200 dark:border-red-800
-      text-red-600 dark:text-red-200
+      bg-green-50 dark:bg-green-900/80
+      border border-green-200 dark:border-green-800
+      text-green-600 dark:text-green-400
       font-medium text-sm
-      hover:bg-red-100 dark:hover:bg-red-900/90
+      hover:bg-green-100 dark:hover:bg-green-900/90
       transition cursor-pointer
     "
         >
@@ -59,19 +58,19 @@ export default function InactiveCourseButton({ courseId }: { courseId: string })
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
             />
           </svg>
-          Inactive
+          Reactivate
         </button>
       </AlertDialogTrigger>
 
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Inactive this course?</AlertDialogTitle>
+          <AlertDialogTitle>Reactivate this course?</AlertDialogTitle>
 
           <AlertDialogDescription>
-            This course will be hidden from users. You can restore it later from admin panel.
+            This course will become visible to users again.
           </AlertDialogDescription>
         </AlertDialogHeader>
 

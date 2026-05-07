@@ -1,23 +1,14 @@
 'use client';
 import Loading from '@/components/ui/loading';
 import UserDetails from '@/components/users/UserDetails';
-import { getUserById } from '@/services/apis/users';
-import { useQuery } from '@tanstack/react-query';
+import { useUserById } from '@/hooks/user/useUserById';
 import { useParams } from 'next/navigation';
 
 export default function UsersDetailsPage() {
   const params = useParams<{ userId: string }>();
   const userId = params?.userId;
 
-  const {
-    data: user,
-    isLoading: usersLoading,
-    isError: usersError,
-  } = useQuery({
-    queryKey: ['admin', 'user', userId],
-    queryFn: () => getUserById(userId as string),
-    enabled: Boolean(userId),
-  });
+  const { data: user, isLoading: usersLoading, isError: usersError } = useUserById(userId);
 
   if (usersLoading) {
     return <Loading text="User Details" />;

@@ -1,12 +1,12 @@
 'use client';
 
-import AssignmentCards from '@/components/assignments/AssignmentCards';
 import Assignments from '@/components/assignments/Assignments';
 import { BsFileEarmarkText, BsClockHistory, BsCheckCircleFill } from 'react-icons/bs';
 import { useState } from 'react';
 import CustomSelect from '@/components/ui/CustomSelect';
 import { AssignmentFilter } from '@/types/types';
 import useAssignments from '@/hooks/assignment/useAssignments';
+import AssignmentStatsCards from '@/components/assignments/AssignmentStatsCards';
 
 export default function AssignmentPage() {
   const [filters, setFilters] = useState<AssignmentFilter>({
@@ -81,14 +81,19 @@ export default function AssignmentPage() {
       </div>
 
       <div className="grid md:grid-cols-3 gap-4">
-        <AssignmentCards
+        <AssignmentStatsCards
           title="Total Assignments"
           value={total}
           icon={<BsFileEarmarkText />}
           color="gray"
         />
-        <AssignmentCards title="Pending" value={pending} icon={<BsClockHistory />} color="amber" />
-        <AssignmentCards
+        <AssignmentStatsCards
+          title="Pending"
+          value={pending}
+          icon={<BsClockHistory />}
+          color="amber"
+        />
+        <AssignmentStatsCards
           title="Completed"
           value={completed}
           icon={<BsCheckCircleFill />}

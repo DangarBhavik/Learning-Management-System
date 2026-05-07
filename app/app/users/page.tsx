@@ -1,18 +1,10 @@
 'use client';
 import Loading from '@/components/ui/loading';
 import Users from '@/components/users/UsersTable';
-import { getUsers } from '@/services/apis/users';
-import { useQuery } from '@tanstack/react-query';
+import { useUsers } from '@/hooks/user/useUsers';
 
 export default function UsersPage() {
-  const {
-    data: users,
-    isLoading: usersLoading,
-    isError: usersError,
-  } = useQuery({
-    queryKey: ['admin', 'users-with-stats'],
-    queryFn: getUsers,
-  });
+  const { users, isLoading: usersLoading, isError: usersError } = useUsers();
 
   const userCount = users?.length ?? 0;
 

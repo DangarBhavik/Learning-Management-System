@@ -1,17 +1,17 @@
 import { fetchCourses } from '@/services/apis/courses';
-import { CourseCardProps } from '@/types/types';
 import { useQuery } from '@tanstack/react-query';
 
 export const useCourses = ({
   limit,
   filter,
-}: { limit?: number; filter?: { search: string; statusFilter: string } } = {}) => {
-  const {
-    data = [],
-    isLoading,
-    isError,
-    error,
-  } = useQuery<CourseCardProps[]>({
+}: {
+  limit?: number;
+  filter?: {
+    search: string;
+    statusFilter: string;
+  };
+} = {}) => {
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ['courses', limit, filter],
     queryFn: () =>
       fetchCourses({
@@ -20,5 +20,11 @@ export const useCourses = ({
       }),
   });
 
-  return { courses: data, isFetching: isLoading, isError, error };
+  return {
+    courses: data?.courses ?? [],
+    stats: data?.stats,
+    isFetching: isLoading,
+    isError,
+    error,
+  };
 };

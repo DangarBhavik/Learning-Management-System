@@ -142,6 +142,14 @@ export const getCourseById = async ({ courseId, userId }: { courseId: string; us
   return formattedCourse;
 };
 
+export const getCourseDetailsById = async ({ courseId }: { courseId: string }) => {
+  return prisma.course.findUnique({
+    where: {
+      id: courseId,
+    },
+  });
+};
+
 export const getCourseDetails = async ({ courseId }: { courseId: string }) => {
   const courseDetails = await prisma.course.findUnique({
     where: { id: courseId },
@@ -208,7 +216,11 @@ export const getAllCourses = async ({
         image: true,
       },
     },
-    thumbnail: { select: { url: true } },
+    thumbnail: {
+      select: {
+        url: true,
+      },
+    },
     _count: {
       select: {
         modules: true,
@@ -219,20 +231,37 @@ export const getAllCourses = async ({
   let courses;
 
   if (userRole === 'ADMIN' || userRole === 'MENTOR') {
-    courses = await prisma.course.findMany({
-      where: {
-        title: {
-          contains: search,
-          mode: 'insensitive',
+    const [courseData, pendingCourseApprovals] = await Promise.all([
+      prisma.course.findMany({
+        where: {
+          title: {
+            contains: search,
+            mode: 'insensitive',
+          },
+          status: statusFilter !== 'ALL' ? statusFilter : undefined,
         },
-        status: statusFilter && statusFilter !== 'ALL' ? statusFilter : {},
+        include,
+        orderBy: {
+          createdAt: 'desc',
+        },
+        ...(typeof limit === 'number' ? { take: limit } : {}),
+      }),
+
+      prisma.course.count({
+        where: {
+          status: 'PENDING',
+        },
+      }),
+    ]);
+
+    courses = {
+      courses: courseData,
+      stats: {
+        pendingCourseApprovals,
       },
-      include,
-      orderBy: { createdAt: 'desc' },
-      ...(typeof limit === 'number' ? { take: limit } : {}),
-    });
+    };
   } else {
-    courses = await prisma.course.findMany({
+    const courseData = await prisma.course.findMany({
       where: {
         status: 'APPROVED',
         enrollments: {
@@ -242,12 +271,21 @@ export const getAllCourses = async ({
         },
       },
       include,
-      orderBy: { createdAt: 'desc' },
+      orderBy: {
+        createdAt: 'desc',
+      },
       ...(typeof limit === 'number' ? { take: limit } : {}),
     });
+
+    courses = {
+      courses: courseData,
+      stats: {
+        pendingCourseApprovals: 0,
+      },
+    };
   }
 
-  const formattedCourse = courses.map(c => ({
+  const formattedCourses = courses.courses.map(c => ({
     id: c.id,
     title: c.title,
     description: c.description,
@@ -262,7 +300,10 @@ export const getAllCourses = async ({
     modulesCount: c._count.modules,
   }));
 
-  return formattedCourse;
+  return {
+    courses: formattedCourses,
+    stats: courses.stats,
+  };
 };
 
 export const getMyCourses = async ({ userId }: { userId: string }) => {
@@ -359,6 +400,29 @@ export const getCourseAuthorId = async ({ courseId }: { courseId: string }) => {
   }
 
   return course.authorId;
+};
+
+export const inactiveCourse = async ({ courseId }: { courseId: string }) => {
+  return prisma.course.update({
+    where: {
+      id: courseId,
+    },
+    data: {
+      status: CourseStatus.INACTIVE,
+    },
+  });
+};
+
+export const reactivateCourse = async ({ courseId }: { courseId: string }) => {
+  return prisma.course.update({
+    where: {
+      id: courseId,
+    },
+
+    data: {
+      status: CourseStatus.APPROVED,
+    },
+  });
 };
 
 //Course Assigning to Trainee Related Repository Functions

@@ -84,36 +84,47 @@ export const getAssignmentsWithSubmissions = async ({
 }) => {
   const isAdmin = role === 'ADMIN';
 
-  const submissionFilter =
-    filter === 'ALL'
-      ? undefined
-      : {
-          status: filter,
-          ...(isAdmin ? {} : { studentId: userId }),
-        };
-
-  const whereCondition = isAdmin
-    ? {}
-    : {
-        module: {
-          course: {
-            enrollments: {
-              some: {
-                studentId: userId,
-              },
-            },
-          },
-        },
-      };
-
   const assignments = await prisma.assignment.findMany({
     where: {
       title: {
         contains: search,
         mode: 'insensitive',
       },
-      ...(submissionFilter ? { submissions: { some: submissionFilter } } : {}),
-      ...whereCondition,
+
+      // only approved courses
+      module: {
+        course: {
+          status: 'APPROVED',
+
+          // only enrolled student's assignments
+          ...(isAdmin
+            ? {}
+            : {
+                enrollments: {
+                  some: {
+                    studentId: userId,
+                  },
+                },
+              }),
+        },
+      },
+
+      // filter submissions
+      ...(filter !== 'ALL'
+        ? {
+            submissions: {
+              some: {
+                status: filter,
+
+                ...(isAdmin
+                  ? {}
+                  : {
+                      studentId: userId,
+                    }),
+              },
+            },
+          }
+        : {}),
     },
 
     select: {
@@ -127,6 +138,7 @@ export const getAssignmentsWithSubmissions = async ({
       module: {
         select: {
           title: true,
+
           course: {
             select: {
               title: true,

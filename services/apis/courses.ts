@@ -17,34 +17,45 @@ export type Module = {
 };
 
 export async function fetchCourses(
-  { limit, filters } = {} as { limit?: number; filters?: { search: string; statusFilter: string } }
-): Promise<CourseCardProps[]> {
+  { limit, filters } = {} as {
+    limit?: number;
+    filters?: {
+      search: string;
+      statusFilter: string;
+    };
+  }
+) {
   const params = new URLSearchParams();
+
   if (limit !== undefined) {
     params.set('limit', String(limit));
   }
 
   if (filters) {
     const { search, statusFilter } = filters;
+
     if (search) {
       params.set('search', search);
     }
+
     if (statusFilter && statusFilter !== 'ALL') {
       params.set('status', statusFilter);
     }
   }
 
   const query = params.toString();
+
   const url = query ? `/api/course?${query}` : '/api/course';
 
   const res = await fetch(url);
+
   const json = await res.json();
 
   if (!res.ok || !json.success) {
     throw new Error(json.message ?? 'Failed to fetch courses');
   }
 
-  return json.data as CourseCardProps[];
+  return json.data;
 }
 
 export async function getPendingCourses(): Promise<CourseType[]> {
@@ -295,4 +306,18 @@ export const getMyCourses = async () => {
 
   const result = await response.json();
   return result.data;
+};
+
+export const reactivateCourse = async (courseId: string) => {
+  const response = await fetch(`/api/course/reactivate/${courseId}`, {
+    method: 'PATCH',
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Failed to reactivate course');
+  }
+
+  return data;
 };

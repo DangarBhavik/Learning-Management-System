@@ -1,15 +1,7 @@
 'use client';
 
 import { use, useState, useRef } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getAssignmentById } from '@/services/apis/assignments';
-import {
-  getSubmissionsByAssignment,
-  SubmissionType,
-  submitAssignment,
-} from '@/services/apis/submissions';
-
-import AssignmentCards from '@/components/assignments/AssignmentCards';
+import AssignmentCards from '@/components/assignments/AssignmentStatsCards';
 import StatusBadge from '@/components/assignments/StatusBadge';
 import SubmissionHistory from '@/components/submissions/SubmissionHistory';
 
@@ -25,24 +17,18 @@ import {
 import { BsFileEarmarkText } from 'react-icons/bs';
 import Link from 'next/link';
 import { MarkdownEditor } from '@/components/mdxEditor';
+import { useAssignmentDetails } from '@/hooks/assignment/useAssignmentDetails';
+import { useSubmissionsByAssignment } from '@/hooks/submission/useSubmissionsByAssignment';
+import { useSubmitAssignment } from '@/hooks/submission/useSubmitAssignment';
 
 type Params = { assignmentId: string };
 type Props = { params: Promise<Params> };
-type Assignment = {
-  id: string;
-  title: string;
-  description: string;
-  dueDate: string;
-  maxScore: number;
-  status: 'PENDING' | 'SUBMITTED' | 'GRADED';
-};
 
 const ACCEPTED = '.pdf,.zip,.png,.jpg,.jpeg';
 const ACCEPTED_LABEL = 'PDF, ZIP, PNG, JPG';
 
 export default function AssignmentDetailsPage({ params }: Props) {
   const { assignmentId } = use(params);
-  const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -50,24 +36,11 @@ export default function AssignmentDetailsPage({ params }: Props) {
   const [submissionType, setSubmissionType] = useState<'FILE' | 'LINK'>('FILE');
   const [githubLink, setGithubLink] = useState('');
 
-  const { data: assignment, isLoading } = useQuery<Assignment>({
-    queryKey: ['assignment', assignmentId],
-    queryFn: () => getAssignmentById(assignmentId),
-  });
+  const { data: assignment, isLoading } = useAssignmentDetails(assignmentId);
 
-  const { data: submissions = [] } = useQuery<SubmissionType[]>({
-    queryKey: ['submissions', assignmentId],
-    queryFn: () => getSubmissionsByAssignment(assignmentId),
-  });
+  const { data: submissions = [] } = useSubmissionsByAssignment(assignmentId);
 
-  const mutation = useMutation({
-    mutationFn: (fd: FormData) => submitAssignment(fd),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['submissions', assignmentId] });
-      queryClient.invalidateQueries({ queryKey: ['assignment', assignmentId] });
-      setSelectedFile(null);
-    },
-  });
+  const mutation = useSubmitAssignment(assignmentId);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedFile(e.target.files?.[0] ?? null);

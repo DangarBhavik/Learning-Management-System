@@ -1,18 +1,14 @@
 'use client';
 
-import AssignmentCards from '@/components/assignments/AssignmentCards';
+import AssignmentCards from '@/components/assignments/AssignmentStatsCards';
 import Submissions from '@/components/submissions/Submissions';
-import { getSubmissionsByTrainee, SubmissionType } from '@/services/apis/submissions';
-import { useQuery } from '@tanstack/react-query';
 import { BsFileEarmarkCheck, BsClockHistory, BsCheckCircleFill } from 'react-icons/bs';
 import { useState } from 'react';
 import CustomSelect from '../ui/CustomSelect';
+import { useTraineeSubmissions } from '@/hooks/submission/useTraineeSubmissions';
 
 export default function TraineeSubmissionsPage() {
-  const { data: submission = [], isLoading } = useQuery<SubmissionType[]>({
-    queryKey: ['submission'],
-    queryFn: getSubmissionsByTrainee,
-  });
+  const { data: submission = [], isLoading } = useTraineeSubmissions();
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'PENDING' | 'GRADED' | 'RESUBMITTED'>(

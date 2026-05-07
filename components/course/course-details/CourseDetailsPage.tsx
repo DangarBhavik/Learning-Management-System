@@ -8,6 +8,7 @@ import { use } from 'react';
 import Loading from '../../ui/loading';
 import { Role } from '@/generated/prisma/enums';
 import InactiveCourseButton from './InactiveCourseButton';
+import ReactivateCourseButton from './ReactivateCourseButton ';
 
 type Props = {
   role: Role;
@@ -57,24 +58,12 @@ export default function CourseDetailsPage({ role, userId, params }: Props) {
                 </div>
               )}
               {course.status === 'PENDING' && <ApproveButton courseId={course.id} />}
-              {course.status === 'APPROVED' && (
-                <div className="flex items-center justify-center gap-2 px-4 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-                  <svg
-                    className="w-5 h-5 text-green-600 dark:text-green-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
+
+              {(userId == course.authorId || role == 'ADMIN') && course.status !== 'INACTIVE' ? (
+                <InactiveCourseButton courseId={course.id} />
+              ) : (
+                <ReactivateCourseButton courseId={course.id} />
               )}
-              {course.status !== 'INACTIVE' && <InactiveCourseButton courseId={course.id} />}
             </>
           )}
         </div>

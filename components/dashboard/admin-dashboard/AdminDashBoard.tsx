@@ -7,26 +7,33 @@ import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
 import { FaArrowTrendUp } from 'react-icons/fa6';
 import Courses from '@/components/ui/Courses';
 import Users from '@/components/users/UsersTable';
-import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
-import { getAdminDashboard } from '@/services/apis/dashboard';
 import Loading from '@/components/ui/loading';
+import { useCourses } from '@/hooks/courses/useCourses';
+import { useUsers } from '@/hooks/user/useUsers';
 
 function AdminDashBoard() {
   const {
-    data: dashboardData,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ['admin-dashboard'],
-    queryFn: getAdminDashboard,
+    courses,
+    stats: courseStats,
+    isFetching: coursesLoading,
+  } = useCourses({
+    limit: 3,
   });
 
-  if (isLoading) {
+  const {
+    users,
+    stats,
+    isLoading: usersLoading,
+  } = useUsers({
+    limit: 3,
+  });
+
+  if (usersLoading || coursesLoading) {
     return <Loading text="Dashboard Data" />;
   }
 
-  if (isError || !dashboardData) {
+  if (!courses || !users) {
     return (
       <p className="text-sm text-red-600 dark:text-red-400">
         Could not load dashboard data. Please refresh the page.
@@ -75,22 +82,22 @@ function AdminDashBoard() {
             <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <DashBoardCard
                 title="Total Users"
-                value={dashboardData.stats.totalUsers}
+                value={stats?.totalUsers ?? 0}
                 icon={<BiBook className="text-[22px]" />}
               />
               <DashBoardCard
                 title="Trainees"
-                value={dashboardData.stats.totalTrainees}
+                value={stats?.totalTrainees ?? 0}
                 icon={<FaRegFileAlt className="text-[20px]" />}
               />
               <DashBoardCard
                 title="Mentors"
-                value={dashboardData.stats.totalMentors}
+                value={stats?.totalMentors ?? 0}
                 icon={<IoMdCheckmarkCircleOutline className="text-[22px]" />}
               />
               <DashBoardCard
                 title="Pending Approvals"
-                value={dashboardData.pendingCourseApprovals}
+                value={courseStats?.pendingCourseApprovals ?? 0}
                 icon={<FaArrowTrendUp className="text-[20px]" />}
               />
             </div>
@@ -116,7 +123,7 @@ function AdminDashBoard() {
           </div>
 
           <div className="px-5 sm:px-6 pb-6">
-            <Courses btnText="Manage Course" courses={dashboardData?.latestCourses ?? []} />
+            <Courses btnText="Manage Course" courses={courses} />
           </div>
         </div>
       </section>
@@ -139,7 +146,7 @@ function AdminDashBoard() {
           </div>
 
           <div className="px-5 sm:px-6 pb-6">
-            <Users users={dashboardData?.latestUsers ?? []} />
+            <Users users={users} />
           </div>
         </div>
       </section>

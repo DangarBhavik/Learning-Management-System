@@ -30,8 +30,21 @@ const mentorAccessRoutes = createRouteMatcher([
   '/app/assignments(.*)',
 ]);
 
+const AdminAccessRoutes = createRouteMatcher([
+  '/app',
+  '/app/assign-course(.*)',
+  '/app/courses(.*)',
+  '/app/assigned-courses(.*)',
+  '/app/add-course(.*)',
+  '/app/users(.*)',
+  '/app/approvals(.*)',
+  '/app/submissions(.*)',
+  '/app/assignments(.*)',
+  '/api/(.*)',
+]);
+
 export default clerkMiddleware(async (auth, req) => {
-  const { userId  } = await auth();
+  const { userId } = await auth();
 
   if (publicRoutes(req)) {
     return NextResponse.next();
@@ -61,6 +74,9 @@ export default clerkMiddleware(async (auth, req) => {
   }
 
   if (user?.role === 'MENTOR' && mentorAccessRoutes(req)) {
+    return NextResponse.next();
+  }
+  if (user?.role === 'ADMIN' && AdminAccessRoutes(req)) {
     return NextResponse.next();
   }
 

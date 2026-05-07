@@ -1,18 +1,11 @@
 'use client';
-import { useQuery } from '@tanstack/react-query';
+
 import ApprovalTable from './ApprovalTable';
-import { getPendingCourses } from '@/services/apis/courses';
 import Loading from '../ui/loading';
+import { usePendingCourses } from '@/hooks/courses/usePendingCourses';
 
 export default function ApprovalsPage() {
-  const {
-    data: courses,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ['pendingCourses'],
-    queryFn: getPendingCourses,
-  });
+  const { data: courses, isLoading, isError } = usePendingCourses();
 
   const pendingCount = courses?.length ?? 0;
 

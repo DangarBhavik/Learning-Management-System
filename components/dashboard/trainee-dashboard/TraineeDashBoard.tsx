@@ -6,33 +6,19 @@ import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
 import { FaArrowTrendUp } from 'react-icons/fa6';
 import Courses from '@/components/ui/Courses';
 import Assignments from '@/components/assignments/Assignments';
-import { useQuery } from '@tanstack/react-query';
-
-import { getTraineeAssignments } from '@/services/apis/assignments';
 import Link from 'next/link';
 import Loading from '@/components/ui/loading';
 import { useCourses } from '@/hooks/courses/useCourses';
-
-type AssignmentType = {
-  id: string;
-  title: string;
-  description: string;
-  dueDate: string | null;
-  maxScore: number;
-  moduleTitle: string;
-  courseTitle: string;
-  submission: {
-    status: 'Not Submitted' | 'PENDING' | 'GRADED' | 'RESUBMITTED';
-    score?: number | null;
-  } | null;
-};
+import useAssignments from '@/hooks/assignment/useAssignments';
 
 function TraineeDashBoard() {
-  const { courses, isFetching: coursesLoading } = useCourses(3);
+  const { courses, isFetching: coursesLoading } = useCourses({ limit: 3 });
 
-  const { data: assignments = [], isLoading: assignmentsLoading } = useQuery<AssignmentType[]>({
-    queryKey: ['assignments'],
-    queryFn: getTraineeAssignments,
+  const { assignments, isLoading: assignmentsLoading } = useAssignments({
+    filters: {
+      search: '',
+      statusFilter: 'ALL',
+    },
   });
 
   if (coursesLoading || assignmentsLoading) {
@@ -41,9 +27,7 @@ function TraineeDashBoard() {
 
   const totalCourses = courses.length;
 
-  const pendingAssignments = assignments.filter(
-    a => !a.submission || a.submission?.status === 'Not Submitted'
-  ).length;
+  const pendingAssignments = assignments.filter(a => !a.submission).length;
 
   const completedAssignments = assignments.filter(a => a.submission?.status === 'GRADED').length;
 

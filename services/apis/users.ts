@@ -24,16 +24,21 @@ export type MentorOption = {
   email: string;
 };
 
-export async function getUsers() {
-  const res = await fetch('/api/user/userlist');
-  const json = await res.json();
+export const getUsers = async ({ limit }: { limit?: number } = {}) => {
+  const query = new URLSearchParams();
 
-  if (!res.ok || !json.success) {
-    throw new Error(json.message ?? 'Failed to fetch users');
+  if (limit !== undefined) {
+    query.append('limit', String(limit));
   }
 
-  return json.data;
-}
+  const response = await fetch(
+    `/api/user/userlist${query.toString() ? `?${query.toString()}` : ''}`
+  );
+
+  const data = await response.json();
+
+  return data.data;
+};
 
 export const getUserById = async (id: string) => {
   const res = await fetch(`/api/user/${id}`);

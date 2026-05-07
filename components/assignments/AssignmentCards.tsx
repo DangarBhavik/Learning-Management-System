@@ -1,78 +1,118 @@
-'use client';
+import { AssignmentType } from './Assignments';
+import statusConfig from './StatusConfig';
+import Link from 'next/link';
+import { BsFileEarmarkText } from 'react-icons/bs';
+import {
+  HiOutlineCalendar,
+  HiOutlineStar,
+  HiOutlineBookOpen,
+  HiOutlineAcademicCap,
+  HiArrowRight,
+} from 'react-icons/hi2';
+import ScoreBar from './ScoreBar';
 
-import React from 'react';
+export default function AssignmentCard({ item, index }: { item: AssignmentType; index: number }) {
+  const statusKey = (item.submission?.status ?? 'NOT_SUBMITTED') as keyof typeof statusConfig;
 
-const palette = {
-  gray: {
-    card: 'bg-white dark:bg-gray-950/60 border-gray-200/70 dark:border-gray-800',
-    icon: 'bg-gray-100 dark:bg-gray-800/70 text-gray-500 dark:text-gray-400',
-    accent: 'from-gray-400 to-gray-500',
-    value: 'text-gray-900 dark:text-white',
-  },
-  amber: {
-    card: 'bg-amber-50/60 dark:bg-amber-950/20 border-amber-200/60 dark:border-amber-800/50',
-    icon: 'bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400',
-    accent: 'from-amber-400 to-orange-500',
-    value: 'text-amber-700 dark:text-amber-300',
-  },
-  emerald: {
-    card: 'bg-emerald-50/60 dark:bg-emerald-950/20 border-emerald-200/60 dark:border-emerald-800/50',
-    icon: 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400',
-    accent: 'from-emerald-400 to-teal-500',
-    value: 'text-emerald-700 dark:text-emerald-300',
-  },
-  indigo: {
-    card: 'bg-indigo-50/60 dark:bg-indigo-950/20 border-indigo-200/60 dark:border-indigo-800/50',
-    icon: 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400',
-    accent: 'from-indigo-400 to-violet-500',
-    value: 'text-indigo-700 dark:text-indigo-300',
-  },
-};
-
-type PaletteKey = keyof typeof palette;
-
-const AssignmentCards: React.FC<{
-  title: string;
-  value: React.ReactNode;
-  icon: React.ReactNode;
-  color?: PaletteKey;
-}> = ({ title, value, icon, color = 'gray' }) => {
-  const p = palette[color] ?? palette.gray;
+  const isGraded = item.submission?.status === 'GRADED';
+  const cfg = statusConfig[statusKey] ?? statusConfig.NOT_SUBMITTED;
+  const isOverdue = !isGraded && item.dueDate && new Date(item.dueDate) < new Date();
 
   return (
     <div
-      className={`
-        group relative flex items-center gap-4 rounded-2xl border
-        ${p.card}
-        backdrop-blur-sm px-5 py-4
-        shadow-sm hover:shadow-md
-        transition-all duration-200
-        overflow-hidden
-      `}
+      className="group relative flex flex-col sm:flex-row sm:items-center gap-4
+                   rounded-2xl border border-gray-200/70 dark:border-gray-800
+                   bg-white dark:bg-gray-950/50
+                   backdrop-blur-sm px-5 py-4
+                   shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-gray-700
+                   transition-all duration-200"
+      style={{ animationDelay: `${index * 40}ms` }}
     >
-      <div
-        className={`absolute left-0 top-0 bottom-0 w-[3px] rounded-r-full bg-linear-to-b ${p.accent} opacity-80`}
-      />
+      <div className={`absolute left-0 top-3 bottom-3 w-0.75 rounded-full ${cfg.bar}`} />
 
-      <div
-        className={`
-          shrink-0 w-11 h-11 rounded-xl
-          flex items-center justify-center text-lg
-          ${p.icon}
-          transition-transform duration-200 group-hover:scale-105
-        `}
-      >
-        {icon}
+      <div className="shrink-0 w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800/60 flex items-center justify-center text-gray-400 dark:text-gray-500 text-base">
+        <BsFileEarmarkText />
       </div>
 
-      <div className="min-w-0">
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 truncate">
-          {title}
-        </p>
-        <p className={`text-2xl font-extrabold leading-tight ${p.value}`}>{value}</p>
+      <div className="flex-1 min-w-0 space-y-1.5">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-sm font-bold text-gray-900 dark:text-white">{item.title}</span>
+
+          <span
+            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${cfg.pill}`}
+          >
+            {cfg.icon}
+            {cfg.label}
+          </span>
+
+          {isOverdue && (
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
+              Overdue
+            </span>
+          )}
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3 text-[11px] text-gray-400 dark:text-gray-500">
+          <span className="inline-flex items-center gap-1">
+            <HiOutlineBookOpen className="text-xs" />
+            {item.courseTitle}
+          </span>
+
+          <span className="text-gray-300 dark:text-gray-700">·</span>
+
+          <span className="inline-flex items-center gap-1">
+            <HiOutlineAcademicCap className="text-xs" />
+            {item.moduleTitle}
+          </span>
+
+          {item.dueDate && (
+            <>
+              <span className="text-gray-300 dark:text-gray-700">·</span>
+              <span
+                className={`inline-flex items-center gap-1 ${
+                  isOverdue ? 'text-red-500 dark:text-red-400 font-semibold' : ''
+                }`}
+              >
+                <HiOutlineCalendar className="text-xs" />
+                {new Date(item.dueDate).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+              </span>
+            </>
+          )}
+        </div>
+      </div>
+
+      <div className="hidden sm:flex flex-col gap-1 w-36 shrink-0">
+        <div className="flex items-center gap-1 text-[10px] font-semibold uppercase text-gray-400 dark:text-gray-500">
+          <HiOutlineStar className="text-xs" />
+          {isGraded ? 'Score' : 'Max score'}
+        </div>
+
+        {isGraded && item.submission?.score != null ? (
+          <ScoreBar score={item.submission.score} max={item.maxScore} />
+        ) : (
+          <span className="text-xs font-semibold text-gray-300 dark:text-gray-600">
+            — / {item.maxScore}
+          </span>
+        )}
+      </div>
+
+      <div>
+        <Link
+          href={`/app/assignments/${item.id}`}
+          className={`inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold ${
+            isGraded
+              ? 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'
+              : 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
+          }`}
+        >
+          {isGraded ? 'View Feedback' : 'Submit'}
+          <HiArrowRight className="text-xs" />
+        </Link>
       </div>
     </div>
   );
-};
-
-export default AssignmentCards;
+}

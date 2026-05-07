@@ -2,7 +2,7 @@ import getUserDetails from '@/lib/isAuth';
 import ApiResponse from '@/utils/api-response';
 import { NextRequest, NextResponse } from 'next/server';
 
-import { getCourseDetailsById, inactiveCourse } from '@/services/repository/course';
+import { getCourseDetailsById, reactivateCourse } from '@/services/repository/course';
 
 export const PATCH = async (
   req: NextRequest,
@@ -13,7 +13,9 @@ export const PATCH = async (
 
     const { courseId } = await params;
 
-    const course = await getCourseDetailsById({courseId});
+    const course = await getCourseDetailsById({
+      courseId,
+    });
 
     if (!course) {
       return NextResponse.json(new ApiResponse(404, 'Course not found', null), { status: 404 });
@@ -23,10 +25,12 @@ export const PATCH = async (
       return NextResponse.json(new ApiResponse(403, 'Forbidden', null), { status: 403 });
     }
 
-    const updatedCourse = await inactiveCourse({courseId});
+    const updatedCourse = await reactivateCourse({
+      courseId,
+    });
 
     return NextResponse.json(
-      new ApiResponse(200, 'Course marked as inactive successfully', updatedCourse),
+      new ApiResponse(200, 'Course reactivated successfully', updatedCourse),
       { status: 200 }
     );
   } catch (error) {

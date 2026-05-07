@@ -9,7 +9,7 @@ import { HiArrowLeft } from 'react-icons/hi2';
 import { BiCalendar } from 'react-icons/bi';
 import { LuFileBadge } from 'react-icons/lu';
 import { BsFileEarmarkText } from 'react-icons/bs';
-import AssignmentCards from '@/components/assignments/AssignmentCards';
+import AssignmentCards from '@/components/assignments/AssignmentStatsCards';
 import StatusBadge from '@/components/assignments/StatusBadge';
 import getInitials from '@/utils/getInitials';
 import useSubmission from '@/hooks/submission/useSubmission';

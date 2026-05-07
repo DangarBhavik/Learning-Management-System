@@ -1,11 +1,12 @@
 import type { ReactNode } from 'react';
-import { RiDashboard2Line } from 'react-icons/ri';
+import { RiDashboard2Line, RiTodoLine } from 'react-icons/ri';
 import { HiUserGroup } from 'react-icons/hi';
-import { BiBook, BiBell } from 'react-icons/bi';
+import { BiBook, BiBell, BiCheckShield, BiTask } from 'react-icons/bi';
 import { FiUser } from 'react-icons/fi';
 import { UserRole } from '@/types/types';
 import { MdOutlineAssignment, MdReviews } from 'react-icons/md';
 import { LuBookText } from 'react-icons/lu';
+import { FaChalkboardTeacher } from 'react-icons/fa';
 
 type MenuItem = {
   label: string;
@@ -33,17 +34,17 @@ export const sidebarMenu: Record<UserRole, MenuItem[]> = {
     {
       label: 'Approvals',
       href: 'app/approvals',
-      icon: <BiBook />,
+      icon: <BiCheckShield />,
     },
     {
       label: 'Submissions',
       href: 'app/submissions',
-      icon: <BiBook />,
+      icon: <BiTask />,
     },
     {
       label: 'Assign Course',
       href: 'app/assign-course',
-      icon: <BiBell />,
+      icon: <FaChalkboardTeacher />,
     },
   ],
 
@@ -105,12 +106,12 @@ export const sidebarMenu: Record<UserRole, MenuItem[]> = {
     {
       label: 'Assignments',
       href: 'app/assignments',
-      icon: <BiBell />,
+      icon: <RiTodoLine />,
     },
     {
       label: 'Submissions',
       href: 'app/submissions',
-      icon: <BiBell />,
+      icon: <BiTask />,
     },
     {
       label: 'Profile',
