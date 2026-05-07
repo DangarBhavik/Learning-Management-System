@@ -56,7 +56,9 @@ export default function CourseDetailsPage({ role, userId, params }: Props) {
                   Draft
                 </div>
               )}
-              {course.status === 'PENDING' && <ApproveButton courseId={course.id} />}
+              {course.status === 'PENDING' && role === 'ADMIN' && (
+                <ApproveButton courseId={course.id} />
+              )}
               {course.status === 'APPROVED' && (
                 <div className="flex items-center justify-center gap-2 px-4 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
                   <svg

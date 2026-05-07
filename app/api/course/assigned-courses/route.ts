@@ -13,7 +13,10 @@ export const GET = async (req: NextRequest) => {
     const userId = searchParams.get('userId');
     const limit = Number(searchParams.get('limit'));
     const page = Number(searchParams.get('page'));
-    const skip = (page - 1) * limit;
+    let skip = 0;
+    if (typeof limit === 'number') {
+      skip = (page - 1) * limit;
+    }
 
     if (!userId) {
       return NextResponse.json(new ApiResponse(400, 'userId required', {}), { status: 400 });
@@ -25,11 +28,13 @@ export const GET = async (req: NextRequest) => {
       return NextResponse.json(new ApiResponse(404, 'User not found', {}), { status: 404 });
     }
 
-    if (user.role === 'MENTOR' && selectedUser.role === 'TRAINEE') {
-      const mentorId = await getTraineeMentorId(userId);
+    if (selectedUser.id !== user.id) {
+      if (user.role === 'MENTOR' && selectedUser.role === 'TRAINEE') {
+        const mentorId = await getTraineeMentorId(userId);
 
-      if (mentorId !== user.id) {
-        return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
+        if (mentorId !== user.id) {
+          return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
+        }
       }
     }
 

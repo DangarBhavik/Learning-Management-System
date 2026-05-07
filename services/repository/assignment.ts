@@ -1,3 +1,4 @@
+import { AssignmentFilter } from '@/types/types';
 import { prisma } from '@/utils/prisma-client';
 
 export const createAssignment = async ({
@@ -40,6 +41,21 @@ export const deleteAssignment = async ({ assignmentId }: { assignmentId: string 
     where: { id: assignmentId },
   });
 
+  // const deleteAssignments = await prisma.$transaction(async tx => {
+  //   const submissions = await tx.submission.findMany({
+  //     where: { assignmentId },
+  //     select: {
+  //       fileUrl: true,
+  //     },
+  //   });
+
+  //   const deletedFilesFromDb = await tx.file.findMany({});
+
+  //   const assignment = await tx.assignment.delete({
+  //     where: { id: assignmentId },
+  //   });
+  // });
+
   return deletedAssignment;
 };
 
@@ -80,7 +96,7 @@ export const getAssignmentsWithSubmissions = async ({
   userId: string;
   role: string;
   search: string;
-  filter: 'ALL' | 'PENDING' | 'GRADED' | 'RESUBMITTED';
+  filter: AssignmentFilter['statusFilter'];
 }) => {
   const isAdmin = role === 'ADMIN';
 
@@ -88,7 +104,7 @@ export const getAssignmentsWithSubmissions = async ({
     filter === 'ALL'
       ? undefined
       : {
-          status: filter,
+          status: filter == 'NOT_SUBMITTED' ? undefined : filter,
           ...(isAdmin ? {} : { studentId: userId }),
         };
 
@@ -112,7 +128,11 @@ export const getAssignmentsWithSubmissions = async ({
         contains: search,
         mode: 'insensitive',
       },
-      ...(submissionFilter ? { submissions: { some: submissionFilter } } : {}),
+      ...(filter === 'NOT_SUBMITTED'
+        ? { submissions: { none: { studentId: userId } } }
+        : submissionFilter
+          ? { submissions: { some: submissionFilter } }
+          : {}),
       ...whereCondition,
     },
 

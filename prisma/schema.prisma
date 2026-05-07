@@ -129,6 +129,7 @@ model File {
   // Relations
   uploader    User     @relation("UploadedFiles", fields: [uploadedBy], references: [id])
   thumbnails  Course[] @relation("CourseThumbnail")
+
   // lessonVideo Lesson[] @relation("LessonVideo")
 
   @@index([uploadedBy])

@@ -7,8 +7,13 @@ type Course = {
   description: string;
   thumbnail: string;
   author: string;
+  image: string;
   status: string;
+  authorId: string;
+  thumbnailId: string | null;
+  createdAt: string;
   modulesCount: number;
+  authorInitials?: string;
 };
 
 const SelectableCourses = ({
@@ -20,7 +25,6 @@ const SelectableCourses = ({
   func: (course: Course) => void;
   selectedCourses?: Course[];
 }) => {
-
   return (
     <ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       {courses &&

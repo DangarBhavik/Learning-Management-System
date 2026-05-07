@@ -55,8 +55,8 @@ const SubmissionReviewPage = () => {
     );
   }
 
-  const submissionUrl = submission.fileUrl || submission.githubLink || null;
-  const studentInitials = getInitials(submission.student.username, { fallback: 'U' });
+  const submissionUrl = submission?.fileUrl || submission?.githubLink || null;
+  const studentInitials = getInitials(submission?.student?.username, { fallback: 'U' });
 
   return (
     <section className="mx-8 mt-7 mb-12 space-y-7">
@@ -147,7 +147,7 @@ const SubmissionReviewPage = () => {
 
         <div className="flex items-center gap-4">
           <Avatar size="lg">
-            {submission.student.image ? (
+            {submission?.student?.image ? (
               <AvatarImage src={submission.student.image} alt={submission.student.username} />
             ) : (
               <AvatarFallback>{studentInitials}</AvatarFallback>
@@ -156,10 +156,10 @@ const SubmissionReviewPage = () => {
 
           <div className="min-w-0">
             <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-              {submission.student.username}
+              {submission?.student.username}
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-              {submission.student.email}
+              {submission?.student.email}
             </p>
           </div>
         </div>

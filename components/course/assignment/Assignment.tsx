@@ -24,7 +24,6 @@ const Assignment = ({ assignment, moduleId }: { assignment: AssignmentType; modu
       await deleteAssignment();
       setShowDeleteConfirmation(false);
     } catch (err) {
-      // optional: show toast or handle error
       console.error('Delete failed', err);
     }
   };

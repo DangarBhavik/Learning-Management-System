@@ -1,3 +1,4 @@
+'use client';
 import { useState } from 'react';
 import CourseAssignGrid from './CourseAssignGrid';
 import useGetAssignedCourses from '@/hooks/courses/useGetAssignedCourses';

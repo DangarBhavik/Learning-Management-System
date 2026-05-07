@@ -11,6 +11,8 @@ import { BsThreeDotsVertical } from 'react-icons/bs';
 import { MdClose } from 'react-icons/md';
 import { RiLoader4Fill } from 'react-icons/ri';
 import DeleteConfirmation from '../DeleteConfimation';
+import { toast } from 'sonner';
+import createToast from '@/utils/toast';
 
 const ModuleInput: React.FC<{ title?: string; moduleId: string; index: number }> = ({
   title,
@@ -31,7 +33,14 @@ const ModuleInput: React.FC<{ title?: string; moduleId: string; index: number }>
       return;
     }
 
-    await modifyModule({ title: text });
+    await modifyModule(
+      { title: text },
+      {
+        onSuccess: () => {
+          createToast('Module Title Updated Successfully!', 'success');
+        },
+      }
+    );
     setShowEditForm(false);
   };
 

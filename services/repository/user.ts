@@ -37,7 +37,11 @@ export const getTraineeMentor = async (traineeId: string) => {
     },
   });
 
-  return user?.mentor;
+  if (!user) {
+    throw new Error(' Mentor not found');
+  }
+
+  return user.mentor;
 };
 
 export const getTraineeMentorId = async (traineeId: string) => {
@@ -48,7 +52,11 @@ export const getTraineeMentorId = async (traineeId: string) => {
     },
   });
 
-  return user?.mentorId;
+  if (!user) {
+    throw new Error('Mentor not found');
+  }
+
+  return user.mentorId;
 };
 
 export const getUsers = async () => {

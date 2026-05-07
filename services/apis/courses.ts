@@ -86,13 +86,17 @@ export async function getAssignedCourses({
   page,
   userId,
 }: {
-  limit: number;
+  limit?: number;
   page: number;
   userId: string;
 }) {
-  const res = await fetch(
-    `/api/course/assigned-courses?limit=${limit}&page=${page}&userId=${userId}`
-  );
+  let url = `/api/course/assigned-courses?userId=${userId}&page=${page}`;
+
+  if (limit !== undefined) {
+    url += `&limit=${limit}`;
+  }
+
+  const res = await fetch(url);
 
   if (!res.ok) {
     const text = await res.text();

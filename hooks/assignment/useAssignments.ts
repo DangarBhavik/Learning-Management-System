@@ -16,11 +16,14 @@ type AssignmentType = {
   } | null;
 };
 
-const useAssignments = ({ filters }: { filters: AssignmentFilter }) => {
+const useAssignments = ({ filters }: { filters?: AssignmentFilter }) => {
   const { data = [], isLoading } = useQuery<AssignmentType[]>({
     queryKey: ['assignments', filters],
     queryFn: () =>
-      getTraineeAssignments({ search: filters.search, statusFilter: filters.statusFilter }),
+      getTraineeAssignments({
+        search: filters?.search || '',
+        statusFilter: filters?.statusFilter || 'ALL',
+      }),
   });
 
   return { assignments: data, isLoading };
