@@ -5,6 +5,7 @@ import { useCreateCourse } from '@/hooks/courses/useCreateCourse';
 import { courseFormData } from '@/types/types';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 
 function AddCourse() {
   const router = useRouter();
@@ -21,6 +22,7 @@ function AddCourse() {
         router.push(`/app/add-course/${createdCourse.id}/content`);
       },
     });
+    toast.success('Course Created Successfully!', { position: 'bottom-right' });
   };
 
   return (

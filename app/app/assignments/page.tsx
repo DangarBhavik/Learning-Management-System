@@ -20,36 +20,6 @@ export default function AssignmentPage() {
   const pending = assignments.filter(a => a.submission?.status === 'PENDING').length;
   const completed = assignments.filter(a => a.submission?.status === 'GRADED').length;
 
-  // const filteredAssignments = assignments.filter(a => {
-  //   const matchesSearch =
-  //     a.title.toLowerCase().includes(filters.search.toLowerCase()) ||
-  //     a.courseTitle.toLowerCase().includes(filters.search.toLowerCase()) ||
-  //     a.moduleTitle.toLowerCase().includes(filters.search.toLowerCase());
-
-  //   const status = a.submission?.status ?? 'PENDING';
-
-  //   const matchesFilter = filters.statusFilter === 'ALL' ? true : status === filters.statusFilter;
-
-  //   return matchesSearch && matchesFilter;
-  // });
-
-  // if (isLoading) {
-  //   return (
-  //     <section className="mx-8 mt-8 space-y-6 animate-pulse">
-  //       <div className="h-8 w-52 rounded-lg bg-gray-200 dark:bg-gray-800" />
-  //       <div className="h-4 w-72 rounded bg-gray-100 dark:bg-gray-800/60" />
-  //       <div className="grid md:grid-cols-3 gap-4">
-  //         {[0, 1, 2].map(i => (
-  //           <div key={i} className="h-24 rounded-2xl bg-gray-100 dark:bg-gray-800/60" />
-  //         ))}
-  //       </div>
-  //       {[0, 1, 2].map(i => (
-  //         <div key={i} className="h-20 rounded-2xl bg-gray-100 dark:bg-gray-800/40" />
-  //       ))}
-  //     </section>
-  //   );
-  // }
-
   return (
     <section className="mx-8 mt-7 mb-12 space-y-7">
       <div className="flex items-end justify-between gap-4 flex-wrap">
@@ -66,7 +36,7 @@ export default function AssignmentPage() {
         </div>
 
         {total > 0 && (
-          <div className="flex flex-col items-end gap-1 min-w-[140px]">
+          <div className="flex flex-col items-end gap-1 min-w-35">
             <span className="text-[11px] font-medium text-gray-500 dark:text-gray-400">
               {Math.round((completed / total) * 100)}% complete
             </span>
@@ -128,11 +98,12 @@ export default function AssignmentPage() {
             }
             options={[
               { label: 'All', value: 'ALL' },
+              { label: 'Not Submitted', value: 'NOT_SUBMITTED' },
               { label: 'Pending', value: 'PENDING' },
               { label: 'Completed', value: 'GRADED' },
               { label: 'Resubmitted', value: 'RESUBMITTED' },
             ]}
-            className="min-w-[160px]"
+            className="min-w-40"
           />
         </div>
       </div>

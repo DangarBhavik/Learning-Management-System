@@ -2,10 +2,10 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { getUserByClerkId } from './services/repository/user';
 
+// '/api/(.*)',
 // const isProtectedRoute = createRouteMatcher(['/app(.*)']);
 const publicRoutes = createRouteMatcher([
   '/',
-  '/api/(.*)',
   '/auth/signin(.*)',
   '/auth/signup(.*)',
   '/api/webhooks(.*)',
@@ -16,6 +16,12 @@ const traineeAccessRoutes = createRouteMatcher([
   '/app/courses(.*)',
   '/app/assignments(.*)',
   '/app/submissions(.*)',
+  '/api/courses',
+  '/api/courses/courseId',
+  '/api/assignments',
+  '/api/submissions',
+  '/api/assignments/assignmentId',
+  '/api/assignments/submit',
 ]);
 
 const mentorAccessRoutes = createRouteMatcher([
@@ -28,6 +34,7 @@ const mentorAccessRoutes = createRouteMatcher([
   '/app/review-submission(.*)',
   '/app/submissions(.*)',
   '/app/assignments(.*)',
+  '/api/(.*)',
 ]);
 
 const AdminAccessRoutes = createRouteMatcher([
@@ -42,6 +49,8 @@ const AdminAccessRoutes = createRouteMatcher([
   '/app/assignments(.*)',
   '/api/(.*)',
 ]);
+
+const mentorProhibitedRoutes = createRouteMatcher(['/api/courses/courseId/approve']);
 
 export default clerkMiddleware(async (auth, req) => {
   const { userId } = await auth();
@@ -73,7 +82,7 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.next();
   }
 
-  if (user?.role === 'MENTOR' && mentorAccessRoutes(req)) {
+  if (user?.role === 'MENTOR' && mentorAccessRoutes(req) && !mentorProhibitedRoutes(req)) {
     return NextResponse.next();
   }
   if (user?.role === 'ADMIN' && AdminAccessRoutes(req)) {

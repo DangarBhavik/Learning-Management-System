@@ -4,6 +4,7 @@ import './globals.css';
 import { ThemeProvider } from 'next-themes';
 import { ClerkProvider } from '@clerk/nextjs';
 import TanstackProvider from '@/components/providers/QueryClientProvider';
+import { Toaster } from '@/components/ui/sonner';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -20,16 +21,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className="h-full antialiased"
-      suppressHydrationWarning
-    >
+    <html lang="en" className="h-full antialiased" suppressHydrationWarning>
       <body className={`${inter.className} min-h-full w-full dark:bg-gray-800 dark:text-white`}>
         <div id="modal"></div>
         <TanstackProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <ClerkProvider>{children}</ClerkProvider>
+            <ClerkProvider>
+              {children}
+              <Toaster />
+            </ClerkProvider>
           </ThemeProvider>
         </TanstackProvider>
       </body>

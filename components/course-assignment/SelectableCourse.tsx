@@ -10,9 +10,14 @@ type Course = {
   title: string;
   description: string;
   thumbnail: string;
-  author: string | { username: string };
+  author: string;
+  image: string;
   status: string;
+  authorId: string;
+  thumbnailId: string | null;
+  createdAt: string;
   modulesCount: number;
+  authorInitials?: string;
 };
 
 function SelectableCourse({
@@ -32,8 +37,6 @@ function SelectableCourse({
     e.stopPropagation();
   };
   // console.log(course.thumbnail);
-
- 
 
   return (
     <Card
@@ -70,7 +73,7 @@ function SelectableCourse({
         <p className="text-xs text-muted-foreground line-clamp-2 flex-1">{course.description}</p>
         <div className="flex items-center justify-between text-xs text-muted-foreground border-t border-border pt-2">
           <span className="truncate">
-            {typeof course.author === 'string' ? course.author : course.author?.username}
+            {typeof course.author === 'string' ? course.author : course.author}
           </span>
           <span className="bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-foreground">
             {course.modulesCount} modules

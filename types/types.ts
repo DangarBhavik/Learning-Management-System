@@ -84,5 +84,16 @@ export type AssignmentFormProps = {
 
 export type AssignmentFilter = {
   search: string;
-  statusFilter: 'ALL' | 'PENDING' | 'GRADED' | 'RESUBMITTED';
+  statusFilter: 'ALL' | 'NOT_SUBMITTED' | 'PENDING' | 'GRADED' | 'RESUBMITTED';
+};
+
+export type CoursesLayoutProps = {
+  title: string;
+  subtitle?: string;
+  count?: number;
+  isError?: boolean;
+  errorText?: string;
+  headerRight?: React.ReactNode;
+  children: React.ReactNode;
+  role?: PrismaUserRole;
 };

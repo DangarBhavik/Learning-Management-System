@@ -1,18 +1,23 @@
 import { getAssignedCourses } from '@/services/apis/courses';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
-type AssignableCourse = {
+type Course = {
   id: string;
   title: string;
   description: string;
   thumbnail: string;
   author: string;
+  image: string;
   status: string;
+  authorId: string;
+  thumbnailId: string | null;
+  createdAt: string;
   modulesCount: number;
+  authorInitials?: string;
 };
 
 type AssignableCoursesData = {
-  courses: AssignableCourse[];
+  courses: Course[];
   pagination: {
     currentPage: number;
     totalPages: number;
@@ -37,7 +42,7 @@ export const useGetAssignedCourses = ({
   page,
 }: {
   userId: string;
-  limit: number;
+  limit?: number;
   page: number;
 }) => {
   const { data, isLoading, isFetching } = useQuery<AssignableCoursesData>({

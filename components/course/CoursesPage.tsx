@@ -29,6 +29,7 @@ export default function CoursesPage({ role }: { role: PrismaUserRole }) {
     >
       <SearchBar
         options={[
+          { label: 'All', value: 'ALL' },
           { label: 'Pending', value: 'PENDING' },
           { label: 'Draft', value: 'DRAFT' },
           { label: 'Approved', value: 'APPROVED' },
@@ -41,7 +42,7 @@ export default function CoursesPage({ role }: { role: PrismaUserRole }) {
       {!isFetching ? (
         <Courses btnText="View Course" courses={courses} />
       ) : (
-        <p>Loading courses...</p>
+        <p className="text-gray-500 flex items-center justify-center">Loading courses...</p>
       )}
     </CoursesLayout>
   );

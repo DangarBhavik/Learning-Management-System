@@ -481,7 +481,6 @@ export const getAssignableCourses = async ({
     thumbnail: course.thumbnail?.url || '',
     author: course.author?.username || 'Unknown',
     modulesCount: course.modules.length,
-    lessons: course.modules.reduce((acc, m) => acc + m._count.lessons, 0),
   }));
 
   return formattedCourses;
@@ -555,10 +554,10 @@ export const getAssignedCourses = async ({
   skip,
 }: {
   userId: string;
-  limit: number;
+  limit?: number;
   skip?: number;
 }) => {
-  const take = typeof limit === 'number' ? limit : undefined;
+  const take = limit == 0 ? undefined : limit;
 
   const courses = await prisma.course.findMany({
     where: {
@@ -570,7 +569,7 @@ export const getAssignedCourses = async ({
     },
     include: {
       thumbnail: { select: { url: true } },
-      author: { select: { username: true } },
+      author: { select: { username: true, image: true } },
       modules: {
         select: {
           _count: { select: { lessons: true } },
@@ -586,11 +585,14 @@ export const getAssignedCourses = async ({
     id: course.id,
     title: course.title,
     description: course.description,
+    thumbnail: course.thumbnail?.url ?? '',
+    author: course.author?.username ?? 'Unknown',
+    image: course.author?.image ?? '',
     status: course.status,
-    thumbnail: course.thumbnail?.url,
-    author: course.author?.username,
+    authorId: course.authorId,
+    thumbnailId: course.thumbnailId,
+    createdAt: course.createdAt,
     modulesCount: course.modules.length,
-    lessons: course.modules.reduce((acc, m) => acc + m._count.lessons, 0),
   }));
 
   return formattedCourses;

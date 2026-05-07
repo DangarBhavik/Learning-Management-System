@@ -20,7 +20,6 @@ const NewModule = () => {
       return;
     }
     await createModule({ title: inputText });
-
     setInputText('');
   };
 

@@ -1,18 +1,6 @@
 'use client';
 
-import Loading from '@/components/ui/loading';
-import { PrismaUserRole } from '@/types/types';
-
-type CoursesLayoutProps = {
-  title: string;
-  subtitle?: string;
-  count?: number;
-  isError?: boolean;
-  errorText?: string;
-  headerRight?: React.ReactNode;
-  children: React.ReactNode;
-  role: PrismaUserRole;
-};
+import { CoursesLayoutProps } from '@/types/types';
 
 export default function CoursesLayout({
   title,
@@ -36,7 +24,7 @@ export default function CoursesLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen  bg-gray-50 dark:bg-gray-900">
       <div className="overflow-hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
@@ -81,7 +69,7 @@ export default function CoursesLayout({
           </div>
         </div>
       </div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</div>
+      <div className="max-w-7xl  mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</div>
     </div>
   );
 }

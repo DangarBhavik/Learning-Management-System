@@ -60,12 +60,6 @@ export const sidebarMenu: Record<UserRole, MenuItem[]> = {
       icon: <LuBookText />,
     },
     {
-      label: 'My Courses',
-      href: 'app/my-courses',
-      icon: <LuBookText />,
-    },
-
-    {
       label: 'Students',
       href: 'app/assign-course',
       icon: <HiUserGroup />,
