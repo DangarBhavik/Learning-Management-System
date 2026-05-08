@@ -1,5 +1,6 @@
 import { CourseStatus, Role } from '@/generated/prisma/enums';
 import ApiResponse from '@/utils/api-response';
+import { userRoleCheck } from '@/utils/checkUserRole';
 import { prisma } from '@/utils/prisma-client';
 import { NextResponse } from 'next/server';
 
@@ -262,7 +263,7 @@ export const getAllCourses = async ({
 
   let courses;
 
-  if (userRole === 'ADMIN') {
+  if (userRoleCheck.isAdmin(userRole)) {
     const [courseData, pendingCourseApprovals] = await Promise.all([
       prisma.course.findMany({
         where: {
@@ -292,7 +293,7 @@ export const getAllCourses = async ({
         pendingCourseApprovals,
       },
     };
-  } else if (userRole === 'MENTOR') {
+  } else if (userRoleCheck.isMentor(userRole)) {
     const [courseData, totalCourses, totalStudents, pendingSubmissions] = await Promise.all([
       prisma.course.findMany({
         where: {

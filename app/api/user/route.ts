@@ -3,6 +3,7 @@ import ApiResponse from '@/utils/api-response';
 import { NextResponse } from 'next/server';
 import { getTraineesByMentor, getAllUsersForAdmin } from '@/services/repository/course';
 import { User } from '@/generated/prisma/client';
+import { userRoleCheck } from '@/utils/checkUserRole';
 
 export const GET = async () => {
   try {
@@ -16,17 +17,17 @@ export const GET = async () => {
       return NextResponse.json(new ApiResponse(401, message, {}), { status: 401 });
     }
 
-    if (user.role === 'TRAINEE') {
+    if ( userRoleCheck.isTrainee(user.role)) {
       return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
     }
 
     let users: User[] = [];
 
-    if (user.role === 'MENTOR') {
+    if ( userRoleCheck.isMentor(user.role)) {
       users = await getTraineesByMentor(user.id);
     }
 
-    if (user.role === 'ADMIN') {
+    if (userRoleCheck.isAdmin(user.role)) {
       users = await getAllUsersForAdmin();
     }
 

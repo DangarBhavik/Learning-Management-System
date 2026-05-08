@@ -1,4 +1,5 @@
-import { AssignmentFilter } from '@/types/types';
+import { AssignmentFilter, PrismaUserRole } from '@/types/types';
+import { userRoleCheck } from '@/utils/checkUserRole';
 import { prisma } from '@/utils/prisma-client';
 
 export const createAssignment = async ({
@@ -94,11 +95,11 @@ export const getAssignmentsWithSubmissions = async ({
   filter,
 }: {
   userId: string;
-  role: string;
+  role: PrismaUserRole;
   search: string;
   filter: AssignmentFilter['statusFilter'];
 }) => {
-  const isAdmin = role === 'ADMIN';
+  const isAdmin =  userRoleCheck.isAdmin(role);
 
   const assignments = await prisma.assignment.findMany({
     where: {

@@ -1,4 +1,6 @@
 import { AssignmentFilter } from '@/types/types';
+import { sendRequest } from '@/utils/sendRequest';
+import axios from 'axios';
 
 export type AssignmentType = {
   id: string;
@@ -35,52 +37,29 @@ export const createAssignment = async ({
   description: string;
   maxScore: number;
 }) => {
-  const response = await fetch(`/api/course/${courseId}/module/${moduleId}/assignment`, {
-    method: 'POST',
-    body: JSON.stringify({ title, description, maxScore }),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  const response = await sendRequest(
+    `/api/course/${courseId}/module/${moduleId}/assignment`,
+    'post',
+    JSON.stringify({ title, description, maxScore })
+  );
 
-  if (!response.ok) {
-    console.log(response);
-    throw new Error('Failed to create assignment');
-  }
-
-  const result = await response.json();
-
-  if (!result.success) {
-    throw new Error(result.message || 'Failed to create assignment');
-  }
-
-  return result.data;
+  return response.data;
 };
 
 export const getTraineeAssignments = async ({ search, statusFilter }: AssignmentFilter) => {
-  const res = await fetch(`/api/assignments?search=${search}&filter=${statusFilter}`);
+  const response = await sendRequest(`/api/assignments?search=${search}&filter=${statusFilter}`);
 
-  if (!res.ok) throw new Error('Failed');
-
-  const data = await res.json();
-  return data.data;
+  return response.data;
 };
 
 export const submitAssignment = async (formData: FormData) => {
-  const res = await fetch('/api/assignments/submit', {
-    method: 'POST',
-    body: formData,
-  });
-
-  if (!res.ok) throw new Error('Submission failed');
-
-  return res.json();
+  const response = await sendRequest('/api/assignments/submit', 'post', formData);
+  return response.data;
 };
 
 export const getAssignmentById = async (id: string) => {
-  const res = await fetch(`/api/assignments/${id}`);
-  const data = await res.json();
-  return data.data;
+  const response = await sendRequest(`/api/assignments/${id}`);
+  return response.data;
 };
 
 export const editAssignment = async ({
@@ -98,31 +77,12 @@ export const editAssignment = async ({
   description: string;
   maxScore: number;
 }) => {
-
-  
-  const response = await fetch(
+  const response = await sendRequest(
     `/api/course/${courseId}/module/${moduleId}/assignment/${assignmentId}`,
-    {
-      method: 'PATCH',
-      body: JSON.stringify({ title, description, maxScore }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }
+    'patch',
+    JSON.stringify({ title, description, maxScore })
   );
-
-  if (!response.ok) {
-    console.log(response);
-    throw new Error('Failed to edit assignment');
-  }
-
-  const result = await response.json();
-
-  if (!result.success) {
-    throw new Error(result.message || 'Failed to edit assignment');
-  }
-
-  return result.data;
+  return response.data;
 };
 
 export const deleteAssignment = async ({
@@ -134,23 +94,9 @@ export const deleteAssignment = async ({
   courseId: string;
   moduleId: string;
 }) => {
-  const response = await fetch(
+  const response = await sendRequest(
     `/api/course/${courseId}/module/${moduleId}/assignment/${assignmentId}`,
-    {
-      method: 'DELETE',
-    }
+    'delete'
   );
-
-  if (!response.ok) {
-    console.log(response);
-    throw new Error('Failed to edit assignment');
-  }
-
-  const result = await response.json();
-
-  if (!result.success) {
-    throw new Error(result.message || 'Failed to edit assignment');
-  }
-
-  return result.data;
+  return response.data;
 };

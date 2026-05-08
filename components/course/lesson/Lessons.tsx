@@ -5,16 +5,11 @@ const Lessons = ({ lessons, moduleId }: { lessons: LessonType[]; moduleId: strin
   return (
     <>
       {lessons.length > 0 && (
-        <>
-          {/* <div className="flex justify-center ">
-            <h5 className="dark:text-gray-300  text-black text-sm"> Lessons</h5>
-          </div> */}
-          <div className="space-y-4">
-            {lessons.map(lesson => (
-              <Lesson moduleId={moduleId} key={`${lesson.id}+${moduleId}`} lesson={lesson} />
-            ))}
-          </div>
-        </>
+        <div className="space-y-4">
+          {lessons.map(lesson => (
+            <Lesson moduleId={moduleId} key={`${lesson.id}+${moduleId}`} lesson={lesson} />
+          ))}
+        </div>
       )}
     </>
   );

@@ -1,3 +1,5 @@
+import { sendRequest } from '@/utils/sendRequest';
+
 export const uploadFile = async ({
   courseId,
   moduleId,
@@ -11,24 +13,13 @@ export const uploadFile = async ({
 
   formData.append('resource', resource);
 
-  const response = await fetch(`/api/course/${courseId}/module/${moduleId}/lesson/file`, {
-    method: 'POST',
-    body: formData,
-  });
+  const response = await sendRequest(
+    `/api/course/${courseId}/module/${moduleId}/lesson/file`,
+    'post',
+    formData
+  );
 
-  if (!response.ok) {
-    console.log(response);
-
-    throw new Error('Failed to upload resource');
-  }
-
-  const result = await response.json();
-
-  if (!result.success) {
-    throw new Error(result.message);
-  }
-
-  return result.data;
+  return response.data;
 };
 
 export const deleteFile = async ({
@@ -40,21 +31,10 @@ export const deleteFile = async ({
   moduleId: string;
   fileId: string;
 }) => {
-  const response = await fetch(`/api/course/${courseId}/module/${moduleId}/lesson/file/${fileId}`, {
-    method: 'DELETE',
-  });
+  const response = await sendRequest(
+    `/api/course/${courseId}/module/${moduleId}/lesson/file/${fileId}`,
+    'delete'
+  );
 
-  if (!response.ok) {
-    console.log(response);
-
-    throw new Error('Failed to upload resource');
-  }
-
-  const result = await response.json();
-
-  if (!result.success) {
-    throw new Error(result.message);
-  }
-
-  return result.data;
+  return response.data;
 };

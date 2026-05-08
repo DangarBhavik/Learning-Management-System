@@ -286,13 +286,10 @@ function createYouTubeJsxEditor({ readOnly }: CreateJsxComponentDescriptorsOptio
     const removeNode = useLexicalNodeRemove();
 
     return (
-      <div className={cn(blockShellClass(readOnly), 'my-2')}>
-        <div className={blockHeaderClass(readOnly)}>
-          <div className="min-w-0">
-            {!readOnly && <div className="truncate text-sm font-medium">{title ?? 'YouTube'}</div>}
-          </div>
-          <div className="flex items-center gap-3">
-            <Button
+      <div className={cn(blockShellClass(readOnly), 'my-2 relative')}>
+        {/* <div className={blockHeaderClass(readOnly)}> */}
+          <div className="absolute top-6 right-6 w-full flex justify-end items-center gap-3">
+            {/* <Button
               type="button"
               variant="link"
               size="xs"
@@ -303,9 +300,10 @@ function createYouTubeJsxEditor({ readOnly }: CreateJsxComponentDescriptorsOptio
               disabled={!url}
             >
               Open
-            </Button>
+            </Button> */}
             {!readOnly && (
               <Button
+              className='bg-red-500/10 text-red-600 hover:bg-red-500/20'
                 type="button"
                 onClick={() => removeNode()}
                 variant="destructive"
@@ -317,7 +315,7 @@ function createYouTubeJsxEditor({ readOnly }: CreateJsxComponentDescriptorsOptio
               </Button>
             )}
           </div>
-        </div>
+        {/* </div> */}
 
         {url ? (
           <YouTubeEmbed url={url} title={title} />

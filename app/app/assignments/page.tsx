@@ -7,6 +7,7 @@ import CustomSelect from '@/components/ui/CustomSelect';
 import { AssignmentFilter } from '@/types/types';
 import useAssignments from '@/hooks/assignment/useAssignments';
 import AssignmentStatsCards from '@/components/assignments/AssignmentStatsCards';
+import SearchBar from '@/components/ui/SearchBar';
 
 export default function AssignmentPage() {
   const [filters, setFilters] = useState<AssignmentFilter>({
@@ -71,42 +72,25 @@ export default function AssignmentPage() {
         />
       </div>
 
-      <div className="flex items-center gap-3">
-        <span className="text-xs font-semibold tracking-wide text-gray-500 dark:text-gray-400 uppercase whitespace-nowrap">
-          All assignments
-        </span>
-
-        <div className="flex-1 h-px bg-gray-200 dark:bg-gray-500" />
-        <div className="flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
-          <input
-            type="text"
-            placeholder="Search assignments..."
-            value={filters.search}
-            onChange={e => setFilters({ ...filters, search: e.target.value })}
-            className="w-full md:w-72 px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-800 
-          bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 
-          focus:ring-indigo-500"
-          />
-
-          <CustomSelect
-            value={filters.statusFilter}
-            onChange={val =>
-              setFilters({
-                ...filters,
-                statusFilter: val as 'ALL' | 'PENDING' | 'GRADED' | 'RESUBMITTED',
-              })
-            }
-            options={[
-              { label: 'All', value: 'ALL' },
-              { label: 'Not Submitted', value: 'NOT_SUBMITTED' },
-              { label: 'Pending', value: 'PENDING' },
-              { label: 'Completed', value: 'GRADED' },
-              { label: 'Resubmitted', value: 'RESUBMITTED' },
-            ]}
-            className="min-w-40"
-          />
-        </div>
-      </div>
+      <SearchBar
+        options={[
+          { label: 'All', value: 'ALL' },
+          { label: 'Not Submitted', value: 'NOT_SUBMITTED' },
+          { label: 'Pending', value: 'PENDING' },
+          { label: 'Completed', value: 'GRADED' },
+          { label: 'Resubmitted', value: 'RESUBMITTED' },
+        ]}
+        searchTitle="All assignments"
+        search={filters.search}
+        setSearch={search => setFilters({ ...filters, search })}
+        statusFilter={filters.statusFilter}
+        setStatusFilter={status =>
+          setFilters({
+            ...filters,
+            statusFilter: status as 'ALL' | AssignmentFilter['statusFilter'],
+          })
+        }
+      />
 
       {isLoading ? <p>Loading...</p> : <Assignments assignments={assignments} />}
     </section>

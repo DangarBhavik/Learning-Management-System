@@ -7,6 +7,7 @@ import {
   getSubmissionById,
   updateSubmissionByMentor,
 } from '@/services/repository/submission';
+import { userRoleCheck } from '@/utils/checkUserRole';
 
 const sendResponse = (status: number, message: string, data: unknown) =>
   NextResponse.json(new ApiResponse(status, message, data), { status });
@@ -20,9 +21,7 @@ export async function GET(
 
     const user = await getUserDetails();
 
-    if (!user) return sendResponse(401, 'Please login first', {});
-
-    if (user.role === 'TRAINEE') {
+    if (userRoleCheck.isTrainee(user.role)) {
       return sendResponse(403, 'Unauthorised', {});
     }
 

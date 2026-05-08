@@ -1,4 +1,4 @@
-import { editLesoon } from '@/services/apis/lesson';
+import { editLesson } from '@/services/apis/lesson';
 import { Course } from '@/types/types';
 import queryClient from '@/utils/query-client';
 import { useMutation } from '@tanstack/react-query';
@@ -14,7 +14,7 @@ export const useModifyLesson = ({
 }) => {
   const { mutateAsync, isPending } = useMutation({
     mutationFn: ({ content, title }: { content: string; title: string }) =>
-      editLesoon({ courseId, moduleId, lessonId, content, title }),
+      editLesson({ courseId, moduleId, lessonId, content, title }),
     onSuccess: response => {
       queryClient.setQueryData(['courses', courseId], (old: Course) => {
         if (!old) {

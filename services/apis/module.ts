@@ -1,23 +1,13 @@
+import { sendRequest } from '@/utils/sendRequest';
+
 export const createModule = async ({ title, courseId }: { title: string; courseId: string }) => {
-  const response = await fetch(`/api/course/${courseId}/module`, {
-    method: 'POST',
-    body: JSON.stringify({ title }),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  const response = await sendRequest(
+    `/api/course/${courseId}/module`,
+    'post',
+    JSON.stringify({ title })
+  );
 
-  if (!response.ok) {
-    throw new Error('Failed to create Module');
-  }
-
-  const result = await response.json();
-
-  if (!result.success && result.statusCode != 201) {
-    throw new Error(result.message);
-  }
-
-  return result.data;
+  return response.data;
 };
 
 export const editModule = async ({
@@ -29,25 +19,13 @@ export const editModule = async ({
   title: string;
   moduleId: string;
 }) => {
-  const response = await fetch(`/api/course/${courseId}/module/${moduleId}`, {
-    method: 'PATCH',
-    body: JSON.stringify({ title }),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  const response = await sendRequest(
+    `/api/course/${courseId}/module/${moduleId}`,
+    'patch',
+    JSON.stringify({ title })
+  );
 
-  if (!response.ok) {
-    throw new Error('Failed to update Module');
-  }
-
-  const result = await response.json();
-
-  if (!result.success && result.statusCode != 200) {
-    throw new Error(result.message);
-  }
-
-  return result.data;
+  return response.data;
 };
 
 export const deleteModule = async ({
@@ -57,19 +35,7 @@ export const deleteModule = async ({
   courseId: string;
   moduleId: string;
 }) => {
-  const response = await fetch(`/api/course/${courseId}/module/${moduleId}`, {
-    method: 'DELETE',
-  });
+  const response = await sendRequest(`/api/course/${courseId}/module/${moduleId}`, 'delete');
 
-  if (!response.ok) {
-    throw new Error('Failed to delete Module');
-  }
-
-  const result = await response.json();
-
-  if (!result.success && result.statusCode != 200) {
-    throw new Error(result.message);
-  }
-
-  return result.data;
+  return response.data;
 };

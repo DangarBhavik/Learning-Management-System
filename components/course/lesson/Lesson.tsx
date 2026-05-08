@@ -54,7 +54,7 @@ const Lesson: React.FC<LessonEditFormProps> = ({ lesson, moduleId }) => {
             </div>
           </div>
         </CollapsibleTrigger>
-        <CollapsibleContent className="border-t mt-2 border-slate-300/60">
+        <CollapsibleContent className="border-t mt-1 border-slate-300/60">
           {isEditing ? (
             <EditLesson
               title={lesson.title}
@@ -69,7 +69,7 @@ const Lesson: React.FC<LessonEditFormProps> = ({ lesson, moduleId }) => {
               onChange={() => {}}
               readOnly={!isEditing}
               isEditing={isEditing}
-              className="overflow-auto   no-scrollbar"
+              className="overflow-auto w-4/5  no-scrollbar"
             />
           )}
         </CollapsibleContent>

@@ -6,8 +6,8 @@ import CoursesLayout from './CoursesLayout';
 import { useCourses } from '@/hooks/courses/useCourses';
 import SearchBar from '../ui/SearchBar';
 import { useState } from 'react';
-import { CourseStatus } from '@/generated/prisma/browser';
-import { PrismaUserRole } from '@/types/types';
+import { CourseStatus, PrismaUserRole } from '@/types/types';
+import CustomPagination from '../ui/CustomPagination';
 
 export default function CoursesPage({ role }: { role: PrismaUserRole }) {
   const [filters, setFilters] = useState<{ search: string; statusFilter: CourseStatus | 'ALL' }>({
@@ -37,12 +37,19 @@ export default function CoursesPage({ role }: { role: PrismaUserRole }) {
         search={filters.search}
         setSearch={search => setFilters({ ...filters, search })}
         statusFilter={filters.statusFilter}
-        setStatusFilter={statusFilter => setFilters({ ...filters, statusFilter })}
+        setStatusFilter={statusFilter =>
+          setFilters({ ...filters, statusFilter: statusFilter as CourseStatus | 'ALL' })
+        }
       />
       {!isFetching ? (
-        <Courses btnText="View Course" courses={courses} />
+        <>
+          <Courses btnText="View Course" courses={courses} />
+          {/* <CustomPagination /> */}
+        </>
       ) : (
-        <p className="text-gray-500 flex items-center justify-center">Loading courses...</p>
+        <p className="text-gray-500 flex min-h-80 items-center justify-center">
+          Loading courses...
+        </p>
       )}
     </CoursesLayout>
   );

@@ -8,12 +8,13 @@ import {
   updateUserById,
   getUserById,
 } from '@/services/repository/user';
+import { userRoleCheck } from '@/utils/checkUserRole';
 
 export const GET = async (_req: Request, { params }: { params: Promise<{ id: string }> }) => {
   try {
     const currentUser = await getUserDetails();
 
-    if (!currentUser || currentUser.role === 'TRAINEE') {
+    if ( userRoleCheck.isTrainee(currentUser.role)) {
       return NextResponse.json(new ApiResponse(403, 'Forbidden', null), { status: 403 });
     }
 
@@ -80,7 +81,7 @@ export const PATCH = async (req: NextRequest, { params }: { params: Promise<{ id
     const nextRole = role ?? existingUser.role;
     let nextMentorId = mentorId;
 
-    if (nextRole !== 'TRAINEE') {
+    if ( !userRoleCheck.isTrainee(nextRole)) {
       nextMentorId = null;
     } else if (nextMentorId) {
       const mentor = await getMentorById(nextMentorId);
@@ -97,11 +98,11 @@ export const PATCH = async (req: NextRequest, { params }: { params: Promise<{ id
       email: email ?? existingUser.email,
       image: image ?? existingUser.image,
       role: nextRole,
-      mentorId: nextRole === 'TRAINEE' ? (nextMentorId ?? existingUser.mentorId) : null,
+      mentorId: userRoleCheck.isTrainee(nextRole) ? (nextMentorId ?? existingUser.mentorId) : null,
     });
 
     const mentor =
-      updatedUser.mentorId && updatedUser.role === 'TRAINEE'
+      updatedUser.mentorId && userRoleCheck.isTrainee(updatedUser.role)
         ? await getMentorById(updatedUser.mentorId)
         : null;
 

@@ -3,6 +3,7 @@ import ApiResponse from '@/utils/api-response';
 import getUserDetails from '@/lib/isAuth';
 import { getTraineeMentorId, getUserById } from '@/services/repository/user';
 import { getAssignedCourses, getAssignedCoursesCount } from '@/services/repository/course';
+import { userRoleCheck } from '@/utils/checkUserRole';
 
 export const GET = async (req: NextRequest) => {
   try {
@@ -29,7 +30,7 @@ export const GET = async (req: NextRequest) => {
     }
 
     if (selectedUser.id !== user.id) {
-      if (user.role === 'MENTOR' && selectedUser.role === 'TRAINEE') {
+      if (userRoleCheck.isMentor(user.role) && userRoleCheck.isTrainee(selectedUser.role)) {
         const mentorId = await getTraineeMentorId(userId);
 
         if (mentorId !== user.id) {

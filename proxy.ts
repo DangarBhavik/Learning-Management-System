@@ -1,8 +1,8 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { getUserByClerkId } from './services/repository/user';
+import { userRoleCheck } from './utils/checkUserRole';
 
-// '/api/(.*)',
 // const isProtectedRoute = createRouteMatcher(['/app(.*)']);
 const publicRoutes = createRouteMatcher([
   '/',
@@ -78,14 +78,18 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.redirect(new URL('/auth/signin', req.url));
   }
 
-  if (user?.role === 'TRAINEE' && traineeAccessRoutes(req)) {
+  if (userRoleCheck.isTrainee(user.role) && traineeAccessRoutes(req)) {
     return NextResponse.next();
   }
 
-  if (user?.role === 'MENTOR' && mentorAccessRoutes(req) && !mentorProhibitedRoutes(req)) {
+  if (
+    userRoleCheck.isMentor(user.role) &&
+    mentorAccessRoutes(req) &&
+    !mentorProhibitedRoutes(req)
+  ) {
     return NextResponse.next();
   }
-  if (user?.role === 'ADMIN' && AdminAccessRoutes(req)) {
+  if (userRoleCheck.isAdmin(user.role) && AdminAccessRoutes(req)) {
     return NextResponse.next();
   }
 

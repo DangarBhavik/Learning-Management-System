@@ -1,15 +1,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import SelectableCourses from './SelectableCourses';
 import { useState } from 'react';
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination';
 import Summery from './Summery';
 import NoCourses from './NoCourses';
+import CustomPagination from '../ui/CustomPagination';
 
 type Course = {
   id: string;
@@ -107,27 +101,11 @@ const CourseAssignGrid = ({
                 selectedCourses={selectedCourses}
               />
               <div className="mt-4">
-                <Pagination>
-                  <PaginationContent>
-                    {data?.pagination.hasPreviousPage && (
-                      <PaginationItem>
-                        <PaginationPrevious onClick={getPreviousPage} />
-                      </PaginationItem>
-                    )}
-
-                    <PaginationItem>
-                      <span className="text-xs">
-                        Page {data?.pagination.currentPage} of {data?.pagination.totalPages}
-                      </span>
-                    </PaginationItem>
-
-                    {data?.pagination.hasNextPage && (
-                      <PaginationItem>
-                        <PaginationNext onClick={getNextPage} />
-                      </PaginationItem>
-                    )}
-                  </PaginationContent>
-                </Pagination>
+                <CustomPagination
+                  paginationData={data.pagination}
+                  getNextPage={getNextPage}
+                  getPreviousPage={getPreviousPage}
+                />
               </div>
             </CardContent>
           </Card>

@@ -12,6 +12,7 @@ import {
 } from '@/services/repository/course';
 import { checkCourseCrudAccess } from '@/utils/checkCourseCrudAccess';
 import { createFile, deleteFile } from '@/services/repository/file';
+import { userRoleCheck } from '@/utils/checkUserRole';
 
 export const GET = async (
   req: NextRequest,
@@ -31,7 +32,7 @@ export const GET = async (
 
   const isEnrolled = enrollments.some(e => e.studentId === user.id);
 
-  if (!isEnrolled && user.role === 'TRAINEE') {
+  if (!isEnrolled && userRoleCheck.isTrainee(user.role)) {
     return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
   }
 

@@ -1,3 +1,5 @@
+import { sendRequest } from '@/utils/sendRequest';
+
 export type AdminUserRow = {
   id: string;
   image: string | null;
@@ -31,36 +33,22 @@ export const getUsers = async ({ limit }: { limit?: number } = {}) => {
     query.append('limit', String(limit));
   }
 
-  const response = await fetch(
+  const response = await sendRequest(
     `/api/user/userlist${query.toString() ? `?${query.toString()}` : ''}`
   );
 
-  const data = await response.json();
-
-  return data.data;
+  return response.data;
 };
 
 export const getUserById = async (id: string) => {
-  const res = await fetch(`/api/user/${id}`);
+  const response = await sendRequest(`/api/user/${id}`);
 
-  const json = await res.json();
-
-  if (!res.ok || !json.success) {
-    throw new Error(json.message ?? 'Failed to update role');
-  }
-
-  return json.data as AdminUserDetails;
+  return response.data as AdminUserDetails;
 };
 
 export const getMentors = async () => {
-  const res = await fetch('/api/user/mentors');
-  const json = await res.json();
-
-  if (!res.ok || !json.success) {
-    throw new Error(json.message ?? 'Failed to fetch mentors');
-  }
-
-  return json.data as MentorOption[];
+  const response = await sendRequest(`/api/user/mentors`);
+  return response.data as MentorOption[];
 };
 
 export const updateUserDetails = async (
@@ -72,30 +60,12 @@ export const updateUserDetails = async (
     mentorId: string | null;
   }
 ) => {
-  const res = await fetch(`/api/user/${userId}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  });
-
-  const json = await res.json();
-
-  if (!res.ok || !json.success) {
-    throw new Error(json.message ?? 'Failed to update user details');
-  }
-
-  return json.data as AdminUserDetails;
+  const response = await sendRequest(`/api/user/${userId}`, 'patch', JSON.stringify(payload));
+  return response.data as AdminUserDetails;
 };
 
 export const getAssignableUsers = async () => {
-  const res = await fetch('/api/user');
+  const response = await sendRequest(`/api/user`);
 
-  if (!res.ok) {
-    throw new Error('Failed to fetch users');
-  }
-
-  const data = await res.json();
-  return data.data;
+  return response.data;
 };

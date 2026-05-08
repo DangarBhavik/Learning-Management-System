@@ -1,14 +1,15 @@
 import getUserDetails from '@/lib/isAuth';
-
 import { restrictCoursesForTrainee } from '@/services/repository/course';
 import { getTraineeMentorId, getUserById } from '@/services/repository/user';
 import ApiResponse from '@/utils/api-response';
+import { userRoleCheck } from '@/utils/checkUserRole';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const DELETE = async (req: NextRequest) => {
   try {
-    const user = await getUserDetails();
     const { courseIds, userId } = await req.json();
+
+    const user = await getUserDetails();
 
     if (!userId || !courseIds?.length) {
       return NextResponse.json(new ApiResponse(400, 'Invalid payload', {}), { status: 400 });
@@ -20,7 +21,7 @@ export const DELETE = async (req: NextRequest) => {
       return NextResponse.json(new ApiResponse(404, 'User not found', {}), { status: 404 });
     }
 
-    if (user.role === 'MENTOR' && selectedUser.role === 'TRAINEE') {
+    if (userRoleCheck.isMentor(user.role) && userRoleCheck.isTrainee(selectedUser.role)) {
       const mentorId = await getTraineeMentorId(userId);
 
       if (mentorId !== user.id) {
@@ -30,7 +31,7 @@ export const DELETE = async (req: NextRequest) => {
 
     const deleteEnrollment = await restrictCoursesForTrainee({
       courseIds,
-      userId,
+      userId: selectedUser.id,
     });
 
     return NextResponse.json(

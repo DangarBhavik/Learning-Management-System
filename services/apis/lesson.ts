@@ -1,3 +1,5 @@
+import { sendRequest } from '@/utils/sendRequest';
+
 export const addLesson = async ({
   courseId,
   moduleId,
@@ -9,30 +11,16 @@ export const addLesson = async ({
   title: string;
   content: string;
 }) => {
-  const response = await fetch(`/api/course/${courseId}/module/${moduleId}/lesson`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
+  const response = await sendRequest(
+    `/api/course/${courseId}/module/${moduleId}/lesson`,
+    'post',
+    JSON.stringify({
       title,
       content,
-    }),
-  });
+    })
+  );
 
-  if (!response.ok) {
-    console.log(response);
-
-    throw new Error('Failed to create lesson');
-  }
-
-  const result = await response.json();
-
-  if (!result.success) {
-    throw new Error(result.message);
-  }
-
-  return result.data;
+  return response.data;
 };
 
 export const deleteLesson = async ({
@@ -44,26 +32,15 @@ export const deleteLesson = async ({
   moduleId: string;
   lessonId: string;
 }) => {
-  const response = await fetch(`/api/course/${courseId}/module/${moduleId}/lesson/${lessonId}`, {
-    method: 'DELETE',
-  });
+  const response = await sendRequest(
+    `/api/course/${courseId}/module/${moduleId}/lesson/${lessonId}`,
+    'delete'
+  );
 
-  if (!response.ok) {
-    console.log(response);
-
-    throw new Error('Failed to delete lesson');
-  }
-
-  const result = await response.json();
-
-  if (!result.success) {
-    throw new Error(result.message);
-  }
-
-  return result.data;
+  return response.data;
 };
 
-export const editLesoon = async ({
+export const editLesson = async ({
   courseId,
   moduleId,
   lessonId,
@@ -76,22 +53,11 @@ export const editLesoon = async ({
   title: string;
   content: string;
 }) => {
-  const response = await fetch(`/api/course/${courseId}/module/${moduleId}/lesson/${lessonId}`, {
-    method: 'PATCH',
-    body: JSON.stringify({ title, content }),
-  });
+  const response = await sendRequest(
+    `/api/course/${courseId}/module/${moduleId}/lesson/${lessonId}`,
+    'patch',
+    JSON.stringify({ title, content })
+  );
 
-  if (!response.ok) {
-    console.log(response);
-
-    throw new Error('Failed to update Lesson');
-  }
-
-  const result = await response.json();
-
-  if (!result.success) {
-    throw new Error(result.message);
-  }
-
-  return result.data;
+  return response.data;
 };

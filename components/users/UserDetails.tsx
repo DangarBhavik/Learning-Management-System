@@ -9,6 +9,7 @@ import {
   updateUserDetails,
 } from '@/services/apis/users';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { userRoleCheck } from '@/utils/checkUserRole';
 
 const roleStyles = {
   ADMIN: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
@@ -25,7 +26,7 @@ export default function UserDetails({ user }: { user: AdminUserDetails }) {
   const [mentorId, setMentorId] = useState<string>(() => user.mentorId ?? '');
   const [formError, setFormError] = useState<string | null>(null);
 
-  const isTrainee = role === 'TRAINEE';
+  const isTrainee = userRoleCheck.isTrainee(user.role);
 
   const { data: mentors = [], isLoading: mentorsLoading } = useQuery({
     queryKey: ['admin', 'mentors'],
@@ -164,7 +165,7 @@ export default function UserDetails({ user }: { user: AdminUserDetails }) {
           <Input label="Image URL" value={image} onChange={setImage} />
           <SelectRole value={role} onChange={setRole} />
 
-          {isTrainee ? (
+          {userRoleCheck.isTrainee(role) ? (
             <div className="space-y-1">
               <label className="text-sm text-gray-500 dark:text-gray-400">Mentor</label>
               <select
@@ -191,7 +192,9 @@ export default function UserDetails({ user }: { user: AdminUserDetails }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <DetailItem label="User ID" value={user.id} />
 
-        {user.role === 'TRAINEE' ? <DetailItem label="Mentor" value={selectedMentorLabel} /> : null}
+        {userRoleCheck.isTrainee(user.role) ? (
+          <DetailItem label="Mentor" value={selectedMentorLabel} />
+        ) : null}
 
         <DetailItem label="Created At" value={formatDate(user.createdAt)} />
 

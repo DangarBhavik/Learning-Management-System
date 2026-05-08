@@ -1,4 +1,5 @@
-import { CourseCardProps, courseFormData, CourseType } from '@/types/types';
+import { courseFormData, CourseType } from '@/types/types';
+import { sendRequest } from '@/utils/sendRequest';
 
 export type Lesson = {
   id: string;
@@ -47,29 +48,15 @@ export async function fetchCourses(
 
   const url = query ? `/api/course?${query}` : '/api/course';
 
-  const res = await fetch(url);
+  const res = await sendRequest(url);
 
-  const json = await res.json();
-
-  if (!res.ok || !json.success) {
-    throw new Error(json.message ?? 'Failed to fetch courses');
-  }
-
-  return json.data;
+  return res.data;
 }
 
 export async function getPendingCourses(): Promise<CourseType[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/course/pending`);
+  const response = await sendRequest(`${process.env.NEXT_PUBLIC_BASE_URL}/api/course/pending`);
 
-  if (!res.ok) {
-    const text = await res.text();
-    console.error('API ERROR:', text);
-    throw new Error('Something went wrong');
-  }
-
-  const result = await res.json();
-
-  return result.data;
+  return response.data;
 }
 
 export async function getAssignableCourses({
@@ -81,15 +68,11 @@ export async function getAssignableCourses({
   page: number;
   userId: string;
 }) {
-  const res = await fetch(`/api/course/not-assigned?limit=${limit}&page=${page}&userId=${userId}`);
+  const response = await sendRequest(
+    `/api/course/not-assigned?limit=${limit}&page=${page}&userId=${userId}`
+  );
 
-  if (!res.ok) {
-    throw new Error('Something went wrong');
-  }
-
-  const result = await res.json();
-
-  return result.data;
+  return response.data;
 }
 
 export async function getAssignedCourses({
@@ -107,15 +90,9 @@ export async function getAssignedCourses({
     url += `&limit=${limit}`;
   }
 
-  const res = await fetch(url);
+  const response = await sendRequest(url);
 
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error('Something went wrong');
-  }
-
-  const result = await res.json();
-  return result.data;
+  return response.data;
 }
 
 export const createCourse = async (course: courseFormData) => {
@@ -126,33 +103,14 @@ export const createCourse = async (course: courseFormData) => {
     formData.append('thumbnail', course.thumbnail);
   }
 
-  const response = await fetch('/api/course', {
-    method: 'POST',
-    body: formData,
-  });
-
-  if (!response.ok) {
-    console.log(response);
-
-    throw new Error('Failed to create courses');
-  }
-
-  const result = await response.json();
-  return result.data;
+  const response = await sendRequest('/api/course', 'post', formData);
+  return response.data;
 };
 
 export const getCourseById = async (courseId: string) => {
-  const response = await fetch(`/api/course/${courseId}`, {
-    method: 'GET',
-  });
+  const response = await sendRequest(`/api/course/${courseId}`);
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch course details');
-  }
-
-  const result = await response.json();
-
-  return result.data;
+  return response.data;
 };
 
 export const updateCourse = async (courseId: string, course: courseFormData) => {
@@ -164,32 +122,14 @@ export const updateCourse = async (courseId: string, course: courseFormData) => 
     formData.append('thumbnail', course.thumbnail);
   }
 
-  const response = await fetch(`/api/course/${courseId}`, {
-    method: 'PATCH',
-    body: formData,
-  });
+  const response = await sendRequest(`/api/course/${courseId}`, 'patch', formData);
 
-  if (!response.ok) {
-    console.log(response);
-    throw new Error('Failed to update course');
-  }
-
-  const result = await response.json();
-  return result.data;
+  return response.data;
 };
 
 export const saveCourse = async ({ courseId }: { courseId: string }) => {
-  const response = await fetch(`/api/course/${courseId}/submit`, {
-    method: 'PATCH',
-  });
-
-  if (!response.ok) {
-    console.log(response);
-    throw new Error('course Saved Failes');
-  }
-
-  const result = await response.json();
-  return result.data;
+  const response = await sendRequest(`/api/course/${courseId}/submit`, 'patch');
+  return response.data;
 };
 
 export const assignCourse = async ({
@@ -199,30 +139,12 @@ export const assignCourse = async ({
   courseIds: string[];
   userId: string;
 }) => {
-  try {
-    const res = await fetch('/api/course/assign-course', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+  const response = await sendRequest('/api/course/assign-course', 'post', {
+    courseIds,
+    userId,
+  });
 
-      body: JSON.stringify({
-        courseIds,
-        userId,
-      }),
-    });
-
-    const result = await res.json();
-
-    if (!res.ok) {
-      throw new Error(result.message ?? 'Failed to assign courses');
-    }
-
-    return result.data;
-  } catch (error) {
-    console.error('ASSIGN COURSE ERROR:', error);
-    throw error;
-  }
+  return response.data;
 };
 
 export const restrictCourse = async ({
@@ -232,96 +154,38 @@ export const restrictCourse = async ({
   courseIds: string[];
   userId: string;
 }) => {
-  try {
-    const res = await fetch('/api/course/restrict-course', {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        courseIds,
-        userId,
-      }),
-    });
-
-    const result = await res.json();
-
-    if (!res.ok) {
-      throw new Error(result.message ?? 'Failed to restrict courses');
-    }
-
-    return result.data;
-  } catch (error) {
-    console.error('RESTRICT COURSE ERROR:', error);
-    throw error;
-  }
+  const response = await sendRequest('/api/course/restrict-course', 'delete', {
+    courseIds,
+    userId,
+  });
+  return response.data;
 };
 
 export const approveCourse = async (courseId: string) => {
-  const res = await fetch(`/api/course/${courseId}/approve`, {
-    method: 'PATCH',
-  });
+  const response = await sendRequest(`/api/course/${courseId}/approve`, 'patch');
 
-  const data = await res.json();
-
-  if (!res.ok) {
-    throw new Error(data?.message || 'Failed to approve course');
-  }
-
-  return data;
+  return response.data;
 };
 
 export const getCourseDetails = async (courseId: string) => {
-  const response = await fetch(`/api/course/${courseId}/details`, {
-    method: 'GET',
-  });
+  const response = await sendRequest(`/api/course/${courseId}/details`, 'get');
 
-  if (!response.ok) {
-    console.log(response);
-  }
-
-  const result = await response.json();
-
-  return result.data;
+  return response.data;
 };
 
 export const inactiveCourse = async (courseId: string) => {
-  const response = await fetch(`/api/course/inactive/${courseId}`, {
-    method: 'PATCH',
-  });
+  const response = await sendRequest(`/api/course/inactive/${courseId}`, 'patch');
 
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.message || 'Failed to inactive course');
-  }
-
-  return data;
+  return response.data;
 };
 
 export const getMyCourses = async () => {
-  const response = await fetch(`/api/course/my-courses`);
+  const response = await sendRequest(`/api/course/my-courses`, 'get');
 
-  if (!response.ok) {
-    const text = await response.text();
-    console.error('API ERROR:', text);
-    throw new Error('Something went wrong');
-  }
-
-  const result = await response.json();
-  return result.data;
+  return response.data;
 };
 
 export const reactivateCourse = async (courseId: string) => {
-  const response = await fetch(`/api/course/reactivate/${courseId}`, {
-    method: 'PATCH',
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.message || 'Failed to reactivate course');
-  }
-
-  return data;
+  const response = await sendRequest(`/api/course/reactivate/${courseId}`, 'patch');
+  return response.data;
 };

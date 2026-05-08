@@ -2,6 +2,7 @@ import getUserDetails from '@/lib/isAuth';
 import { assignCoursesToUser } from '@/services/repository/course';
 import { getTraineeMentorId, getUserById } from '@/services/repository/user';
 import ApiResponse from '@/utils/api-response';
+import { userRoleCheck } from '@/utils/checkUserRole';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const POST = async (req: NextRequest) => {
@@ -21,15 +22,13 @@ export const POST = async (req: NextRequest) => {
       return NextResponse.json(new ApiResponse(404, 'User not found', {}), { status: 404 });
     }
 
-    if (user.role === 'MENTOR') {
-      if (selectedUser.role !== 'TRAINEE') {
-        return NextResponse.json(new ApiResponse(401, 'Mentor can assign only to trainees', {}), {
-          status: 401,
-        });
-      }
+    if (userRoleCheck.isMentor(user.role) && !userRoleCheck.isTrainee(selectedUser.role)) {
+      return NextResponse.json(new ApiResponse(401, 'Mentor can assign only to trainees', {}), {
+        status: 401,
+      });
     }
 
-    if (user.role === 'MENTOR' && selectedUser.role === 'TRAINEE') {
+    if (userRoleCheck.isMentor(user.role) && userRoleCheck.isTrainee(selectedUser.role)) {
       const mentorId = await getTraineeMentorId(userId);
 
       if (mentorId !== user.id) {

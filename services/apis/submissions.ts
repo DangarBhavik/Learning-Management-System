@@ -1,4 +1,5 @@
 import { SubmissionStatus } from '@/generated/prisma/enums';
+import { sendRequest } from '@/utils/sendRequest';
 
 export type SubmissionType = {
   id: string;
@@ -36,30 +37,23 @@ export type SubmissionType = {
 };
 
 export const getMyTraineeSubmissions = async () => {
-  const res = await fetch(`/api/submission`);
-  const data = await res.json();
-  return data.data;
+  const response = await sendRequest(`/api/submission`);
+  return response.data;
 };
 
 export const getSubmissionsByAssignment = async (id: string) => {
-  const res = await fetch(`/api/submission/${id}`);
-  const data = await res.json();
-  return data.data;
+  const response = await sendRequest(`/api/submission/${id}`);
+  return response.data;
 };
 
 export const getSubmissionById = async (submissionId: string) => {
-  const res = await fetch(`/api/submission/view/${submissionId}`);
-  const data = await res.json();
-  return data.data;
+  const response = await sendRequest(`/api/submission/view/${submissionId}`);
+  return response.data;
 };
 
 export const submitAssignment = async (formData: FormData) => {
-  const res = await fetch(`/api/assignments/submit`, {
-    method: 'POST',
-    body: formData,
-  });
-
-  return await res.json();
+  const response = await sendRequest(`/api/assignments/submit`, 'post', formData);
+  return response.data;
 };
 
 export const updateFeedback = async ({
@@ -71,37 +65,20 @@ export const updateFeedback = async ({
   score: number | null;
   submissionId: string;
 }) => {
-  const response = await fetch(`/api/submission/view/${submissionId}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ feedback, score, submissionId }),
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to save feedback');
-  }
-
-  return response.json();
+  const response = await sendRequest(
+    `/api/submission/view/${submissionId}`,
+    'patch',
+    JSON.stringify({ feedback, score, submissionId })
+  );
+  return response.data;
 };
 
 export const getSubmissionsByTrainee = async () => {
-  const res = await fetch(`/api/submission/trainee`);
-  const data = await res.json();
-  return data.data;
+  const response = await sendRequest(`/api/submission/trainee`);
+  return response.data;
 };
 
 export const getAllSubmissionsAdmin = async () => {
-  const res = await fetch('/api/submission', {
-    method: 'GET',
-    credentials: 'include',
-  });
-
-  if (!res.ok) {
-    throw new Error('Failed to fetch submissions');
-  }
-
-  const result = await res.json();
-  return result.data;
+  const response = await sendRequest(`/api/submission`);
+  return response.data;
 };

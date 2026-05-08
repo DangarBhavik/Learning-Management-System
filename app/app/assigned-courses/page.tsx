@@ -1,4 +1,3 @@
-import AssignedCourses from '@/components/course-assignment/AssignedCourses';
 import MyLearningsPage from '@/components/course/MyLearnings';
 import getUserDetails from '@/lib/isAuth';
 import { redirect } from 'next/navigation';
