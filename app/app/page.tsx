@@ -4,6 +4,11 @@ import AdminDashBoard from '@/components/dashboard/admin-dashboard/AdminDashBoar
 import MentorDashBoard from '@/components/dashboard/mentor-dashboard/MentorDashBoard';
 import TraineeDashBoard from '@/components/dashboard/trainee-dashboard/TraineeDashBoard';
 
+export const metadata = {
+  title: 'Dashboard',
+  description: 'Your personalized dashboard to manage courses, assignments, and progress.',
+};
+
 export default async function DashboardPage() {
   const user = await getUserDetails();
 

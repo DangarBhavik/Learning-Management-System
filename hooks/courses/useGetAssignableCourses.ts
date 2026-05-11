@@ -45,22 +45,20 @@ const useGetAssignableCourses = ({
   limit: number;
   page: number;
 }) => {
-  const { data, isLoading, isFetching } = useQuery<AssignableCoursesData>({
-    queryKey: ['assigned-courses', userId, page, limit],
+  const { data, isLoading } = useQuery<AssignableCoursesData>({
+    queryKey: ['assignable-courses', userId, page, limit],
     queryFn: () =>
       getAssignableCourses({
         limit,
         page,
         userId,
       }),
-    enabled: userId !== '',
-    placeholderData: keepPreviousData,
+    enabled: !!userId,
   });
 
   return {
     courseData: data ?? emptyAssignableCoursesData(page),
-    isLoading,
-    isFetching,
+    isFetching: isLoading,
   };
 };
 

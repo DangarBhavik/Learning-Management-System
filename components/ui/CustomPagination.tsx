@@ -1,3 +1,4 @@
+import { get } from 'http';
 import {
   Pagination,
   PaginationContent,
@@ -20,12 +21,22 @@ const CustomPagination = ({
   getPreviousPage: () => void;
   getNextPage: () => void;
 }) => {
+  const handlePagination = (ident: 'previous' | 'next') => {
+    if (ident === 'previous') {
+      if (paginationData.currentPage <= 1) return;
+      getPreviousPage();
+      return;
+    }
+
+    if (!paginationData?.hasNextPage) return;
+    getNextPage();
+  };
   return (
     <Pagination>
       <PaginationContent>
         {paginationData?.hasPreviousPage && (
           <PaginationItem>
-            <PaginationPrevious onClick={getPreviousPage} />
+            <PaginationPrevious onClick={handlePagination.bind(null, 'previous')} />
           </PaginationItem>
         )}
 
@@ -37,7 +48,7 @@ const CustomPagination = ({
 
         {paginationData?.hasNextPage && (
           <PaginationItem>
-            <PaginationNext onClick={getNextPage} />
+            <PaginationNext onClick={handlePagination.bind(null, 'next')} />
           </PaginationItem>
         )}
       </PaginationContent>

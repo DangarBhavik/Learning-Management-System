@@ -3,15 +3,11 @@ import CourseAssignGrid from './CourseAssignGrid';
 import { useAssignCourse } from '@/hooks/courses/useAssignCourses';
 import useGetAssignableCourses from '@/hooks/courses/useGetAssignableCourses';
 
-const AssignableCourses = ({
-  selectedUserId,
-}: {
-  selectedUserId: string;
-}) => {
+const AssignableCourses = ({ selectedUserId }: { selectedUserId: string }) => {
   const limit = 4;
   const [page, setPage] = useState(1);
 
-  const { courseData: data, isLoading } = useGetAssignableCourses({
+  const { courseData: data, isFetching } = useGetAssignableCourses({
     userId: selectedUserId,
     page,
     limit,
@@ -29,28 +25,28 @@ const AssignableCourses = ({
     });
   };
 
-  const handlePagination = (ident: 'previous' | 'next') => {
-    if (ident === 'previous') {
-      if (page <= 1) return;
-      setPage(prev => prev - 1);
-      return;
-    }
+  // const handlePagination = (ident: 'previous' | 'next') => {
+  //   if (ident === 'previous') {
+  //     if (page <= 1) return;
+  //     setPage(prev => prev - 1);
+  //     return;
+  //   }
 
-    if (!data?.pagination?.hasNextPage) return;
-    setPage(prev => prev + 1);
-  };
+  //   if (!data?.pagination?.hasNextPage) return;
+  //   setPage(prev => prev + 1);
+  // };
 
   return (
     <CourseAssignGrid
       title={`Available Courses `}
       submitText="Assign"
       pendingtext="Assigning..."
-      isFetching={isLoading}
+      isFetching={isFetching}
       data={data}
       isLoading={isAssigning}
-      getNextPage={handlePagination.bind(null, 'next')}
+      getNextPage={() => setPage(prev => prev + 1)}
       userId={selectedUserId}
-      getPreviousPage={handlePagination.bind(null, 'previous')}
+      getPreviousPage={() => setPage(prev => prev - 1)}
       func={handleAssignCourse}
     />
   );

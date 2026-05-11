@@ -15,7 +15,9 @@ export default function CoursesPage({ role }: { role: PrismaUserRole }) {
     statusFilter: 'ALL',
   });
 
-  const { courses, isFetching } = useCourses({ filter: filters });
+  const [page, setPage] = useState(1);
+
+  const { courses, isFetching, pagination } = useCourses({ filter: filters, limit: 6, page: page });
 
   return (
     <CoursesLayout
@@ -44,7 +46,11 @@ export default function CoursesPage({ role }: { role: PrismaUserRole }) {
       {!isFetching ? (
         <>
           <Courses btnText="View Course" courses={courses} />
-          {/* <CustomPagination /> */}
+          <CustomPagination
+            paginationData={pagination}
+            getNextPage={() => setPage(prev => prev + 1)}
+            getPreviousPage={() => setPage(prev => prev - 1)}
+          />
         </>
       ) : (
         <p className="text-gray-500 flex min-h-80 items-center justify-center">

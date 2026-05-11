@@ -9,16 +9,21 @@ import { NextRequest, NextResponse } from 'next/server';
 export const GET = async (req: NextRequest) => {
   try {
     const user = await getUserDetails();
-
     const searchParams = req.nextUrl.searchParams;
     const limitParam = searchParams.get('limit');
+    const pageParam = searchParams.get('page') || '1';
     const search = searchParams.get('search') || '';
     const statusFilter = (searchParams.get('status') as CourseStatus | 'ALL') || 'ALL';
     const limit = limitParam === null ? undefined : Math.floor(Number(limitParam));
+    let skip = 0;
+    if (limit !== undefined) {
+      skip = (Math.floor(Number(pageParam)) - 1) * limit;
+    }
 
     const courses = await getAllCourses({
       userId: user.id,
       userRole: user.role,
+      skip,
       limit,
       search,
       statusFilter,

@@ -23,7 +23,14 @@ export const useCreateModule = ({ courseId }: { courseId: string }) => {
           modules: [...(oldData.modules ?? []), newModule],
         };
       });
+<<<<<<< HEAD
       createToast('Module Created Successfully', 'success');
+=======
+      createToast('Module created successfully!', 'success');
+    },
+    onError: error => {
+      createToast(error.message || 'Failed to create Module', 'error');
+>>>>>>> 680280eeacbf9218e986c09f2e1fc8542c1a75d5
     },
   });
 

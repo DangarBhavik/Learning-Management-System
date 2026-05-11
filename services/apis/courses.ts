@@ -18,8 +18,9 @@ export type Module = {
 };
 
 export async function fetchCourses(
-  { limit, filters } = {} as {
+  { limit, page, filters } = {} as {
     limit?: number;
+    page?: number;
     filters?: {
       search: string;
       statusFilter: string;
@@ -30,6 +31,10 @@ export async function fetchCourses(
 
   if (limit !== undefined) {
     params.set('limit', String(limit));
+  }
+
+  if (page !== undefined) {
+    params.set('page', String(page));
   }
 
   if (filters) {

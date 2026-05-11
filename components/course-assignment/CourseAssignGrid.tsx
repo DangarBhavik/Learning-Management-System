@@ -69,14 +69,17 @@ const CourseAssignGrid = ({
     setSelectedCourses([]);
   };
 
-  if (isFetching && (!data?.courses || data.courses.length === 0)) {
+  if (isFetching) {
     return (
       <Card className="shadow-md dark:bg-[#0b111f] border border-border">
         <CardHeader className="border-b border-border py-2 px-4">
           <CardTitle className="text-sm">{title}</CardTitle>
-          <CardDescription className="text-xs">Loading course..</CardDescription>
+          {/* <CardDescription className="text-xs">Loading course..</CardDescription> */}
         </CardHeader>
-        <CardContent className="h-32"></CardContent>
+        <CardContent className="h-44 flex justify-center items-center">
+          Loading Courses...
+        </CardContent>
+
       </Card>
     );
   }

@@ -38,8 +38,8 @@ const Summery = ({
   };
 
   return (
-    <div className={cn('lg:col-span-1 ', className)}>
-      <Card className=" h-fit shadow-md border border-border dark:bg-[#0b111f]">
+    <div className={cn('lg:col-span-1', className)}>
+      <Card className=" h-fit shadow-md  border border-border dark:bg-[#0b111f]">
         <CardHeader className="py-2 px-4 border-b border-border">
           <CardTitle className="text-sm">{title}</CardTitle>
           <CardDescription className="text-xs">{selectedCourses.length} course(s)</CardDescription>

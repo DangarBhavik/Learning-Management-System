@@ -7,6 +7,11 @@ type PageProps = {
   };
 };
 
+export const metadata = {
+  title: 'Course Details',
+  description: 'View detailed information about your course, modules, and assignments',
+};
+
 export default async function CoursesDetailsPage({ params }: PageProps) {
   const user = await getUserDetails();
 

@@ -2,6 +2,7 @@ import { CourseStatus, Role } from '@/generated/prisma/enums';
 import ApiResponse from '@/utils/api-response';
 import { userRoleCheck } from '@/utils/checkUserRole';
 import { prisma } from '@/utils/prisma-client';
+import { handleBuildComplete } from 'next/dist/build/adapter/build-complete';
 import { NextResponse } from 'next/server';
 
 type CourseWithModuleCount = {
@@ -250,10 +251,12 @@ export const getAllCourses = async ({
   userRole,
   userId,
   limit,
+  skip,
   search,
   statusFilter = 'ALL',
 }: {
   userRole: Role;
+  skip: number;
   userId: string;
   limit?: number;
   search?: string;
@@ -278,6 +281,7 @@ export const getAllCourses = async ({
           createdAt: 'desc',
         },
         ...(typeof limit === 'number' ? { take: limit } : {}),
+        skip,
       }),
 
       prisma.course.count({
@@ -287,10 +291,17 @@ export const getAllCourses = async ({
       }),
     ]);
 
+    const allCoursesCount = await prisma.course.count();
+
     courses = {
       courses: courseData,
       stats: {
         pendingCourseApprovals,
+      },
+      pagination: {
+        totalPages: Math.ceil(allCoursesCount / (limit || allCoursesCount)),
+        hasNextPage: skip + (limit || 0) < allCoursesCount,
+        hasPreviousPage: skip > 0,
       },
     };
   } else if (userRoleCheck.isMentor(userRole)) {
@@ -309,6 +320,7 @@ export const getAllCourses = async ({
           createdAt: 'desc',
         },
         ...(typeof limit === 'number' ? { take: limit } : {}),
+        skip,
       }),
 
       prisma.course.count({
@@ -340,6 +352,11 @@ export const getAllCourses = async ({
         totalStudents: totalStudents,
         pendingSubmissions: pendingSubmissions,
       },
+      pagination: {
+        totalPages: Math.ceil(totalCourses / (limit || totalCourses)),
+        hasNextPage: skip + (limit || 0) < totalCourses,
+        hasPreviousPage: skip > 0,
+      },
     };
   } else {
     const courseData = await prisma.course.findMany({
@@ -360,12 +377,16 @@ export const getAllCourses = async ({
         createdAt: 'desc',
       },
       ...(typeof limit === 'number' ? { take: limit } : {}),
+      skip,
     });
 
     courses = {
       courses: courseData,
-      stats: {
-        pendingCourseApprovals: 0,
+      stats: {},
+      pagination: {
+        totalPages: Math.ceil(courseData.length / (limit || courseData.length)),
+        hasNextPage: skip + (limit || 0) < courseData.length,
+        hasPreviousPage: skip > 0,
       },
     };
   }
@@ -375,6 +396,7 @@ export const getAllCourses = async ({
   return {
     courses: formattedCourses,
     stats: courses.stats,
+    pagination: courses.pagination,
   };
 };
 

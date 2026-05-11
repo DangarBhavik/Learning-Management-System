@@ -4,6 +4,8 @@ import Courses from '@/components/ui/Courses';
 import { useMyCourses } from '@/hooks/courses/useMyCourses';
 import Link from 'next/link';
 
+
+
 const AllCoursesPage = () => {
   const { myCourses, isLoading } = useMyCourses();
 
