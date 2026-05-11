@@ -93,7 +93,7 @@ export const getSubmissionsByTrainee = async ({
   return response.data;
 };
 
-export const getAllSubmissionsAdmin = async () => {
+export const getAllSubmissionsForReview = async () => {
   const response = await sendRequest(`/api/submission`);
   return response.data;
 };

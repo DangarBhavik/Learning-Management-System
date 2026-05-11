@@ -23,15 +23,6 @@ function Navbar() {
             className="object-contain "
           />
         </div>
-        <div className="flex justify-center items-center gap-2  dark:block">
-          <Image
-            src={Darklogo}
-            alt="EduVant logo"
-            width={180}
-            height={40}
-            className="object-contain "
-          />
-        </div>
 
         <ul className="hidden sm:flex items-center gap-8 text-sm font-medium text-gray-600 dark:text-gray-300">
           <li className="hover:text-black dark:hover:text-white cursor-pointer transition">

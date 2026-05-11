@@ -10,16 +10,5 @@ export const metadata = {
 };
 
 export default async function MySubmissions() {
-  const user = await getUserDetails();
-
-  return (
-    <RoleBased
-      role={user.role}
-      components={{
-        ADMIN: AdminSubmissionsPage,
-        MENTOR: SubmissionsPage,
-        TRAINEE: SubmissionsPage,
-      }}
-    />
-  );
+  return <SubmissionsPage />;
 }

@@ -2,10 +2,10 @@
 
 import SubmissionsTable from '@/components/submissions/SubmissionsTable';
 import Loading from '@/components/ui/loading';
-import { useAdminSubmissions } from '@/hooks/submission/useAdminSubmissions';
+import { useSubmissionsForReview } from '@/hooks/submission/useSubmissionsForReview';
 
 export default function AdminSubmissionsPage() {
-  const { data: submissions = [], isLoading, isError } = useAdminSubmissions();
+  const { submissions, isLoading, isError } = useSubmissionsForReview();
 
   if (isLoading) {
     return <Loading text="Submissions" />;

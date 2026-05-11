@@ -38,7 +38,7 @@ export const sidebarMenu: Record<UserRole, MenuItem[]> = {
     },
     {
       label: 'Submissions',
-      href: 'app/submissions',
+      href: 'app/review-submission',
       icon: <BiTask />,
     },
     {

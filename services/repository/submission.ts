@@ -55,13 +55,17 @@ export const getSubmissionsForMentor = async (mentorId: string) => {
     },
     include: {
       file: true,
+      student: {
+        select: {
+          id: true,
+          username: true,
+          mentor: { select: { username: true } },
+        },
+      },
       assignment: {
         select: {
           id: true,
           title: true,
-          description: true,
-          dueDate: true,
-          maxScore: true,
           module: {
             select: {
               course: {
@@ -70,19 +74,6 @@ export const getSubmissionsForMentor = async (mentorId: string) => {
                   title: true,
                 },
               },
-            },
-          },
-        },
-      },
-      student: {
-        select: {
-          id: true,
-          username: true,
-          email: true,
-          image: true,
-          mentor: {
-            select: {
-              username: true,
             },
           },
         },

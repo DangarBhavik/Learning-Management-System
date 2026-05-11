@@ -39,14 +39,17 @@ const getStatusStyle = (status: string) => {
   }
 };
 
-const SubmissionsTable: React.FC<{ submissions: Submission[] }> = ({ submissions }) => {
+const SubmissionsTable: React.FC<{ submissions: Submission[]; showMentorColumn?: boolean }> = ({
+  submissions,
+  showMentorColumn = true,
+}) => {
   return (
     <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
       <table className="w-full text-sm">
         <thead className="sticky top-0 bg-gray-50 dark:bg-gray-900 backdrop-blur z-10">
           <tr className="text-gray-600 dark:text-gray-300 text-xs uppercase tracking-wide">
             <th className="p-4 text-left">Student</th>
-            <th className="p-4 text-left">Mentor</th>
+            {showMentorColumn && <th className="p-4 text-left">Mentor</th>}
             <th className="p-4 text-left">Course</th>
             <th className="p-4 text-left">Assignment</th>
             <th className="p-4 text-left">Score</th>
@@ -79,7 +82,9 @@ const SubmissionsTable: React.FC<{ submissions: Submission[] }> = ({ submissions
                   </div>
                 </td>
 
-                <td className="p-4 text-gray-600 dark:text-gray-400">{s.student.mentorName}</td>
+                {showMentorColumn && (
+                  <td className="p-4 text-gray-600 dark:text-gray-400">{s.student.mentorName}</td>
+                )}
 
                 <td className="p-4 text-gray-700 dark:text-gray-300">{s.course.title}</td>
 

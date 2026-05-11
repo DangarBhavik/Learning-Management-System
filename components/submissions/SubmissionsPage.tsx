@@ -4,7 +4,6 @@ import AssignmentCards from '@/components/assignments/AssignmentStatsCards';
 import Submissions from '@/components/submissions/Submissions';
 import { BsFileEarmarkCheck, BsClockHistory, BsCheckCircleFill } from 'react-icons/bs';
 import { useState } from 'react';
-import CustomSelect from '../ui/CustomSelect';
 import { useSubmissions } from '@/hooks/submission/useSubmissions';
 import SearchBar from '../ui/SearchBar';
 import { SubmissionStatus } from '@/generated/prisma/enums';
