@@ -35,7 +35,7 @@ export function CourseHeader({ course }: CourseHeaderProps) {
     statusColors[course.status as keyof typeof statusColors] || statusColors.DEFAULT;
 
   return (
-    <div className="relative h-[45vh] min-h-[350px] overflow-hidden">
+    <div className="relative h-[45vh] min-h-[400px] overflow-hidden">
       {course.thumbnail ? (
         <Image src={course.thumbnail} alt={course.title} fill className="object-cover" priority />
       ) : (
@@ -63,7 +63,7 @@ export function CourseHeader({ course }: CourseHeaderProps) {
         </div>
       </div>
 
-      <div className="absolute bottom-20 left-0 right-0 p-6 sm:p-10">
+      <div className="absolute bottom-18 left-0 right-0 p-6 sm:p-10">
         <div className="max-w-4xl">
           <div className="flex items-center gap-2 text-white/70 text-sm mb-3">
             <span className="font-medium">{course.modules.length} Modules</span>

@@ -25,7 +25,9 @@ export default function CoursesPage({ role }: { role: PrismaUserRole }) {
       title="All Courses"
       headerRight={
         <Link href="/app/add-course">
-          <button className="bg-blue-500 text-white px-3 py-1 rounded-md">+ Add Course</button>
+          <button className="bg-blue-500 text-white px-3 py-1 rounded-md cursor-pointer">
+            + Add Course
+          </button>
         </Link>
       }
     >

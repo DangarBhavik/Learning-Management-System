@@ -87,7 +87,7 @@ export type AssignmentFilter = {
   statusFilter: 'ALL' | 'NOT_SUBMITTED' | 'PENDING' | 'GRADED' | 'RESUBMITTED';
 };
 
-export type CourseStatus = 'DRAFT' | 'PENDING' | 'APPROVED' ;
+export type CourseStatus = 'DRAFT' | 'PENDING' | 'APPROVED';
 
 export type CoursesLayoutProps = {
   title: string;

@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full antialiased" suppressHydrationWarning>
-      <body className={`${inter.className} min-h-full w-full dark:bg-gray-800 dark:text-white`}>
+      <body className={`${inter.className} min-h-full w-full dark:bg-gray-900 dark:text-white`}>
         <div id="modal"></div>
         <TanstackProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>

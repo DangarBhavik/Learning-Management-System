@@ -41,6 +41,7 @@ const AssignableCourses = ({ selectedUserId }: { selectedUserId: string }) => {
       title={`Available Courses `}
       submitText="Assign"
       pendingtext="Assigning..."
+      emptyText={`Available to assign`}
       isFetching={isFetching}
       data={data}
       isLoading={isAssigning}

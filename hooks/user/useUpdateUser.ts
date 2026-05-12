@@ -6,12 +6,8 @@ export const useUpdateUser = (userId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: {
-      username: string;
-      image: string;
-      role: 'ADMIN' | 'MENTOR' | 'TRAINEE';
-      mentorId: string | null;
-    }) => updateUserDetails(userId, payload),
+    mutationFn: (payload: { role: 'ADMIN' | 'MENTOR' | 'TRAINEE'; mentorId: string | null }) =>
+      updateUserDetails(userId, payload),
 
     onSuccess: updated => {
       queryClient.setQueryData(['admin', 'user', userId], updated);

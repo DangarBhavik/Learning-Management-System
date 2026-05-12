@@ -3,7 +3,6 @@
 import Assignments from '@/components/assignments/Assignments';
 import { BsFileEarmarkText, BsClockHistory, BsCheckCircleFill } from 'react-icons/bs';
 import { useState } from 'react';
-import CustomSelect from '@/components/ui/CustomSelect';
 import { AssignmentFilter } from '@/types/types';
 import useAssignments from '@/hooks/assignment/useAssignments';
 import AssignmentStatsCards from '@/components/assignments/AssignmentStatsCards';

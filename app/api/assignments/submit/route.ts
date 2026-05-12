@@ -30,6 +30,9 @@ export async function POST(req: NextRequest) {
       const allowedTypes = [
         'application/pdf',
         'application/zip',
+        'application/x-zip-compressed',
+        'multipart/x-zip',
+        'application/octet-stream',
         'image/png',
         'image/jpeg',
         'image/jpg',

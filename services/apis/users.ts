@@ -54,8 +54,6 @@ export const getMentors = async () => {
 export const updateUserDetails = async (
   userId: string,
   payload: {
-    username: string;
-    image: string;
     role: 'ADMIN' | 'MENTOR' | 'TRAINEE';
     mentorId: string | null;
   }

@@ -52,13 +52,13 @@ export default function CourseDetailsLayout({ course, topActions, showSubmission
   const firstLesson = course?.modules?.[0]?.lessons?.[0];
   const currentLesson = activeLesson ?? firstLesson;
 
-  console.log(currentLesson);
+  // console.log(currentLesson);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen  bg-gray-50 dark:bg-gray-950">
       <CourseHeader course={course} />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-22 relative z-10 pb-12">
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 -mt-22 relative z-10 pb-12">
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <ContentViewer lesson={currentLesson} />

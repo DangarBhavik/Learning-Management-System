@@ -12,8 +12,7 @@ const ReviewAssignment = () => {
   }
   if (submissions.length === 0) {
     return <div>no submissions </div>;
-  }``
-
+  }
   if (isError) {
     return <p className="p-6 text-red-500">Failed to load submissions</p>;
   }

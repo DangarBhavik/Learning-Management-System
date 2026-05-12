@@ -74,7 +74,7 @@ const FeedbackSection = ({
   }
 
   return (
-    <Card>
+    <Card className="dark:bg-gray-950">
       <CardContent>
         <h2 className="text-xl font-semibold mb-4">
           {feedback ? 'Edit Feedback' : 'Provide Feedback'}

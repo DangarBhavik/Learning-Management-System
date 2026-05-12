@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users } from 'lucide-react';
 
-const NoCourses = ({ title }: { title: string }) => {
+const NoCourses = ({ title, emptyText }: { title: string; emptyText: string }) => {
   return (
     <Card className="shadow-md dark:bg-[#0b111f] border border-border">
       <CardHeader className="border-b border-border py-2 px-4">
@@ -12,9 +12,9 @@ const NoCourses = ({ title }: { title: string }) => {
         <div className="text-center space-y-2">
           <Users className="w-10 h-10 text-muted-foreground mx-auto opacity-50" />
           <div>
-            <p className="text-sm font-semibold text-foreground">No courses assigned</p>
+            <p className="text-sm font-semibold text-foreground">No Courses {emptyText}</p>
             <p className="text-xs text-muted-foreground">
-              This trainee has no assigned courses yet.
+              This trainee has no courses {emptyText} yet.
             </p>
           </div>
         </div>

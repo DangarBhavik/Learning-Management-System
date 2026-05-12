@@ -32,7 +32,7 @@ const steps = [
 export default function Workflow() {
   return (
     <section id="workflow" className="pb-10">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-8xl">
         <div className="mb-20 text-center">
           <h2 className="mb-4 text-4xl font-bold">
             How It{' '}

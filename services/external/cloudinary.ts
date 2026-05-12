@@ -11,15 +11,33 @@ cloudinary.config({
 export const uploadToCloud = async (file: File): Promise<UploadApiResponse> => {
   const buffer = Buffer.from(await file.arrayBuffer());
 
+  const isPdf = file.type === 'application/pdf';
+  const isImage = file.type.startsWith('image/');
+  const isZip =
+    file.type === 'application/zip' ||
+    file.type === 'application/x-zip-compressed' ||
+    file.name.toLowerCase().endsWith('.zip');
+
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       {
         folder: 'lms',
-        resource_type: 'auto',
+
+        // PDFs + Images => previewable
+        // ZIP => raw downloadable file
+        // Others => keep existing behavior
+        resource_type: isPdf || isImage ? 'image' : isZip ? 'raw' : 'auto',
+
+        // preserve original filename
+        use_filename: true,
+        unique_filename: true,
+
+        ...(isZip && { format: 'zip' }),
       },
       (error, result) => {
         if (error) return reject(error);
-        if (!result) return reject(null);
+        if (!result) return reject(new Error('Upload failed'));
+
         resolve(result);
       }
     );
@@ -33,6 +51,7 @@ export const deleteFromCloud = async (publicId: string, resourceType: string) =>
     const result = await cloudinary.uploader.destroy(publicId, {
       resource_type: resourceType,
     });
+
     return result;
   } catch (error) {
     console.error('Cloudinary deletion error:', error);

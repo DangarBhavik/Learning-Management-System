@@ -1,6 +1,6 @@
 'use client';
 import Loading from '@/components/ui/loading';
-import UserDetails from '@/components/users/UserDetails';
+import UserDetails from '@/components/users/user-details/UserDetails';
 import { useUserById } from '@/hooks/user/useUserById';
 import { useParams } from 'next/navigation';
 

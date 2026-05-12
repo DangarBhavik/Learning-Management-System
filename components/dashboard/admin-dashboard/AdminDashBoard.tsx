@@ -59,19 +59,19 @@ function AdminDashBoard() {
 
               <div className="flex flex-wrap gap-3">
                 <Link
-                  href="/admin/approvals"
+                  href="/app/approvals"
                   className="rounded-2xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-4 py-2 text-sm font-medium hover:opacity-90 transition"
                 >
                   Review Approvals
                 </Link>
                 <Link
-                  href="/admin/users"
+                  href="/app/users"
                   className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/60 dark:bg-gray-950/30 px-4 py-2 text-sm font-medium hover:bg-white/80 dark:hover:bg-gray-950/50 transition"
                 >
                   Manage Users
                 </Link>
                 <Link
-                  href="/admin/courses"
+                  href="/app/courses"
                   className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/60 dark:bg-gray-950/30 px-4 py-2 text-sm font-medium hover:bg-white/80 dark:hover:bg-gray-950/50 transition"
                 >
                   Manage Courses

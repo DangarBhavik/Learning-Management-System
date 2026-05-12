@@ -25,6 +25,7 @@ const CourseAssignGrid = ({
   title,
   submitText,
   pendingtext,
+  emptyText,
   isFetching,
   userId,
   isLoading,
@@ -36,6 +37,7 @@ const CourseAssignGrid = ({
   userId: string;
   title: string;
   pendingtext: string;
+  emptyText: string;
   submitText: string;
   isFetching: boolean;
   data: {
@@ -88,7 +90,7 @@ const CourseAssignGrid = ({
   return (
     <div className="grid">
       <div className="lg:col-span-2 space-y-4">
-        {data.courses.length == 0 && <NoCourses title={title} />}
+        {data.courses.length == 0 && <NoCourses title={title} emptyText={emptyText}/>}
 
         {data.courses.length > 0 && (
           <Card className="shadow-md border dark:bg-[#0b111f] border-border">

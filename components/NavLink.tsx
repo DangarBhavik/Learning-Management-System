@@ -12,7 +12,8 @@ type NavLinkProps = {
 const NavLink: React.FC<NavLinkProps> = ({ href, icon, label }) => {
   const pathname = usePathname();
 
-  const isActive = pathname === href || pathname.startsWith(`/${href}/`);
+  const isActive =
+    href === '/app' ? pathname === '/app' : pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <li className="list-none">
