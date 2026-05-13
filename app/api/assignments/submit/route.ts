@@ -5,6 +5,8 @@ import { uploadToCloud } from '@/services/external/cloudinary';
 import { createSubmission } from '@/services/repository/submission';
 import { createFile } from '@/services/repository/file';
 import { FileType } from '@/generated/prisma/enums';
+import { createNotification } from '@/services/repository/notification';
+import { getAssignmentById } from '@/services/repository/assignment';
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,7 +23,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(new ApiResponse(400, 'Missing fields', {}), { status: 400 });
     }
 
-    // FILE SUBMISSION
+    const assignemntDetails = await getAssignmentById({ assignmentId });
+
+    if (!assignemntDetails) {
+      return NextResponse.json(new ApiResponse(400, 'Cannot found Assignment', {}), {
+        status: 400,
+      });
+    }
+
     if (type === 'FILE') {
       if (!file) {
         return NextResponse.json(new ApiResponse(400, 'File is required', {}), { status: 400 });
@@ -81,6 +90,12 @@ export async function POST(req: NextRequest) {
         assignmentId,
         studentId: user.id,
         githubLink: githubLink.trim(),
+      });
+
+      await createNotification({
+        userId: user.mentorId!,
+        message: `New Submission of Assignment ${assignemntDetails.title} for Review`,
+        link: `/app/submissions/${submission.id}`,
       });
 
       return NextResponse.json(new ApiResponse(200, 'Link submitted successfully', submission), {

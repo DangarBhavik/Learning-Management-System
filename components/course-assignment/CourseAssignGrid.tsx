@@ -23,6 +23,7 @@ type Course = {
 };
 
 const CourseAssignGrid = ({
+  isCourseLoading,
   title,
   submitText,
   pendingtext,
@@ -41,6 +42,7 @@ const CourseAssignGrid = ({
   pendingtext: string;
   emptyText: string;
   submitText: string;
+  isCourseLoading: boolean;
   isFetching: boolean;
   courses: Course[];
   paginationData: PaginationDataType;
@@ -68,7 +70,7 @@ const CourseAssignGrid = ({
     setSelectedCourses([]);
   };
 
-  if (isFetching) {
+  if (isCourseLoading) {
     return (
       <Card className="shadow-md dark:bg-[#0b111f] border border-border">
         <CardHeader className="border-b border-border py-2 px-4">
@@ -88,7 +90,7 @@ const CourseAssignGrid = ({
         {courses.length == 0 && <NoCourses title={title} emptyText={emptyText} />}
 
         {courses.length > 0 && (
-          <Card className="shadow-md border dark:bg-[#0b111f] border-border">
+          <Card className="shadow-md border  dark:bg-[#0b111f] border-border">
             <CardHeader className="border-b flex justify-between border-border py-2 px-4">
               <div>
                 <CardTitle className="text-sm">{title}</CardTitle>
@@ -102,6 +104,7 @@ const CourseAssignGrid = ({
             </CardHeader>
             <CardContent className="px-4 pb-4">
               <SelectableCourses
+                classes={isFetching ? ' opacity-90' : ''}
                 func={handleSelectCourse}
                 courses={courses || []}
                 selectedCourses={selectedCourses}

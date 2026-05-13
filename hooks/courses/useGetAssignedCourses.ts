@@ -27,28 +27,31 @@ export const useGetAssignedCourses = ({
   userId,
   limit,
   page,
+  search,
 }: {
   userId: string;
   limit?: number;
   page: number;
+  search?: string;
 }) => {
-  const { data, isLoading } = useQuery<AssignableCoursesData>({
-    queryKey: ['assigned-courses', userId, page, limit],
+  const { data, isLoading, isFetching } = useQuery<AssignableCoursesData>({
+    queryKey: ['assigned-courses', userId, page, limit, search],
     queryFn: () =>
       getAssignedCourses({
         limit,
         page,
         userId,
+        search,
       }),
+    placeholderData: keepPreviousData,
     enabled: !!userId,
   });
-
-  console.log(data);
 
   return {
     courses: data?.courses ?? [],
     paginationData: data?.pagination ?? DEFAULT_PAGINATION_DATA,
-    isFetching: isLoading,
+    isLoading: isLoading,
+    isFetching: isFetching,
   };
 };
 

@@ -1,5 +1,6 @@
 import getUserDetails from '@/lib/isAuth';
 import { assignCoursesToUser } from '@/services/repository/course';
+import { createNotification } from '@/services/repository/notification';
 import { getTraineeMentorId, getUserById } from '@/services/repository/user';
 import ApiResponse from '@/utils/api-response';
 import { userRoleCheck } from '@/utils/checkUserRole';
@@ -39,6 +40,12 @@ export const POST = async (req: NextRequest) => {
     const assignedCourses = await assignCoursesToUser({
       courseIds,
       userId,
+    });
+
+    await createNotification({
+      userId: selectedUser.id,
+      message: `You have been assigned new courses.`,
+      link: `/app/courses`,
     });
 
     return NextResponse.json(

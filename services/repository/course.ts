@@ -595,10 +595,12 @@ export const getAssignedCourses = async ({
   userId,
   limit,
   skip,
+  search,
 }: {
   userId: string;
   limit?: number;
   skip?: number;
+  search: string;
 }) => {
   const take = limit == 0 ? undefined : limit;
 
@@ -610,6 +612,10 @@ export const getAssignedCourses = async ({
         some: {
           studentId: userId,
         },
+      },
+      title: {
+        contains: search,
+        mode: 'insensitive',
       },
     },
     include,
@@ -623,13 +629,23 @@ export const getAssignedCourses = async ({
   return formattedCourses;
 };
 
-export const getAssignedCoursesCount = async ({ userId }: { userId: string }) => {
+export const getAssignedCoursesCount = async ({
+  userId,
+  search,
+}: {
+  userId: string;
+  search: string;
+}) => {
   const totalCourses = await prisma.course.count({
     where: {
       enrollments: {
         some: {
           studentId: userId,
         },
+      },
+      title: {
+        contains: search,
+        mode: 'insensitive',
       },
     },
   });
@@ -642,14 +658,16 @@ export const getFormattedAssignedCourses = async ({
   page = 1,
   limit = 6,
   skip,
+  search,
 }: {
   userId: string;
   page: number;
   limit: number;
   skip?: number;
+  search: string;
 }) => {
-  const assignedCourseCount = await getAssignedCoursesCount({ userId });
-  const courses = await getAssignedCourses({ userId, limit, skip });
+  const assignedCourseCount = await getAssignedCoursesCount({ userId, search });
+  const courses = await getAssignedCourses({ userId, limit, skip, search });
 
   const totalPages = Math.ceil(assignedCourseCount / limit);
 

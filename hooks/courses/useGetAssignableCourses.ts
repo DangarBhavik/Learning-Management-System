@@ -32,7 +32,7 @@ const useGetAssignableCourses = ({
   limit: number;
   page: number;
 }) => {
-  const { data, isLoading } = useQuery<AssignableCoursesData>({
+  const { data, isLoading , isFetching } = useQuery<AssignableCoursesData>({
     queryKey: ['assignable-courses', userId, page, limit],
     queryFn: () =>
       getAssignableCourses({
@@ -46,7 +46,8 @@ const useGetAssignableCourses = ({
   return {
     courses: data?.courses ?? [],
     paginationData: data?.pagination ?? DEFAULT_PAGINATION_DATA,
-    isFetching: isLoading,
+    isFetching: isFetching,
+    isLoading: isLoading,
   };
 };
 

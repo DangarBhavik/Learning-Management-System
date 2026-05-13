@@ -9,6 +9,7 @@ import {
   getUserById,
 } from '@/services/repository/user';
 import { userRoleCheck } from '@/utils/checkUserRole';
+import { createNotification } from '@/services/repository/notification';
 
 export const GET = async (_req: Request, { params }: { params: Promise<{ id: string }> }) => {
   try {
@@ -108,6 +109,14 @@ export const PATCH = async (req: NextRequest, { params }: { params: Promise<{ id
       ...updatedUser,
       mentorName: mentor?.username ?? null,
     };
+
+    if (role) {
+      await createNotification({
+        userId: updatedUser.id,
+        message: `Your role has been updated to ${role}`,
+        link: `/app/profile`,
+      });
+    }
 
     return NextResponse.json(new ApiResponse(200, 'User updated successfully', payload), {
       status: 200,

@@ -8,7 +8,7 @@ const AssignedCourses = ({ selectedUserId }: { selectedUserId: string }) => {
   const [page, setPage] = useState(1);
   const limit = 5;
 
-  const { courses, paginationData, isFetching } = useGetAssignedCourses({
+  const { courses, paginationData, isFetching, isLoading } = useGetAssignedCourses({
     userId: selectedUserId,
     limit,
     page,
@@ -34,6 +34,7 @@ const AssignedCourses = ({ selectedUserId }: { selectedUserId: string }) => {
       pendingtext="Taking Access.."
       isFetching={isFetching}
       courses={courses}
+      isCourseLoading={isLoading}
       paginationData={paginationData}
       isLoading={isTakingAccess}
       getNextPage={() => setPage(prev => prev + 1)}

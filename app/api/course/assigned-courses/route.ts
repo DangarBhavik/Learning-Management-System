@@ -12,12 +12,13 @@ export const GET = async (req: NextRequest) => {
     const searchParams = req.nextUrl.searchParams;
 
     const userId = searchParams.get('userId');
-    const LIMIT = 6;
+    const search = searchParams.get('search') || '';
+    const limit = parseInt(searchParams.get('limit') || '6', 10);
 
     const page = Number(searchParams.get('page'));
     let skip = 0;
     if (page && page > 1) {
-      skip = (page - 1) * LIMIT;
+      skip = (page - 1) * limit;
     }
 
     if (!userId) {
@@ -42,9 +43,10 @@ export const GET = async (req: NextRequest) => {
 
     const formattedCourses = await getFormattedAssignedCourses({
       userId,
-      limit: LIMIT,
+      limit,
       skip,
       page,
+      search,
     });
 
     return NextResponse.json(new ApiResponse(200, 'Assigned courses fetched', formattedCourses));

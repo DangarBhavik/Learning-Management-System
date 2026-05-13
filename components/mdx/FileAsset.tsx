@@ -9,6 +9,7 @@ type FileAssetProps = {
   url: string;
   name: string;
   size?: number;
+  type: 'other' | 'zip';
 };
 
 function formatBytes(bytes?: number) {
@@ -24,7 +25,7 @@ function formatBytes(bytes?: number) {
   return `${value.toFixed(precision)} ${units[unitIndex]}`;
 }
 
-export default function FileAsset({ id, url, name, size }: FileAssetProps) {
+export default function FileAsset({ id, url, name, size, type }: FileAssetProps) {
   const handleOpen = React.useCallback(() => {
     window.open(url, '_blank', 'noopener,noreferrer');
   }, [url]);
@@ -37,6 +38,7 @@ export default function FileAsset({ id, url, name, size }: FileAssetProps) {
           {size != null ? (
             <div className="text-xs text-muted-foreground">{formatBytes(size)}</div>
           ) : null}
+          {type && <div className="text-xs text-muted-foreground">{type}</div>}
         </div>
 
         <Button type="button" variant="link" size="xs" onClick={handleOpen}>

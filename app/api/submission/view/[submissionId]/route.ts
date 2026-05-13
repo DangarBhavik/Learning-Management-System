@@ -8,6 +8,7 @@ import {
   updateSubmissionByMentor,
 } from '@/services/repository/submission';
 import { userRoleCheck } from '@/utils/checkUserRole';
+import { createNotification } from '@/services/repository/notification';
 
 const sendResponse = (status: number, message: string, data: unknown) =>
   NextResponse.json(new ApiResponse(status, message, data), { status });
@@ -59,14 +60,14 @@ export async function PATCH(
 
     if (!user) return sendResponse(401, 'Please login first', {});
 
-    if (user.role === 'MENTOR') {
-      const validation = await getSubmissionMentorId(submissionId);
+    if (userRoleCheck.isMentor(user.role)) {
+      const submissionDetails = await getSubmissionMentorId(submissionId);
 
-      if (!validation) {
+      if (!submissionDetails) {
         return sendResponse(404, 'Submission not found', {});
       }
 
-      if (validation.student.mentorId !== user.id) {
+      if (submissionDetails.student.mentorId !== user.id) {
         return sendResponse(403, 'Unauthorised', {});
       }
     }
@@ -75,6 +76,12 @@ export async function PATCH(
       submissionId,
       feedback,
       score,
+    });
+
+    await createNotification({
+      userId: updatedSubmission.studentId,
+      message: `Your submission for ${updatedSubmission.assignment.title} has been reviewed.`,
+      link: `/app/submissions/${updatedSubmission.id}`,
     });
 
     return sendResponse(200, 'Submission updated successfully', updatedSubmission);

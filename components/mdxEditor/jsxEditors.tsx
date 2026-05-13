@@ -12,6 +12,10 @@ import { RiLoader4Fill } from 'react-icons/ri';
 import YouTubeEmbed from '@/components/mdx/YouTube';
 import { Button } from '@/components/ui/button';
 import { useDeleteFile } from '@/hooks/file/useDeleteFile';
+import { useState } from 'react';
+import Modal from '../modal/Modal';
+import PdfPreview from '../submissions/review-submission/PdfPreview';
+import SubmissionPreview from '../submissions/review-submission/SubmissionPreview';
 
 function blockShellClass(readOnly?: boolean) {
   return cn(
@@ -51,6 +55,8 @@ function createFileAssetJsxEditor({
     const fileId = getJsxStringProp(mdastNode, 'id');
     const removeNode = useLexicalNodeRemove();
 
+    const [showPreview, setShowPreview] = useState(false);
+
     const { deleteFile, isDeleting } = useDeleteFile();
 
     const disableRemove = Boolean(readOnly) || isDeleting;
@@ -69,12 +75,11 @@ function createFileAssetJsxEditor({
               variant="link"
               size="xs"
               onClick={() => {
-                if (!url) return;
-                window.open(url, '_blank', 'noopener,noreferrer');
+                setShowPreview(true);
               }}
               disabled={!url}
             >
-              Open
+              Preview
             </Button>
 
             {!readOnly && (
@@ -103,6 +108,18 @@ function createFileAssetJsxEditor({
               </Button>
             )}
           </div>
+
+          {showPreview && url && (
+            <Modal
+              classes="w-1/2"
+              onClose={() => {
+                setShowPreview(false);
+              }}
+              title={name ?? 'File Preview'}
+            >
+              <SubmissionPreview url={url} />
+            </Modal>
+          )}
         </div>
       </div>
     );
@@ -288,8 +305,8 @@ function createYouTubeJsxEditor({ readOnly }: CreateJsxComponentDescriptorsOptio
     return (
       <div className={cn(blockShellClass(readOnly), 'my-2 relative')}>
         {/* <div className={blockHeaderClass(readOnly)}> */}
-          <div className="absolute top-6 right-6 w-full flex justify-end items-center gap-3">
-            {/* <Button
+        <div className="absolute top-6 right-6 w-full flex justify-end items-center gap-3">
+          {/* <Button
               type="button"
               variant="link"
               size="xs"
@@ -301,20 +318,20 @@ function createYouTubeJsxEditor({ readOnly }: CreateJsxComponentDescriptorsOptio
             >
               Open
             </Button> */}
-            {!readOnly && (
-              <Button
-              className='bg-red-500/10 text-red-600 hover:bg-red-500/20'
-                type="button"
-                onClick={() => removeNode()}
-                variant="destructive"
-                size="icon-sm"
-                aria-label="Remove YouTube embed"
-                title="Remove"
-              >
-                <BiTrash />
-              </Button>
-            )}
-          </div>
+          {!readOnly && (
+            <Button
+              className="bg-red-500/10 text-red-600 hover:bg-red-500/20"
+              type="button"
+              onClick={() => removeNode()}
+              variant="destructive"
+              size="icon-sm"
+              aria-label="Remove YouTube embed"
+              title="Remove"
+            >
+              <BiTrash />
+            </Button>
+          )}
+        </div>
         {/* </div> */}
 
         {url ? (

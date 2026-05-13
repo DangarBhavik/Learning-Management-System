@@ -7,7 +7,7 @@ const AssignableCourses = ({ selectedUserId }: { selectedUserId: string }) => {
   const limit = 4;
   const [page, setPage] = useState(1);
 
-  const { courses, paginationData, isFetching } = useGetAssignableCourses({
+  const { courses, paginationData, isFetching, isLoading } = useGetAssignableCourses({
     userId: selectedUserId,
     page,
     limit,
@@ -32,6 +32,7 @@ const AssignableCourses = ({ selectedUserId }: { selectedUserId: string }) => {
       pendingtext="Assigning..."
       emptyText={`Available to assign`}
       isFetching={isFetching}
+      isCourseLoading={isLoading}
       courses={courses}
       paginationData={paginationData}
       isLoading={isAssigning}

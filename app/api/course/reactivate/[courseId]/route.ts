@@ -3,6 +3,7 @@ import ApiResponse from '@/utils/api-response';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { getCourseDetailsById, reactivateCourse } from '@/services/repository/course';
+import { createNotification } from '@/services/repository/notification';
 
 export const PATCH = async (
   req: NextRequest,
@@ -27,6 +28,12 @@ export const PATCH = async (
 
     const updatedCourse = await reactivateCourse({
       courseId,
+    });
+
+    await createNotification({
+      userId: course.authorId,
+      message: `Your course "${course.title}" has been reactivated.`,
+      link: `/app/courses/${course.id}`,
     });
 
     return NextResponse.json(

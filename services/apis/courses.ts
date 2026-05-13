@@ -84,15 +84,21 @@ export async function getAssignedCourses({
   limit,
   page,
   userId,
+  search,
 }: {
   limit?: number;
   page: number;
   userId: string;
+  search?: string;
 }) {
   let url = `/api/course/assigned-courses?userId=${userId}&page=${page}`;
 
   if (limit !== undefined) {
     url += `&limit=${limit}`;
+  }
+
+  if (search) {
+    url += `&search=${search}`;
   }
 
   const response = await sendRequest(url);

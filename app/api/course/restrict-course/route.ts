@@ -1,5 +1,6 @@
 import getUserDetails from '@/lib/isAuth';
 import { restrictCoursesForTrainee } from '@/services/repository/course';
+import { createNotification } from '@/services/repository/notification';
 import { getTraineeMentorId, getUserById } from '@/services/repository/user';
 import ApiResponse from '@/utils/api-response';
 import { userRoleCheck } from '@/utils/checkUserRole';
@@ -32,6 +33,12 @@ export const DELETE = async (req: NextRequest) => {
     const deleteEnrollment = await restrictCoursesForTrainee({
       courseIds,
       userId: selectedUser.id,
+    });
+
+    await createNotification({
+      userId: selectedUser.id,
+      message: `Some courses have been restricted for you.`,
+      link: `/app/courses`,
     });
 
     return NextResponse.json(

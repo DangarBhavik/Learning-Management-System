@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import ApiResponse from '@/utils/api-response';
 import getUserDetails from '@/lib/isAuth';
 import { approveCourse } from '@/services/repository/course';
+import { createNotification } from '@/services/repository/notification';
 
 export const PATCH = async (
   req: NextRequest,
@@ -16,6 +17,12 @@ export const PATCH = async (
     }
 
     const updatedCourse = await approveCourse({ courseId });
+
+    await createNotification({
+      userId: updatedCourse.authorId,
+      message: `Your course "${updatedCourse.title}" has been approved!`,
+      link: `/app/courses/${updatedCourse.id}`,
+    });
 
     return NextResponse.json(new ApiResponse(200, 'Course approved successfully', updatedCourse));
   } catch (error) {
