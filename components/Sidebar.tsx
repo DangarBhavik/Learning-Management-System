@@ -6,7 +6,7 @@ import Darklogo from '@/public/dark-eduvant.png';
 import { CgClose } from 'react-icons/cg';
 import NavLink from './NavLink';
 import { sidebarMenu } from '@/utils/sidebar-menu-helper';
-import { UserRole } from '@/types/types';
+import { UserRole } from '@/types/user';
 import { Show, UserButton } from '@clerk/nextjs';
 import ThemeButton from './ui/ThemeButton';
 type SidebarProps = {

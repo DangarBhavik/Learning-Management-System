@@ -5,32 +5,7 @@ import { CourseHeader } from './CourseHeader';
 import { ContentViewer } from './ContentViewer';
 import { CourseStats } from './CourseStats';
 import { ModuleList } from './ModuleList';
-import InactiveCourseButton from './InactiveCourseButton';
-
-type Lesson = {
-  id: string;
-  title: string;
-  content: string | null;
-};
-
-type Submission = {
-  status: 'PENDING' | 'GRADED' | 'RESUBMITTED';
-  score: number | null;
-};
-
-type Assignment = {
-  id: string;
-  title: string;
-  dueDate: string | null;
-  submission?: Submission | null;
-};
-
-type Module = {
-  id: string;
-  title: string;
-  lessons: Lesson[];
-  assignments: Assignment[];
-};
+import { Lesson, ModuleWithAssignment } from '@/types/module';
 
 type Course = {
   id: string;
@@ -38,7 +13,7 @@ type Course = {
   description: string;
   status: string;
   thumbnail: string | null;
-  modules: Module[];
+  modules: ModuleWithAssignment[];
 };
 
 type Props = {

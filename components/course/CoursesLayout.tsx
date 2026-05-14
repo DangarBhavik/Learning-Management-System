@@ -1,6 +1,6 @@
 'use client';
 
-import { CoursesLayoutProps } from '@/types/types';
+import { CoursesLayoutProps } from '@/types/course';
 
 export default function CoursesLayout({
   title,

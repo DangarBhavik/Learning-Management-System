@@ -1,8 +1,9 @@
-import { CourseStatus, Role } from '@/generated/prisma/enums';
+
+import { CourseStatus } from '@/types/course';
+import { Role } from '@/types/user';
 import ApiResponse from '@/utils/api-response';
 import { userRoleCheck } from '@/utils/checkUserRole';
 import { prisma } from '@/utils/prisma-client';
-import { handleBuildComplete } from 'next/dist/build/adapter/build-complete';
 import { NextResponse } from 'next/server';
 
 type CourseWithModuleCount = {

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { SubmissionType } from '@/services/apis/submissions';
+import { SubmissionType } from '@/types/submission';
 import {
   HiOutlineCalendar,
   HiOutlineAcademicCap,

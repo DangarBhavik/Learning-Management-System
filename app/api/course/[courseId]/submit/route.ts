@@ -4,7 +4,6 @@ import { createNotification } from '@/services/repository/notification';
 import { getAllAdminsID } from '@/services/repository/user';
 import ApiResponse from '@/utils/api-response';
 import { checkCourseCrudAccess } from '@/utils/checkCourseCrudAccess';
-import { prisma } from '@/utils/prisma-client';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const PATCH = async (

@@ -1,5 +1,5 @@
+import { FileType } from '@/types/file';
 import { prisma } from '@/utils/prisma-client';
-import { FileType } from '@/generated/prisma/browser';
 
 export const deleteFiles = async (fileIds: string[]) => {
   const filesToDelete = await prisma.file.findMany({

@@ -1,5 +1,4 @@
 import getUserDetails from '@/lib/isAuth';
-import { FileType } from '@/generated/prisma/enums';
 import { deleteFromCloud, uploadToCloud } from '@/services/external/cloudinary';
 import ApiResponse from '@/utils/api-response';
 import { FileTypeToResourceType } from '@/utils/file-type-map';
@@ -13,6 +12,7 @@ import {
 import { checkCourseCrudAccess } from '@/utils/checkCourseCrudAccess';
 import { createFile, deleteFile } from '@/services/repository/file';
 import { userRoleCheck } from '@/utils/checkUserRole';
+import { FileType } from '@/types/file';
 
 export const GET = async (
   req: NextRequest,

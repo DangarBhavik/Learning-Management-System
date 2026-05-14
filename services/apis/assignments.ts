@@ -1,6 +1,5 @@
-import { AssignmentFilter } from '@/types/types';
+import { AssignmentFilter } from '@/types/assignment';
 import { sendRequest } from '@/utils/sendRequest';
-import axios from 'axios';
 
 export type AssignmentType = {
   id: string;

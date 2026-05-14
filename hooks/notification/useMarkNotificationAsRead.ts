@@ -1,5 +1,5 @@
 import { markNotificationAsRead } from '@/services/apis/notification';
-import type { NotificationsData } from '@/types/types';
+import type { NotificationsData } from '@/types/notification';
 import queryClient from '@/utils/query-client';
 import { useMutation } from '@tanstack/react-query';
 

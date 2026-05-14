@@ -1,32 +1,8 @@
+import { Lesson, ModuleWithAssignment } from '@/types/module';
 import { AssignmentList } from './AssignmentList';
 
-type Lesson = {
-  id: string;
-  title: string;
-  content: string | null;
-};
-
-type Submission = {
-  status: 'PENDING' | 'GRADED' | 'RESUBMITTED';
-  score: number | null;
-};
-
-type Assignment = {
-  id: string;
-  title: string;
-  dueDate: string | null;
-  submission?: Submission | null;
-};
-
-type Module = {
-  id: string;
-  title: string;
-  lessons: Lesson[];
-  assignments: Assignment[];
-};
-
 type ModuleItemProps = {
-  module: Module;
+  module: ModuleWithAssignment;
   moduleIndex: number;
   isExpanded: boolean;
   onToggle: () => void;

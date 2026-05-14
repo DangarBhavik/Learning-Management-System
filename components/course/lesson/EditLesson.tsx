@@ -12,7 +12,7 @@ function EditLesson({
   moduleId: string;
   lessonId: string;
   onClose: () => void;
-  content: string;
+  content: string | null;
   title: string;
 }) {
   const { id: courseId } = useParams<{ id: string }>();

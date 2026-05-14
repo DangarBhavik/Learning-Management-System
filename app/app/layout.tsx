@@ -1,6 +1,5 @@
 import DashboardLayout from '@/components/layout/AppLayout';
-import type { Role } from '@/generated/prisma/enums';
-import type { UserRole } from '@/types/types';
+import { Role, type UserRole } from '@/types/user';
 import { prisma } from '@/utils/prisma-client';
 import { auth } from '@clerk/nextjs/server';
 

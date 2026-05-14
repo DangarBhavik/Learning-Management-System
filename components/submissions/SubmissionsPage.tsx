@@ -6,8 +6,8 @@ import { BsFileEarmarkCheck, BsClockHistory, BsCheckCircleFill } from 'react-ico
 import { useState } from 'react';
 import { useSubmissions } from '@/hooks/submission/useSubmissions';
 import SearchBar from '../ui/SearchBar';
-import { SubmissionStatus } from '@/generated/prisma/enums';
 import CustomPagination from '../ui/CustomPagination';
+import { SubmissionStatus } from '@/types/submission';
 
 export default function SubmissionsPage() {
   const [filters, setFilters] = useState({

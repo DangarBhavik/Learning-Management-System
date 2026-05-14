@@ -1,4 +1,4 @@
-import { courseFormData, CourseType } from '@/types/types';
+import { courseFormData, CourseType } from '@/types/course';
 import { sendRequest } from '@/utils/sendRequest';
 
 export type Lesson = {

@@ -1,4 +1,4 @@
-import { SubmissionStatus } from '@/types/types';
+import { SubmissionStatus } from '@/types/submission';
 
 export const SUBMISSION_STATUS = ['PENDING', 'GRADED', 'RESUBMITTED'] as SubmissionStatus[];
 

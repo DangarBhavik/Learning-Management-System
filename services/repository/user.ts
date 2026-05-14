@@ -1,5 +1,11 @@
-import { User } from '@/generated/prisma/client';
+
 import { prisma } from '@/utils/prisma-client';
+import { User } from '@/types/user';
+const Role = {
+  ADMIN: 'ADMIN',
+  MENTOR: 'MENTOR',
+  TRAINEE: 'TRAINEE',
+} as const;
 
 export const createUserWebhook = async ({
   id,
@@ -59,7 +65,7 @@ export const getTraineeMentorId = async (traineeId: string) => {
   return user.mentorId;
 };
 
-import { Role } from '@/generated/prisma/enums';
+
 
 export const getUsers = async (limit?: number) => {
   const [users, totalUsers, totalMentors, totalTrainees] = await Promise.all([

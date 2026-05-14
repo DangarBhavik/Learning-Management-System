@@ -4,8 +4,6 @@ import { deleteFile, getFileById } from '@/services/repository/file';
 import ApiResponse from '@/utils/api-response';
 import { checkCourseCrudAccess } from '@/utils/checkCourseCrudAccess';
 import { FileTypeToResourceType } from '@/utils/file-type-map';
-import { prisma } from '@/utils/prisma-client';
-import { get } from 'http';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const DELETE = async (

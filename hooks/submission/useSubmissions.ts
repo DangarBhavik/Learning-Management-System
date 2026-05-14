@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { getSubmissionsByTrainee, SubmissionType } from '@/services/apis/submissions';
+import { getSubmissionsByTrainee } from '@/services/apis/submissions';
 import { PaginationDataType } from '@/types/types';
+import { SubmissionType } from '@/types/submission';
 
 export const useSubmissions = ({
   page,

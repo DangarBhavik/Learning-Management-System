@@ -2,8 +2,8 @@ import getUserDetails from '@/lib/isAuth';
 import ApiResponse from '@/utils/api-response';
 import { NextResponse } from 'next/server';
 import { getTraineesByMentor, getAllUsersForAdmin } from '@/services/repository/course';
-import { User } from '@/generated/prisma/client';
-import { userRoleCheck } from '@/utils/checkUserRole';
+import { userRoleCheck } from '@/utils/checkUserRole'; 
+import { User } from '@/types/user';
 
 export const GET = async () => {
   try {

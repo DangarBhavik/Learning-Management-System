@@ -1,4 +1,6 @@
-import { AssignmentFilter, PrismaUserRole } from '@/types/types';
+
+import { AssignmentFilter } from '@/types/assignment';
+import { PrismaUserRole } from '@/types/user';
 import { userRoleCheck } from '@/utils/checkUserRole';
 import { prisma } from '@/utils/prisma-client';
 

@@ -1,4 +1,4 @@
-import { PrismaUserRole } from '@/types/types';
+import { PrismaUserRole } from '@/types/user';
 
 const userRoleMapping: Record<PrismaUserRole, string> = {
   MENTOR: 'MENTOR',

@@ -5,9 +5,7 @@ import { useState } from 'react';
 import { BiTrash } from 'react-icons/bi';
 import DeleteConfirmation from '../course/DeleteConfimation';
 import Pending from '../course/Pending';
-
-
-export type NotificationFilterType = 'all' | 'read' | 'unread';
+import { NotificationFilterType } from '@/types/notification';
 
 type NotificationFiltersProps = {
   selectedNotifications: string[];

@@ -4,28 +4,16 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import Image from 'next/image';
+import { CourseAssign } from '@/types/course';
 
-type Course = {
-  id: string;
-  title: string;
-  description: string;
-  thumbnail: string;
-  author: string;
-  image: string;
-  status: string;
-  authorId: string;
-  thumbnailId: string | null;
-  createdAt: string;
-  modulesCount: number;
-  authorInitials?: string;
-};
+
 
 function SelectableCourse({
   course,
   isSelected,
   onCheckboxChange,
 }: {
-  course: Course;
+  course: CourseAssign;
   isSelected: boolean;
   onCheckboxChange: () => void;
 }) {

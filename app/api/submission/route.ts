@@ -6,68 +6,11 @@ import {
   getAllSubmissionsForAdmin,
   getSubmissionsForMentor,
 } from '@/services/repository/submission';
-import { PaginationDataType, SubmissionStatus } from '@/types/types';
+import { PaginationDataType } from '@/types/types';
+import { SubmissionResponse, SubmissionStatus, SubmissionWithRelations } from '@/types/submission';
+
 
 type Role = 'ADMIN' | 'MENTOR';
-
-type SubmissionWithRelations = {
-  id: string;
-  fileId: string | null;
-
-  file: {
-    id: string;
-    url: string;
-    public_id: string;
-  } | null;
-  githubLink: string | null;
-  score: number | null;
-  status: 'PENDING' | 'GRADED' | 'RESUBMITTED';
-  submittedAt: Date;
-
-  student: {
-    username: string;
-    mentor?: {
-      username: string;
-    } | null;
-  };
-
-  assignment: {
-    id: string;
-    title: string;
-    module?: {
-      course?: {
-        title: string;
-      } | null;
-    } | null;
-  };
-};
-
-type SubmissionResponse = {
-  id: string;
-  file: {
-    id: string;
-    url: string;
-    public_id: string;
-  } | null;
-  githubLink: string | null;
-  score: number | null;
-  status: string;
-  submittedAt: Date;
-
-  student: {
-    name: string;
-    mentorName: string;
-  };
-
-  assignment: {
-    id: string;
-    title: string;
-  };
-
-  course: {
-    title: string;
-  };
-};
 
 const sendResponse = (status: number, message: string, data: unknown) =>
   NextResponse.json(new ApiResponse(status, message, data), { status });

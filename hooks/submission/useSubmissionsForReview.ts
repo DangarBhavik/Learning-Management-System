@@ -1,6 +1,6 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { getAllSubmissionsForReview } from '@/services/apis/submissions';
-import { SubmissionStatus } from '@/types/types';
+import { SubmissionStatus } from '@/types/submission';
 import { DEFAULT_PAGINATION_DATA } from '@/utils/constant';
 
 export const useSubmissionsForReview = ({

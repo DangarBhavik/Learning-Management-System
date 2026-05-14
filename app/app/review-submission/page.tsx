@@ -4,7 +4,7 @@ import Loading from '@/components/ui/loading';
 import { useSubmissionsForReview } from '@/hooks/submission/useSubmissionsForReview';
 import SubmissionsTable from '@/components/submissions/SubmissionsTable';
 import { useState } from 'react';
-import { SubmissionStatus } from '@/types/types';
+import { SubmissionStatus } from '@/types/submission';
 import { SubmissionFilterBtns } from '@/components/review-submission/SubmissionFilterBtns';
 import SearchBar from '@/components/ui/SearchBar';
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { SubmissionType } from '@/services/apis/submissions';
+import { SubmissionType } from '@/types/submission'
 import SubmissionCard from './SubmissionCard';
 import EmptyState from './EmptySubmission';
 

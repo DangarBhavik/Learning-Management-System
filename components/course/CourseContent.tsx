@@ -2,13 +2,14 @@
 
 import Modules from '@/components/course/module/Modules';
 import NewModule from '@/components/course/module/NewModule';
-import { CourseStatus } from '@/generated/prisma/enums';
+import { CourseStatus } from '@/types/course';
 import { notFound, useParams, useRouter } from 'next/navigation';
 import Loading from '../ui/loading';
 import Link from 'next/link';
 import { useCourse } from '@/hooks/courses/useCourse';
 import { useSaveCourse } from '@/hooks/courses/useSaveCourse';
-import { Eye, MoveLeft } from 'lucide-react';
+import { MoveLeft } from 'lucide-react';
+import { Module, ModuleWithAssignment } from '@/types/module';
 
 const AddContent = () => {
   const { id: courseId } = useParams<{ id: string }>();
@@ -71,7 +72,7 @@ const AddContent = () => {
       <div className="absolute  left-1/2 top-0 h-full -z-10 rounded-3xl border-l-2 border-dashed " />
       <div className=" mt-4 mx-8 overflow-hidden ">
         {course!.modules &&
-          course!.modules.map((module, index: number) => (
+          course!.modules.map((module : Module, index: number) => (
             <Modules
               key={module.id}
               index={index}

@@ -1,7 +1,7 @@
 'use client';
 
 import Assignment from './Assignment';
-import { Assignment as AssignmentType } from '@/types/types';
+import { Assignment as AssignmentType } from '@/types/assignment';
 
 const Assignments = ({
   assignments,

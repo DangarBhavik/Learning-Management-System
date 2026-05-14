@@ -1,5 +1,5 @@
-import { SubmissionStatus } from '@/generated/prisma/enums';
 import { getMyTraineeSubmissions } from '@/services/apis/submissions';
+import { SubmissionStatus } from '@/types/submission';
 import { useQuery } from '@tanstack/react-query';
 
 type submission = {

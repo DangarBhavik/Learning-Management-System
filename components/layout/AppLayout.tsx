@@ -1,5 +1,5 @@
 'use client';
-import type { UserRole } from '@/types/types';
+import type { UserRole } from '@/types/user';
 import { useState } from 'react';
 import Sidebar from '../Sidebar';
 import NavBar from '../NavBar';

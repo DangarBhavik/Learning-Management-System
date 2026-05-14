@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import getUserDetails from '@/lib/isAuth';
 import ApiResponse from '@/utils/api-response';
 import { getStudentSubmissions } from '@/services/repository/submission';
-import { SubmissionStatus } from '@/generated/prisma/enums';
+import { SubmissionStatus } from '@/types/submission';
 
 const sendResponse = (status: number, message: string, data: unknown) =>
   NextResponse.json(new ApiResponse(status, message, data), { status });

@@ -1,4 +1,4 @@
-import { FileType } from '@/generated/prisma/enums';
+import { FileType } from "@/types/file";
 
 export const FileTypeToResourceType: Record<FileType, 'image' | 'video' | 'raw'> = {
   [FileType.IMAGE]: 'image',

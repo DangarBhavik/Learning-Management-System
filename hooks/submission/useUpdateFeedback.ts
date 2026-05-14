@@ -2,10 +2,9 @@
 
 import { updateFeedback } from '@/services/apis/submissions';
 import queryClient from '@/utils/query-client';
-import { SubmissionStatus } from '@/generated/prisma/enums';
 import { useMutation } from '@tanstack/react-query';
-import { Submission } from '@/generated/prisma/client';
 import createToast from '@/utils/toast';
+import { Submission, SubmissionStatus } from '@/types/submission';
 
 interface UpdateFeedbackPayload {
   feedback: string;

@@ -14,7 +14,7 @@ import { useUploadFile } from '@/hooks/file/useUploadFile';
 type LessonFormProps = {
   submitText: string;
   title?: string;
-  content?: string;
+  content?: string | null;
   moduleId: string;
   isPending: boolean;
   onClose: () => void;

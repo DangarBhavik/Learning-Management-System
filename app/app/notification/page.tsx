@@ -2,12 +2,11 @@
 
 import { useState } from 'react';
 import { useNotification } from '@/hooks/notification/useNotifications';
-import { NotificationFilterType } from '@/components/notifications/NotificationFilters';
 import { NotificationHeader } from '@/components/notifications/NotificationHeader';
 import { NotificationStats } from '@/components/notifications/NotificationStats';
 import NotificationFilters from '@/components/notifications/NotificationFilters';
 import { NotificationList } from '@/components/notifications/NotificationList';
-import { Notification } from '@/generated/prisma/client';
+import { Notification, NotificationFilterType } from '@/types/notification';
 
 const NotificationsPage = () => {
   const [selectedFilter, setSelectedFilter] = useState<NotificationFilterType>('all');

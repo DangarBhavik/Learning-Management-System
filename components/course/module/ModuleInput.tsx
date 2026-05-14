@@ -11,7 +11,6 @@ import { BsThreeDotsVertical } from 'react-icons/bs';
 import { MdClose } from 'react-icons/md';
 import { RiLoader4Fill } from 'react-icons/ri';
 import DeleteConfirmation from '../DeleteConfimation';
-import { toast } from 'sonner';
 import createToast from '@/utils/toast';
 
 const ModuleInput: React.FC<{ title?: string; moduleId: string; index: number }> = ({

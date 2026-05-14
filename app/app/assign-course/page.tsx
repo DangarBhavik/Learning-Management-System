@@ -9,18 +9,7 @@ import AssignedCourses from '@/components/course-assignment/AssignedCourses';
 import queryClient from '@/utils/query-client';
 import AssignSkeleton from '@/components/course-assignment/AssignSkeleton';
 import { useGetAssignableUsers } from '@/hooks/user/useGetAssignableUsers';
-
-type UserType = {
-  id: string;
-  clerkId: string;
-  mentorId: string | null;
-  role: 'TRAINEE' | 'MENTOR' | 'ADMIN';
-  username: string;
-  email: string;
-  image: string | null;
-  createdAt: string;
-  updatedAt: string;
-};
+import { UserType } from '@/types/user';
 
 const AssignCoursePage = () => {
   const [selectedUserId, setSelectedUserId] = useState('');

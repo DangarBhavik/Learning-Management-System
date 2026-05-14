@@ -1,6 +1,6 @@
 import { LuFileBadge } from 'react-icons/lu';
 import SubmissionHistory from '@/components/submissions/SubmissionHistory';
-import { SubmissionType } from '@/services/apis/submissions';
+import { SubmissionType } from '@/types/submission';
 
 type SubmissionHistorySectionProps = {
   submissions: SubmissionType[];

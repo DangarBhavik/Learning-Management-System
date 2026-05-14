@@ -1,4 +1,4 @@
-import { Notification } from '@/generated/prisma/client';
+import { Notification } from '@/types/notification';
 import { NotificationItem } from './NotificationItem';
 import { NotificationSkeleton } from './NotificationSkeleton';
 import { EmptyNotificationState } from './EmptyNotificationState';

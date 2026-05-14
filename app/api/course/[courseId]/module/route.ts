@@ -1,5 +1,4 @@
 import getUserDetails from '@/lib/isAuth';
-import { getCourseAuthorId } from '@/services/repository/course';
 import { createModule } from '@/services/repository/module';
 import ApiResponse from '@/utils/api-response';
 import { checkCourseCrudAccess } from '@/utils/checkCourseCrudAccess';

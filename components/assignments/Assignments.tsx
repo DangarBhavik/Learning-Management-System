@@ -1,20 +1,7 @@
 'use client';
+import { AssignmentType } from '@/types/assignment';
 import AssignmentCard from './AssignmentCards';
 import EmptyState from './EmptyAssignment';
-
-export type AssignmentType = {
-  id: string;
-  title: string;
-  description: string;
-  dueDate: string | null;
-  maxScore: number;
-  moduleTitle: string;
-  courseTitle: string;
-  submission: {
-    status: 'PENDING' | 'GRADED' | 'RESUBMITTED';
-    score?: number | null;
-  } | null;
-};
 
 const Assignments: React.FC<{ assignments: AssignmentType[] }> = ({ assignments }) => {
   if (assignments.length === 0) return <EmptyState />;

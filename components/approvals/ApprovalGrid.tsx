@@ -1,16 +1,7 @@
 import Link from 'next/link';
 import ApproveButton from '../ui/ApproveButton';
 import Image from 'next/image';
-type CourseType = {
-  id: string;
-  title: string;
-  description: string;
-  mentor: string;
-  submittedAt: string;
-  modules: number;
-  lessons: number;
-  image: string | null;
-};
+import { CourseType } from '@/types/course';
 
 type Props = {
   courses: CourseType[];

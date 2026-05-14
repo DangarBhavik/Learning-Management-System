@@ -1,4 +1,4 @@
-import { AssignmentType } from './Assignments';
+import { AssignmentType } from '@/types/assignment';
 import statusConfig from './StatusConfig';
 import Link from 'next/link';
 import { BsFileEarmarkText } from 'react-icons/bs';

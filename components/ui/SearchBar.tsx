@@ -1,8 +1,9 @@
 'use client';
+import { AssignmentFilter } from '@/types/assignment';
 import CustomSelect from './CustomSelect';
 import { useEffect, useRef, useState } from 'react';
-import { AssignmentFilter, CourseStatus } from '@/types/types';
-import { SubmissionStatus } from '@/generated/prisma/enums';
+import { CourseStatus } from '@/types/course';
+import { SubmissionStatus } from '@/types/submission';
 
 const SearchBar = ({
   inputPosition = 'right',

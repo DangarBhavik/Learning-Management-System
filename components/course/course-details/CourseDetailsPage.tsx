@@ -6,9 +6,9 @@ import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { use } from 'react';
 import Loading from '../../ui/loading';
-import { Role } from '@/generated/prisma/enums';
 import InactiveCourseButton from './InactiveCourseButton';
 import ReactivateCourseButton from './ReactivateCourseButton ';
+import { Role } from '@/types/user';
 
 type Props = {
   role: Role;

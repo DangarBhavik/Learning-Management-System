@@ -2,9 +2,8 @@
 
 import CourseCreateForm from '@/components/course-create-form/CourseCreateForm';
 import { useCreateCourse } from '@/hooks/courses/useCreateCourse';
-import { courseFormData } from '@/types/types';
+import { courseFormData } from '@/types/course';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
 import { toast } from 'sonner';
 
 function AddCourse() {

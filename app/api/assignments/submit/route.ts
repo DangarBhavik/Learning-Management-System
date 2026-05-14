@@ -4,9 +4,9 @@ import ApiResponse from '@/utils/api-response';
 import { uploadToCloud } from '@/services/external/cloudinary';
 import { createSubmission } from '@/services/repository/submission';
 import { createFile } from '@/services/repository/file';
-import { FileType } from '@/generated/prisma/enums';
 import { createNotification } from '@/services/repository/notification';
 import { getAssignmentById } from '@/services/repository/assignment';
+import { FileType } from '@/types/file';
 
 export async function POST(req: NextRequest) {
   try {

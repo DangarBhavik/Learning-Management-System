@@ -1,5 +1,5 @@
 import { updateCourse } from '@/services/apis/courses';
-import { courseFormData } from '@/types/types';
+import { courseFormData } from '@/types/course';
 import createToast from '@/utils/toast';
 import { useMutation } from '@tanstack/react-query';
 

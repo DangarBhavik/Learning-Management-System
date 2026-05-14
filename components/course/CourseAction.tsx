@@ -2,7 +2,6 @@ import { useState } from 'react';
 import NewLesson from './lesson/NewLesson';
 import DropDown from '../ui/DropDown';
 import { BiPlus } from 'react-icons/bi';
-import AssignmentForm from './assignment/AssignmentForm';
 import NewAssignment from './assignment/NewAssignment';
 
 const CourseAction = ({ moduleId }: { moduleId: string }) => {

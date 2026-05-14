@@ -1,8 +1,8 @@
 import { prisma } from '@/utils/prisma-client';
-import { FileType, SubmissionStatus } from '@/generated/prisma/enums';
 import { PaginationDataType } from '@/types/types';
 import { Prisma } from '@/generated/prisma/client';
-import { totalmem } from 'os';
+import { SubmissionStatus } from '@/types/submission';
+import { FileType } from '@/types/file';
 
 const whereClauseForStatus = (
   status: SubmissionStatus[],

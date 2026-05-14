@@ -1,5 +1,5 @@
 import { editModule } from '@/services/apis/module';
-import { Course } from '@/types/types';
+import { Course } from '@/types/course';
 import queryClient from '@/utils/query-client';
 import createToast from '@/utils/toast';
 import { useMutation } from '@tanstack/react-query';

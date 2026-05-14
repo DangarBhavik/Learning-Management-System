@@ -1,5 +1,5 @@
 import { getCourseById } from '@/services/apis/courses';
-import { Course } from '@/types/types';
+import { Course } from '@/types/course';
 import { useQuery } from '@tanstack/react-query';
 
 export const useCourse = (courseId: string) => {

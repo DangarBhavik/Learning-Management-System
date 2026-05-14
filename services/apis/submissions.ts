@@ -1,44 +1,5 @@
-import { SubmissionStatus } from '@/types/types';
+import { SubmissionStatus } from '@/types/submission';
 import { sendRequest } from '@/utils/sendRequest';
-
-export type SubmissionType = {
-  id: string;
-  file: {
-    id: string;
-    url: string;
-    public_id: string;
-  } | null;
-  githubLink?: string;
-  score?: number | null;
-  feedback?: string | null;
-  status: SubmissionStatus;
-  isActive: boolean;
-  submittedAt: string;
-  gradedAt?: string | null;
-  assignmentId: string;
-  studentId: string;
-  assignment: {
-    id: string;
-    title: string;
-    description: string;
-    dueDate?: string | null;
-    maxScore: number;
-    module: {
-      id: string;
-      title: string;
-      course: {
-        id: string;
-        title: string;
-      };
-    };
-  };
-  student: {
-    id: string;
-    username: string;
-    email: string;
-    image: string;
-  };
-};
 
 export const getMyTraineeSubmissions = async () => {
   const response = await sendRequest(`/api/submission`);

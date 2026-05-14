@@ -3,9 +3,10 @@
 import ModuleInput from './ModuleInput';
 import Assignments from '../assignment/Asssignments';
 import Lessons from '../lesson/Lessons';
-import { Assignment, Lesson } from '@/types/types';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import CourseAction from '../CourseAction';
+import { Lesson } from '@/types/module';
+import { Assignment } from '@/types/assignment';
 
 type ModuleFormEditProps = {
   id: string;

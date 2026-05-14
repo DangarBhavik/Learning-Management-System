@@ -1,4 +1,4 @@
-type Role = 'ADMIN' | 'MENTOR' | 'TRAINEE';
+import { Role } from "@/types/user";
 
 type Props = {
   role: Role;

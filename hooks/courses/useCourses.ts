@@ -1,5 +1,4 @@
 import { fetchCourses } from '@/services/apis/courses';
-import { Course } from '@/types/types';
 import { useQuery } from '@tanstack/react-query';
 
 export const useCourses = ({

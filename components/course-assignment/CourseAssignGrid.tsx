@@ -6,21 +6,7 @@ import NoCourses from './NoCourses';
 import CustomPagination from '../ui/CustomPagination';
 import { Button } from '../ui/button';
 import { PaginationDataType } from '@/types/types';
-
-type Course = {
-  id: string;
-  title: string;
-  description: string;
-  thumbnail: string;
-  author: string;
-  image: string;
-  status: string;
-  authorId: string;
-  thumbnailId: string | null;
-  createdAt: string;
-  modulesCount: number;
-  authorInitials?: string;
-};
+import { CourseAssign } from '@/types/course';
 
 const CourseAssignGrid = ({
   isCourseLoading,
@@ -44,17 +30,17 @@ const CourseAssignGrid = ({
   submitText: string;
   isCourseLoading: boolean;
   isFetching: boolean;
-  courses: Course[];
+  courses: CourseAssign[];
   paginationData: PaginationDataType;
   getNextPage: () => void;
   getPreviousPage: () => void;
   func: (courseIds: string[]) => Promise<void>;
   isLoading: boolean;
 }) => {
-  const [selectedCourses, setSelectedCourses] = useState<Course[]>([]);
+  const [selectedCourses, setSelectedCourses] = useState<CourseAssign[]>([]);
   const [showSummery, setShowSummery] = useState(false);
 
-  const handleSelectCourse = (course: Course) => {
+  const handleSelectCourse = (course: CourseAssign) => {
     setSelectedCourses(prev => {
       const isSelected = prev.some(c => c.id === course.id);
       if (isSelected) {

@@ -1,4 +1,4 @@
-import { SubmissionType } from '@/services/apis/submissions';
+import { SubmissionType } from '@/types/submission'
 
 type Props = {
   submissions: SubmissionType[];

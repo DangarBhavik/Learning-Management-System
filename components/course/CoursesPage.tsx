@@ -6,8 +6,9 @@ import CoursesLayout from './CoursesLayout';
 import { useCourses } from '@/hooks/courses/useCourses';
 import SearchBar from '../ui/SearchBar';
 import { useState } from 'react';
-import { CourseStatus, PrismaUserRole } from '@/types/types';
 import CustomPagination from '../ui/CustomPagination';
+import { PrismaUserRole } from '@/types/user';
+import { CourseStatus } from '@/types/course';
 
 export default function CoursesPage({ role }: { role: PrismaUserRole }) {
   const [filters, setFilters] = useState<{ search: string; statusFilter: CourseStatus | 'ALL' }>({

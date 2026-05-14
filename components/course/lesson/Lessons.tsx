@@ -1,4 +1,4 @@
-import { Lesson as LessonType } from '@/types/types';
+import { Lesson as LessonType } from '@/types/module';
 import Lesson from './Lesson';
 
 const Lessons = ({ lessons, moduleId }: { lessons: LessonType[]; moduleId: string }) => {

@@ -1,33 +1,9 @@
 import { useState } from 'react';
 import { ModuleItem } from './ModuleItem';
-
-type Lesson = {
-  id: string;
-  title: string;
-  content: string | null;
-};
-
-type Submission = {
-  status: 'PENDING' | 'GRADED' | 'RESUBMITTED';
-  score: number | null;
-};
-
-type Assignment = {
-  id: string;
-  title: string;
-  dueDate: string | null;
-  submission?: Submission | null;
-};
-
-type Module = {
-  id: string;
-  title: string;
-  lessons: Lesson[];
-  assignments: Assignment[];
-};
+import { Lesson, ModuleWithAssignment } from '@/types/module';
 
 type ModuleListProps = {
-  modules: Module[];
+  modules: ModuleWithAssignment[];
   currentLesson: Lesson | null;
   showSubmission: boolean;
   onLessonSelect: (lesson: Lesson) => void;

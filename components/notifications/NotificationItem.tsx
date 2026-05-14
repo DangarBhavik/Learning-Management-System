@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Bell, Clock3, CalendarDays, Link2, ExternalLink, CheckCheck } from 'lucide-react';
-import { Notification } from '@/generated/prisma/client';
+import { Notification } from '@/types/notification';
 import { useMarkNotificationAsRead } from '@/hooks/notification/useMarkNotificationAsRead';
 import { Button } from '../ui/button';
 import { Checkbox } from '../ui/checkbox';

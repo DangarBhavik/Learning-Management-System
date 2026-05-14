@@ -1,6 +1,6 @@
 import { getCourseAuthorId } from '@/services/repository/course';
 import { userRoleCheck } from './checkUserRole';
-import { PrismaUserRole } from '@/types/types';
+import { PrismaUserRole } from '@/types/user';
 export const checkCourseCrudAccess = async ({
   courseId,
   user,

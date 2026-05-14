@@ -5,14 +5,8 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import Loading from '@/components/ui/loading';
 import { useCourseDetails } from '@/hooks/courses/useCourseDetails';
 import { useModifyCourseDetails } from '@/hooks/courses/useModifyCourseDetails';
-import { courseFormData } from '@/types/types';
+import { CourseDraft, courseFormData } from '@/types/course';
 import { useParams, useRouter } from 'next/navigation';
-
-type CourseDraft = {
-  title?: string;
-  description?: string;
-  thumbnail: File | null;
-};
 
 function AddCourse() {
   const router = useRouter();

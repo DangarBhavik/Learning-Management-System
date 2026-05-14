@@ -1,12 +1,7 @@
 'use client';
 
 import { MarkdownEditor } from '@/components/mdxEditor';
-
-type Lesson = {
-  id: string;
-  title: string;
-  content: string | null;
-};
+import { Lesson } from '@/types/module';
 
 type ContentViewerProps = {
   lesson: Lesson | null | undefined;

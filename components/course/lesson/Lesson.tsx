@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { MarkdownEditor } from '@/components/mdxEditor';
 import EditLesson from './EditLesson';
 import { useDeleteLesson } from '@/hooks/lesson/useDeleteLesson';
-import { Lesson as LessonFormProp } from '@/types/types';
+import { Lesson as LessonFormProp } from '@/types/module';
 import { BookCheck } from 'lucide-react';
 import DropDown from '@/components/ui/DropDown';
 import { BsThreeDotsVertical } from 'react-icons/bs';

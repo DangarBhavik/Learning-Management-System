@@ -1,8 +1,9 @@
-import { CourseStatus, FileType } from '@/generated/prisma/enums';
 import getUserDetails from '@/lib/isAuth';
 import { uploadToCloud } from '@/services/external/cloudinary';
 import { createCourse, getAllCourses } from '@/services/repository/course';
 import { createFile } from '@/services/repository/file';
+import { FileType } from '@/types/file';
+import { CourseStatus } from '@/types/course';
 import ApiResponse from '@/utils/api-response';
 import { NextRequest, NextResponse } from 'next/server';
 

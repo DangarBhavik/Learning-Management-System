@@ -1,6 +1,5 @@
 import getUserDetails from '@/lib/isAuth';
 import { deleteFromCloud } from '@/services/external/cloudinary';
-import { getCourseAuthorId } from '@/services/repository/course';
 import { deleteFiles } from '@/services/repository/file';
 import { deleteLesson, getLessonById, updateLesson } from '@/services/repository/lesson';
 import { getModuleById } from '@/services/repository/module';

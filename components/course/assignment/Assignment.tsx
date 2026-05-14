@@ -8,7 +8,7 @@ import DropDown from '@/components/ui/DropDown';
 import { useDeleteAssignment } from '@/hooks/assignment/useDeleteAssignment';
 import { BookCheck } from 'lucide-react';
 import DeleteConfirmation from '../DeleteConfimation';
-import { Assignment as AssignmentType } from '@/types/types';
+import { Assignment as AssignmentType } from '@/types/assignment';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 const Assignment = ({ assignment, moduleId }: { assignment: AssignmentType; moduleId: string }) => {

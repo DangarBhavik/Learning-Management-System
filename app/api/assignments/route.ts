@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import getUserDetails from '@/lib/isAuth';
 import ApiResponse from '@/utils/api-response';
 import { getAssignmentsWithSubmissions } from '@/services/repository/assignment';
-import { AssignmentFilter } from '@/types/types';
+import { AssignmentFilter } from '@/types/assignment';
 
 export async function GET(req: NextRequest) {
   try {

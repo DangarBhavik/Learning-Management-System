@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { getSubmissionsByAssignment, SubmissionType } from '@/services/apis/submissions';
+import { getSubmissionsByAssignment } from '@/services/apis/submissions';
+import { SubmissionType } from '@/types/submission';
 
 export const useSubmissionsByAssignment = (assignmentId: string) => {
   return useQuery<SubmissionType[]>({

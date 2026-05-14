@@ -9,7 +9,7 @@ import { RiLoader4Fill } from 'react-icons/ri';
 import { Card, CardContent } from '@/components/ui/card';
 import { useParams } from 'next/navigation';
 import { useUploadFile } from '@/hooks/file/useUploadFile';
-import { AssignmentFormProps } from '@/types/types';
+import { AssignmentFormProps } from '@/types/assignment';
 
 const AssignmentForm = ({
   submitText,

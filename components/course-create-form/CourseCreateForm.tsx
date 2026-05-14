@@ -1,4 +1,4 @@
-import { courseFormData } from '@/types/types';
+import { courseFormData } from '@/types/course';
 import { useState } from 'react';
 import FileHandler from '../FileHander';
 import NavLink from '../NavLink';

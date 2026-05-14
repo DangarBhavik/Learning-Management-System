@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-
 import getUserDetails from '@/lib/isAuth';
-
 import ApiResponse from '@/utils/api-response';
-
 import { getAssignmentWithSubmission } from '@/services/repository/submission';
 
 export async function GET(

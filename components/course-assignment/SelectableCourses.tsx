@@ -1,20 +1,6 @@
 'use client';
+import { CourseAssign } from '@/types/course';
 import SelectableCourse from './SelectableCourse';
-
-type Course = {
-  id: string;
-  title: string;
-  description: string;
-  thumbnail: string;
-  author: string;
-  image: string;
-  status: string;
-  authorId: string;
-  thumbnailId: string | null;
-  createdAt: string;
-  modulesCount: number;
-  authorInitials?: string;
-};
 
 const SelectableCourses = ({
   classes,
@@ -23,9 +9,9 @@ const SelectableCourses = ({
   selectedCourses = [],
 }: {
   classes ?: string;
-  courses: Course[];
-  func: (course: Course) => void;
-  selectedCourses?: Course[];
+  courses: CourseAssign[];
+  func: (course: CourseAssign) => void;
+  selectedCourses?: CourseAssign[];
 }) => {
   return (
     <ul className={`grid grid-cols-1  md:grid-cols-2 xl:grid-cols-5 gap-6 ${classes}`}>

@@ -1,4 +1,5 @@
-import { getSubmissionById, SubmissionType } from '@/services/apis/submissions';
+import { getSubmissionById } from '@/services/apis/submissions';
+import { SubmissionType } from '@/types/submission';
 import { useQuery } from '@tanstack/react-query';
 
 const useSubmission = ({ submissionId }: { submissionId: string }) => {

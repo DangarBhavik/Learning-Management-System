@@ -1,22 +1,10 @@
 import React from 'react';
 import Course from './Course';
+import { CourseAssign } from '@/types/course';
 
-type Course = {
-  id: string;
-  title: string;
-  description: string;
-  thumbnail: string;
-  author: string;
-  image: string;
-  status: string;
-  authorId: string;
-  thumbnailId: string | null;
-  createdAt: string;
-  modulesCount: number;
-  authorInitials?: string;
-};
 
-const Courses: React.FC<{ courses: Course[]; btnText: string }> = ({ courses, btnText }) => {
+
+const Courses: React.FC<{ courses: CourseAssign[]; btnText: string }> = ({ courses, btnText }) => {
   return (
     <section className="space-y-5 my-5 ">
       {courses.length === 0 ? (
