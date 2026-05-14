@@ -1,9 +1,11 @@
 import getUserDetails from '@/lib/isAuth';
 import ApiResponse from '@/utils/api-response';
 import { NextRequest, NextResponse } from 'next/server';
-
 import { getCourseDetailsById, reactivateCourse } from '@/services/repository/course';
 import { createNotification } from '@/services/repository/notification';
+import ApiError from '@/utils/api-error';
+import { checkCourseCrudAccess } from '@/utils/checkCourseCrudAccess';
+import sendError from '@/utils/send-error';
 
 export const PATCH = async (
   req: NextRequest,
@@ -19,11 +21,13 @@ export const PATCH = async (
     });
 
     if (!course) {
-      return NextResponse.json(new ApiResponse(404, 'Course not found', null), { status: 404 });
+      throw new ApiError(404, 'Course not found');
     }
 
-    if (user.role !== 'ADMIN' && course.authorId !== user.id) {
-      return NextResponse.json(new ApiResponse(403, 'Forbidden', null), { status: 403 });
+    const haveAccess = await checkCourseCrudAccess({ user, courseId });
+
+    if (!haveAccess) {
+      throw new ApiError(403, 'Unauthorized to reactivate course');
     }
 
     const updatedCourse = await reactivateCourse({
@@ -41,8 +45,6 @@ export const PATCH = async (
       { status: 200 }
     );
   } catch (error) {
-    console.error(error);
-
-    return NextResponse.json(new ApiResponse(500, 'Internal server error', null), { status: 500 });
+    return sendError(error, 'Failed to reactivate course');
   }
 };

@@ -11,6 +11,8 @@ export const useCreateCourse = () => {
     },
 
     onError: (error: Error) => {
+      console.log(error);
+      
       createToast(error.message || 'Failed to create course', 'error');
     },
   });

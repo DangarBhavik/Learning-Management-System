@@ -1,12 +1,13 @@
 import getUserDetails from '@/lib/isAuth';
 import { deleteFromCloud } from '@/services/external/cloudinary';
-import { getCourseAuthorId } from '@/services/repository/course';
 import { deleteFiles } from '@/services/repository/file';
 import { deleteLesson, getLessonById, updateLesson } from '@/services/repository/lesson';
 import { getModuleById } from '@/services/repository/module';
+import ApiError from '@/utils/api-error';
 import ApiResponse from '@/utils/api-response';
 import { checkCourseCrudAccess } from '@/utils/checkCourseCrudAccess';
 import { extractEmbeddedFileIds } from '@/utils/getIdsFromMarkdown';
+import sendError from '@/utils/send-error';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const PATCH = async (
@@ -20,20 +21,18 @@ export const PATCH = async (
     const haveAccess = await checkCourseCrudAccess({ courseId, user });
 
     if (!haveAccess) {
-      return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
+      throw new ApiError(403, 'Unauthorized to update lesson for this course');
     }
 
     const moduleDetails = await getModuleById({ moduleId });
 
     if (!moduleDetails) {
-      return NextResponse.json(new ApiResponse(403, 'Module Not Found', {}), { status: 403 });
+      throw new ApiError(404, 'Module not found');
     }
 
     const lessonDetails = await getLessonById({ lessonId });
     if (!lessonDetails) {
-      return NextResponse.json(new ApiResponse(404, 'Lesson not found', {}), {
-        status: 404,
-      });
+      throw new ApiError(404, 'Lesson not found');
     }
 
     const body = await req.json();
@@ -41,9 +40,7 @@ export const PATCH = async (
     const { title, content } = body;
 
     if (title.trim() == '' && content.trim() == '') {
-      return NextResponse.json(new ApiResponse(403, 'Please Provide all Details', {}), {
-        status: 403,
-      });
+      throw new ApiError(400, 'Please provide all details');
     }
 
     const updatedLesson = await updateLesson({ title, content, lessonId });
@@ -52,8 +49,7 @@ export const PATCH = async (
       status: 200,
     });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return NextResponse.json(new ApiResponse(500, errorMessage, {}), { status: 500 });
+    return sendError(error, 'Failed to update lesson');
   }
 };
 
@@ -69,21 +65,19 @@ export const DELETE = async (
     const haveAccess = await checkCourseCrudAccess({ courseId, user });
 
     if (!haveAccess) {
-      return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
+      throw new ApiError(403, 'Unauthorized to delete lesson for this course');
     }
 
     const moduleDetails = await getModuleById({ moduleId });
 
     if (!moduleDetails) {
-      return NextResponse.json(new ApiResponse(403, 'Module Not Found', {}), { status: 403 });
+      throw new ApiError(404, 'Module not found');
     }
 
     const lessonDetails = await getLessonById({ lessonId });
 
     if (!lessonDetails) {
-      return NextResponse.json(new ApiResponse(404, 'Lesson not found', {}), {
-        status: 404,
-      });
+      throw new ApiError(404, 'Lesson not found');
     }
 
     const embeddedFileIds = extractEmbeddedFileIds(lessonDetails.content);
@@ -103,7 +97,6 @@ export const DELETE = async (
       status: 200,
     });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return NextResponse.json(new ApiResponse(500, errorMessage, {}), { status: 500 });
+    return sendError(error, 'Failed to delete lesson');
   }
 };

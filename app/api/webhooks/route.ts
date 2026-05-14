@@ -2,6 +2,8 @@ import { verifyWebhook } from '@clerk/nextjs/webhooks';
 import type { WebhookEvent } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { createUserWebhook } from '@/services/repository/user';
+import ApiError from '@/utils/api-error';
+import sendError from '@/utils/send-error';
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,10 +16,7 @@ export async function POST(req: NextRequest) {
       const email = email_addresses?.[0]?.email_address;
 
       if (!id || !email) {
-        return NextResponse.json(
-          { success: false, message: 'Missing required user data' },
-          { status: 400 }
-        );
+        throw new ApiError(400, 'Missing required user data');
       }
 
       const createUser = await createUserWebhook({
@@ -35,11 +34,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, message: 'Unhandled event type' }, { status: 200 });
   } catch (error) {
-    console.error('Webhook Error:', error);
-
-    return NextResponse.json(
-      { success: false, message: 'Webhook verification failed' },
-      { status: 400 }
-    );
+    return sendError(error, 'Failed to process webhook event');
   }
 }

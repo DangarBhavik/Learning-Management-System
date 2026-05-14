@@ -10,25 +10,27 @@ import {
 } from '@/services/repository/user';
 import { userRoleCheck } from '@/utils/checkUserRole';
 import { createNotification } from '@/services/repository/notification';
+import ApiError from '@/utils/api-error';
+import sendError from '@/utils/send-error';
 
 export const GET = async (_req: Request, { params }: { params: Promise<{ id: string }> }) => {
   try {
     const currentUser = await getUserDetails();
 
     if (userRoleCheck.isTrainee(currentUser.role)) {
-      return NextResponse.json(new ApiResponse(403, 'Forbidden', null), { status: 403 });
+      throw new ApiError(403, 'Unauthorized to view user details');
     }
 
     const { id } = await params;
 
     if (!id) {
-      return NextResponse.json(new ApiResponse(400, 'User ID is required', null), { status: 400 });
+      throw new ApiError(400, 'User ID is required');
     }
 
     const user = await getUserById(id);
 
     if (!user) {
-      return NextResponse.json(new ApiResponse(404, 'User not found', null), { status: 404 });
+      throw new ApiError(404, 'User not found');
     }
 
     const payload = {
@@ -40,11 +42,7 @@ export const GET = async (_req: Request, { params }: { params: Promise<{ id: str
       status: 200,
     });
   } catch (error) {
-    console.error('GET USER DETAILS ERROR:', error);
-
-    return NextResponse.json(new ApiResponse(500, 'Internal Server Error', null), {
-      status: 500,
-    });
+    return sendError(error, 'Failed to fetch user details');
   }
 };
 
@@ -52,22 +50,16 @@ export const GET = async (_req: Request, { params }: { params: Promise<{ id: str
 
 export const PATCH = async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
   try {
-    const { userId: clerkId } = await auth();
+    const currentUser = await getUserDetails();
 
-    if (!clerkId) {
-      return NextResponse.json(new ApiResponse(401, 'Please login first', null), { status: 401 });
-    }
-
-    const currentUser = await getUserByClerkId(clerkId);
-
-    if (!currentUser || currentUser.role !== 'ADMIN') {
-      return NextResponse.json(new ApiResponse(403, 'Forbidden', null), { status: 403 });
+    if (!currentUser || !userRoleCheck.isAdmin(currentUser.role)) {
+      throw new ApiError(403, 'Unauthorized to update user details');
     }
 
     const { id } = await params;
 
     if (!id) {
-      return NextResponse.json(new ApiResponse(400, 'User ID is required', null), { status: 400 });
+      throw new ApiError(400, 'User ID is required');
     }
 
     const body = await req.json();
@@ -76,7 +68,7 @@ export const PATCH = async (req: NextRequest, { params }: { params: Promise<{ id
     const existingUser = await getUserById(id);
 
     if (!existingUser) {
-      return NextResponse.json(new ApiResponse(404, 'User not found', null), { status: 404 });
+      throw new ApiError(404, 'User not found');
     }
 
     const nextRole = role ?? existingUser.role;
@@ -87,10 +79,8 @@ export const PATCH = async (req: NextRequest, { params }: { params: Promise<{ id
     } else if (nextMentorId) {
       const mentor = await getMentorById(nextMentorId);
 
-      if (!mentor || mentor.role !== 'MENTOR') {
-        return NextResponse.json(new ApiResponse(400, 'Invalid mentor selected', null), {
-          status: 400,
-        });
+      if (!mentor || !userRoleCheck.isMentor(mentor.role)) {
+        throw new ApiError(400, 'Invalid mentor selected');
       }
     }
 
@@ -122,10 +112,6 @@ export const PATCH = async (req: NextRequest, { params }: { params: Promise<{ id
       status: 200,
     });
   } catch (error) {
-    console.error('UPDATE USER DETAILS ERROR:', error);
-
-    return NextResponse.json(new ApiResponse(500, 'Internal Server Error', null), {
-      status: 500,
-    });
+    return sendError(error, 'Failed to update user details');
   }
 };

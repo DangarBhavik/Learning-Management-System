@@ -13,34 +13,38 @@ import {
 import { checkCourseCrudAccess } from '@/utils/checkCourseCrudAccess';
 import { createFile, deleteFile } from '@/services/repository/file';
 import { userRoleCheck } from '@/utils/checkUserRole';
+import ApiError from '@/utils/api-error';
+import sendError from '@/utils/send-error';
 
 export const GET = async (
   req: NextRequest,
   { params }: { params: Promise<{ courseId: string }> }
 ) => {
-  const user = await getUserDetails();
+  try {
+    const user = await getUserDetails();
 
-  const { courseId } = await params;
+    const { courseId } = await params;
 
-  if (!courseId) {
-    return NextResponse.json(new ApiResponse(400, 'CourseId required', {}), {
-      status: 400,
+    if (!courseId) {
+      throw new ApiError(400, 'Course ID is required');
+    }
+
+    const enrollments = await getEnrolledStudentIds({ courseId });
+
+    const isEnrolled = enrollments.some(e => e.studentId === user.id);
+
+    if (!isEnrolled && userRoleCheck.isTrainee(user.role)) {
+      throw new ApiError(403, 'Forbidden');
+    }
+
+    const course = await getCourseById({ courseId, userId: user.id });
+
+    return NextResponse.json(new ApiResponse(200, 'Course fetched successfully', course), {
+      status: 200,
     });
+  } catch (error) {
+    return sendError(error, 'Failed to fetch course');
   }
-
-  const enrollments = await getEnrolledStudentIds({ courseId });
-
-  const isEnrolled = enrollments.some(e => e.studentId === user.id);
-
-  if (!isEnrolled && userRoleCheck.isTrainee(user.role)) {
-    return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
-  }
-
-  const course = await getCourseById({ courseId, userId: user.id });
-
-  return NextResponse.json(new ApiResponse(200, 'Course fetched successfully', course), {
-    status: 200,
-  });
 };
 
 export const PATCH = async (
@@ -55,7 +59,7 @@ export const PATCH = async (
     const haveAccess = await checkCourseCrudAccess({ user, courseId });
 
     if (!haveAccess) {
-      return NextResponse.json(new ApiResponse(403, 'Forbidden', {}), { status: 403 });
+      throw new ApiError(403, 'Unauthorized to update course');
     }
 
     const formData = await req.formData();
@@ -64,34 +68,33 @@ export const PATCH = async (
     const thumbnail = formData.get('thumbnail') as File | null;
 
     if (!title && !description && !thumbnail) {
-      return NextResponse.json(new ApiResponse(400, 'Please Provide All Details', {}), {
-        status: 400,
-      });
+      throw new ApiError(
+        400,
+        'At least one field (title, description, or thumbnail) is required to update'
+      );
+    }
+
+    if (title && (title.length < 5 || title.length > 100)) {
+      throw new ApiError(400, 'Title must be between 5 and 100 characters');
     }
 
     const oldThumbnail = await getCourseThumbnail({ courseId });
 
     if (!oldThumbnail && !thumbnail) {
-      return NextResponse.json(new ApiResponse(404, 'Please upload a thumbnail', {}), {
-        status: 404,
-      });
+      throw new ApiError(400, 'Thumbnail is required for courses without an existing thumbnail');
     }
 
     let thumbnailIdToUpdate: string | undefined;
 
     if (thumbnail && thumbnail.size > 0) {
       if (!thumbnail.type.startsWith('image/')) {
-        return NextResponse.json(new ApiResponse(400, 'Only image files are acceptable', {}), {
-          status: 400,
-        });
+        throw new ApiError(400, 'Thumbnail must be an image file');
       }
 
       const uploadResult = await uploadToCloud(thumbnail);
 
       if (!uploadResult) {
-        return NextResponse.json(new ApiResponse(500, 'Failed to upload the Thumbnail', {}), {
-          status: 500,
-        });
+        throw new ApiError(500, 'Failed to upload thumbnail');
       }
 
       const file = await createFile({
@@ -121,10 +124,6 @@ export const PATCH = async (
       status: 200,
     });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-
-    return NextResponse.json(new ApiResponse(400, errorMessage, {}), {
-      status: 400,
-    });
+    return sendError(error, 'Failed to update course');
   }
 };

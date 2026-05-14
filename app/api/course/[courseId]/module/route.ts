@@ -1,8 +1,10 @@
 import getUserDetails from '@/lib/isAuth';
 import { getCourseAuthorId } from '@/services/repository/course';
 import { createModule } from '@/services/repository/module';
+import ApiError from '@/utils/api-error';
 import ApiResponse from '@/utils/api-response';
 import { checkCourseCrudAccess } from '@/utils/checkCourseCrudAccess';
+import sendError from '@/utils/send-error';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const POST = async (
@@ -17,14 +19,18 @@ export const POST = async (
     const haveAccess = await checkCourseCrudAccess({ courseId, user });
 
     if (!haveAccess) {
-      return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
+      throw new ApiError(403, 'Unauthorized to create module for this course');
     }
 
     const body = await req.json();
-    const { title } = body;
+    const { title } = body as { title: string };
 
     if (!title) {
-      return NextResponse.json(new ApiResponse(401, 'Provide Module Title', {}), { status: 401 });
+      throw new ApiError(400, 'Module title is required');
+    }
+
+    if (title.length < 2 || title.length > 100) {
+      throw new ApiError(400, 'Module title must be between 2 and 100 characters long');
     }
 
     const createdModule = await createModule({ title, courseId });
@@ -33,7 +39,6 @@ export const POST = async (
       status: 201,
     });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Internal Server Error';
-    return NextResponse.json(new ApiResponse(500, errorMessage, {}), { status: 500 });
+    return sendError(error, 'Failed to create module');
   }
 };

@@ -3,7 +3,10 @@ import getUserDetails from '@/lib/isAuth';
 import { uploadToCloud } from '@/services/external/cloudinary';
 import { createCourse, getAllCourses } from '@/services/repository/course';
 import { createFile } from '@/services/repository/file';
+import ApiError from '@/utils/api-error';
 import ApiResponse from '@/utils/api-response';
+import { userRoleCheck } from '@/utils/checkUserRole';
+import sendError from '@/utils/send-error';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = async (req: NextRequest) => {
@@ -33,8 +36,7 @@ export const GET = async (req: NextRequest) => {
       status: 200,
     });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch courses';
-    return NextResponse.json(new ApiResponse(500, errorMessage, {}), { status: 500 });
+    return sendError(error, 'Failed to fetch courses');
   }
 };
 
@@ -42,8 +44,8 @@ export const POST = async (req: NextRequest) => {
   try {
     const user = await getUserDetails();
 
-    if (user.role === 'TRAINEE') {
-      return NextResponse.json(new ApiResponse(403, 'Unauthorised', {}), { status: 403 });
+    if (userRoleCheck.isTrainee(user.role)) {
+      throw new ApiError(403, 'Unauthorized to create course');
     }
 
     const formData = await req.formData();
@@ -52,23 +54,21 @@ export const POST = async (req: NextRequest) => {
     const thumbnail = formData.get('thumbnail') as File | null;
 
     if (!title || !description || !thumbnail) {
-      return NextResponse.json(new ApiResponse(400, 'Please Provide All Details', {}), {
-        status: 400,
-      });
+      throw new ApiError(400, 'Title, description, and thumbnail are required');
+    }
+
+    if (title.length < 5 || title.length > 100) {
+      throw new ApiError(400, 'Title must be between 5 and 100 characters');
     }
 
     if (!thumbnail.type.startsWith('image/')) {
-      return NextResponse.json(new ApiResponse(400, 'Only image files are acceptable', {}), {
-        status: 400,
-      });
+      throw new ApiError(400, 'Thumbnail must be an image file');
     }
 
     const result = await uploadToCloud(thumbnail);
 
     if (!result) {
-      return NextResponse.json(new ApiResponse(500, 'Failed to upload the Thumbnail', {}), {
-        status: 500,
-      });
+      throw new ApiError(500, 'Failed to upload thumbnail');
     }
 
     const { url, public_id, bytes } = result;
@@ -92,8 +92,6 @@ export const POST = async (req: NextRequest) => {
       status: 201,
     });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to create course';
-
-    return NextResponse.json(new ApiResponse(500, errorMessage, {}), { status: 500 });
+    return sendError(error, 'Failed to create course');
   }
 };

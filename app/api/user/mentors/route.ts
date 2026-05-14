@@ -2,15 +2,16 @@ import { NextResponse } from 'next/server';
 import ApiResponse from '@/utils/api-response';
 import getUserDetails from '@/lib/isAuth';
 import { getAllMentors } from '@/services/repository/user';
+import ApiError from '@/utils/api-error';
+import { userRoleCheck } from '@/utils/checkUserRole';
+import sendError from '@/utils/send-error';
 
 export const GET = async () => {
   try {
     const currentUser = await getUserDetails();
 
-    if (!currentUser || currentUser.role !== 'ADMIN') {
-      return NextResponse.json(new ApiResponse(403, 'Forbidden', null), {
-        status: 403,
-      });
+    if (!currentUser || !userRoleCheck.isAdmin(currentUser.role)) {
+      throw new ApiError(403, 'Unauthorized to view users');
     }
 
     const mentors = await getAllMentors();
@@ -19,8 +20,6 @@ export const GET = async () => {
       status: 200,
     });
   } catch (error) {
-    console.error('GET MENTORS ERROR:', error);
-
-    return NextResponse.json(new ApiResponse(500, 'Internal Server Error', null), { status: 500 });
+    return sendError(error, 'Failed to fetch mentors');
   }
 };

@@ -4,6 +4,8 @@ import getUserDetails from '@/lib/isAuth';
 import { getTraineeMentorId, getUserById } from '@/services/repository/user';
 import { getAssignableCourses, getAssignableCoursesCount } from '@/services/repository/course';
 import { userRoleCheck } from '@/utils/checkUserRole';
+import ApiError from '@/utils/api-error';
+import sendError from '@/utils/send-error';
 
 export const GET = async (req: NextRequest) => {
   try {
@@ -17,20 +19,20 @@ export const GET = async (req: NextRequest) => {
     const skip = (page - 1) * limit;
 
     if (!userId) {
-      return NextResponse.json(new ApiResponse(400, 'userId required', {}), { status: 400 });
+      throw new ApiError(400, 'userId required');
     }
 
     const selectedUser = await getUserById(userId);
 
     if (!selectedUser) {
-      return NextResponse.json(new ApiResponse(404, 'User not found', {}), { status: 404 });
+      throw new ApiError(404, 'User not found');
     }
 
     if (userRoleCheck.isMentor(user.role) && userRoleCheck.isTrainee(selectedUser.role)) {
       const mentorId = await getTraineeMentorId(userId);
 
       if (mentorId !== user.id) {
-        return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
+        throw new ApiError(403, 'Not authorized to view assignable courses for this trainee');
       }
     }
 
@@ -50,7 +52,6 @@ export const GET = async (req: NextRequest) => {
       })
     );
   } catch (error) {
-    console.error(error);
-    return NextResponse.json(new ApiResponse(500, 'Internal Server Error', {}), { status: 500 });
+    return sendError(error, 'Failed to fetch assignable courses');
   }
 };

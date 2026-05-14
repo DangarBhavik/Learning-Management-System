@@ -7,36 +7,41 @@ import {
   markNotificationsAsRead,
 } from '@/services/repository/notification';
 import ApiResponse from '@/utils/api-response';
+import sendError from '@/utils/send-error';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = async (request: NextRequest) => {
-  const user = await getUserDetails();
+  try {
+    const user = await getUserDetails();
 
-  const searchParams = request.nextUrl.searchParams;
+    const searchParams = request.nextUrl.searchParams;
 
-  const status = searchParams.get('status');
+    const status = searchParams.get('status');
 
-  let isRead: boolean | undefined = undefined;
+    let isRead: boolean | undefined = undefined;
 
-  if (status === 'read') {
-    isRead = true;
-  }
-
-  if (status === 'unread') {
-    isRead = false;
-  }
-
-  const notifications = await getUserNotifications({
-    userId: user.id,
-    isRead,
-  });
-
-  return NextResponse.json(
-    new ApiResponse(200, 'Notifications fetched successfully', notifications),
-    {
-      status: 200,
+    if (status === 'read') {
+      isRead = true;
     }
-  );
+
+    if (status === 'unread') {
+      isRead = false;
+    }
+
+    const notifications = await getUserNotifications({
+      userId: user.id,
+      isRead,
+    });
+
+    return NextResponse.json(
+      new ApiResponse(200, 'Notifications fetched successfully', notifications),
+      {
+        status: 200,
+      }
+    );
+  } catch (error) {
+    return sendError(error, 'Failed to fetch notifications');
+  }
 };
 
 export const PATCH = async (request: NextRequest) => {
@@ -68,12 +73,14 @@ export const PATCH = async (request: NextRequest) => {
 
     await markNotificationsAsRead({ notificationIds, userId: user.id });
 
-    return NextResponse.json(new ApiResponse(200, 'Notifications deleted successfully', {}), {
-      status: 200,
-    });
+    return NextResponse.json(
+      new ApiResponse(200, 'Notifications marked as read successfully', {}),
+      {
+        status: 200,
+      }
+    );
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return NextResponse.json(new ApiResponse(500, errorMessage, {}), { status: 500 });
+    return sendError(error, 'Failed to mark notifications as read');
   }
 };
 
@@ -107,7 +114,6 @@ export const DELETE = async (request: NextRequest) => {
       status: 200,
     });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return NextResponse.json(new ApiResponse(500, errorMessage, {}), { status: 500 });
+    return sendError(error, 'Failed to delete notifications');
   }
 };

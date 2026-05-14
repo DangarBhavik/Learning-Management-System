@@ -3,6 +3,7 @@ import getUserDetails from '@/lib/isAuth';
 import ApiResponse from '@/utils/api-response';
 import { getAssignmentsWithSubmissions } from '@/services/repository/assignment';
 import { AssignmentFilter } from '@/types/types';
+import sendError from '@/utils/send-error';
 
 export async function GET(req: NextRequest) {
   try {
@@ -32,10 +33,6 @@ export async function GET(req: NextRequest) {
       }
     );
   } catch (error) {
-    console.error('ASSIGNMENTS API ERROR:', error);
-
-    return NextResponse.json(new ApiResponse(500, 'Failed to fetch assignments', {}), {
-      status: 500,
-    });
+    return sendError(error, 'Failed to fetch assignments');
   }
 }

@@ -1,11 +1,11 @@
 import getUserDetails from '@/lib/isAuth';
 import { deleteFromCloud } from '@/services/external/cloudinary';
 import { deleteFile, getFileById } from '@/services/repository/file';
+import ApiError from '@/utils/api-error';
 import ApiResponse from '@/utils/api-response';
 import { checkCourseCrudAccess } from '@/utils/checkCourseCrudAccess';
 import { FileTypeToResourceType } from '@/utils/file-type-map';
-import { prisma } from '@/utils/prisma-client';
-import { get } from 'http';
+import sendError from '@/utils/send-error';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const DELETE = async (
@@ -20,19 +20,19 @@ export const DELETE = async (
     const haveAccess = await checkCourseCrudAccess({ courseId, user });
 
     if (!haveAccess) {
-      return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
+      throw new ApiError(403, 'Unauthorized to delete file for this course');
     }
 
     const file = await getFileById(fileId);
 
     if (!file) {
-      return NextResponse.json(new ApiResponse(404, 'File Not Found', {}), { status: 404 });
+      throw new ApiError(404, 'File Not Found');
     }
 
     const deletedFile = await deleteFile(fileId);
 
     if (!deletedFile) {
-      return NextResponse.json(new ApiResponse(500, 'Failed to Delete File', {}), { status: 500 });
+      throw new ApiError(500, 'Failed to delete file');
     }
 
     await deleteFromCloud(deletedFile.public_id, FileTypeToResourceType[deletedFile.type]);
@@ -41,9 +41,6 @@ export const DELETE = async (
       status: 201,
     });
   } catch (error) {
-    const errorMessge = error instanceof Error ? error.message : 'Failed to Delete File';
-    return NextResponse.json(new ApiResponse(500, errorMessge, {}), {
-      status: 500,
-    });
+    return sendError(error, 'Failed to delete File');
   }
 };
