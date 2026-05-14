@@ -1,8 +1,10 @@
 import getUserDetails from '@/lib/isAuth';
 import { createAssignment } from '@/services/repository/assignment';
 import { getModuleById } from '@/services/repository/module';
+import ApiError from '@/utils/api-error';
 import ApiResponse from '@/utils/api-response';
 import { checkCourseCrudAccess } from '@/utils/checkCourseCrudAccess';
+import sendError from '@/utils/send-error';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const POST = async (
@@ -17,20 +19,20 @@ export const POST = async (
     const haveAccess = await checkCourseCrudAccess({ courseId, user });
 
     if (!haveAccess) {
-      return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
+      throw new ApiError(403, 'Unauthorized to create assignment for this course');
     }
 
     const moduleDetails = await getModuleById({ moduleId });
 
     if (!moduleDetails) {
-      return NextResponse.json(new ApiResponse(403, 'Module Not Found', {}), { status: 403 });
+      throw new ApiError(404, 'Module Not Found');
     }
 
     const body = await req.json();
     const { title, description, maxScore } = await body;
 
     if (!title && !description && !maxScore) {
-      return NextResponse.json(new ApiResponse(401, 'Provide All Details', {}), { status: 401 });
+      throw new ApiError(400, 'Please provide all details');
     }
 
     const createdAssignment = await createAssignment({
@@ -45,9 +47,7 @@ export const POST = async (
       new ApiResponse(201, 'Assignment Created SuccessFully', createdAssignment),
       { status: 201 }
     );
-  } catch {
-    return NextResponse.json(new ApiResponse(401, 'Failed to create Assignment ', {}), {
-      status: 401,
-    });
+  } catch (error) {
+    return sendError(error, 'Failed to create assignment');
   }
 };

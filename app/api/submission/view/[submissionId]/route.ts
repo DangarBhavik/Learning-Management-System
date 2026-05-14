@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import getUserDetails from '@/lib/isAuth';
 import ApiResponse from '@/utils/api-response';
-
 import {
   getSubmissionMentorId,
   getSubmissionById,
@@ -9,6 +8,8 @@ import {
 } from '@/services/repository/submission';
 import { userRoleCheck } from '@/utils/checkUserRole';
 import { createNotification } from '@/services/repository/notification';
+import ApiError from '@/utils/api-error';
+import sendError from '@/utils/send-error';
 
 const sendResponse = (status: number, message: string, data: unknown) =>
   NextResponse.json(new ApiResponse(status, message, data), { status });
@@ -23,18 +24,18 @@ export async function GET(
     const user = await getUserDetails();
 
     if (userRoleCheck.isTrainee(user.role)) {
-      return sendResponse(403, 'Unauthorised', {});
+      throw new ApiError(403, 'Not authorised to view Submission');
     }
 
-    if (user.role === 'MENTOR') {
+    if (userRoleCheck.isMentor(user.role)) {
       const validation = await getSubmissionMentorId(submissionId);
 
       if (!validation) {
-        return sendResponse(404, 'Submission not found', {});
+        throw new ApiError(404, 'Submission not found');
       }
 
       if (validation.student.mentorId !== user.id) {
-        return sendResponse(403, 'Not authorised to view Submission', {});
+        throw new ApiError(403, 'Not authorised to view Submission');
       }
     }
 
@@ -42,8 +43,7 @@ export async function GET(
 
     return sendResponse(200, 'Submission fetched successfully', submission);
   } catch (error) {
-    console.error('Error fetching submission:', error);
-    return sendResponse(500, 'Error fetching submission', {});
+    return sendError(error, 'Failed to fetch submission');
   }
 }
 
@@ -63,26 +63,22 @@ export async function PATCH(
     const submission = await getSubmissionById(submissionId);
 
     if (!submission) {
-      return sendResponse(404, 'Submission not found', {});
+      throw new ApiError(404, 'Submission not found');
     }
 
     if (score && score > submission.assignment.maxScore) {
-      return sendResponse(
-        400,
-        `Score cannot be greater than ${submission.assignment.maxScore}`,
-        {}
-      );
+      throw new ApiError(400, `Score cannot be greater than ${submission.assignment.maxScore}`);
     }
 
     if (userRoleCheck.isMentor(user.role)) {
       const submissionDetails = await getSubmissionMentorId(submissionId);
 
       if (!submissionDetails) {
-        return sendResponse(404, 'Submission not found', {});
+        throw new ApiError(404, 'Submission not found');
       }
 
       if (submissionDetails.student.mentorId !== user.id) {
-        return sendResponse(403, 'Unauthorised', {});
+        throw new ApiError(403, 'Unauthorised');
       }
     }
 
@@ -100,7 +96,6 @@ export async function PATCH(
 
     return sendResponse(200, 'Submission updated successfully', updatedSubmission);
   } catch (error) {
-    console.error('Error updating submission:', error);
-    return sendResponse(500, 'Error updating submission', {});
+    return sendError(error, 'Failed to update submission');
   }
 }

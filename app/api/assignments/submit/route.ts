@@ -7,6 +7,8 @@ import { createFile } from '@/services/repository/file';
 import { createNotification } from '@/services/repository/notification';
 import { getAssignmentById } from '@/services/repository/assignment';
 import { FileType } from '@/types/file';
+import ApiError from '@/utils/api-error';
+import sendError from '@/utils/send-error';
 
 export async function POST(req: NextRequest) {
   try {
@@ -20,20 +22,18 @@ export async function POST(req: NextRequest) {
     const type = formData.get('type') as 'FILE' | 'LINK';
 
     if (!assignmentId || !type) {
-      return NextResponse.json(new ApiResponse(400, 'Missing fields', {}), { status: 400 });
+      throw new ApiError(400, 'Assignment ID and submission type are required');
     }
 
     const assignemntDetails = await getAssignmentById({ assignmentId });
 
     if (!assignemntDetails) {
-      return NextResponse.json(new ApiResponse(400, 'Cannot found Assignment', {}), {
-        status: 400,
-      });
+      throw new ApiError(404, 'Assignment not found');
     }
 
     if (type === 'FILE') {
       if (!file) {
-        return NextResponse.json(new ApiResponse(400, 'File is required', {}), { status: 400 });
+        throw new ApiError(400, 'File is required for file submission');
       }
 
       const allowedTypes = [
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
       ];
 
       if (!allowedTypes.includes(file.type)) {
-        return NextResponse.json(new ApiResponse(400, 'Invalid file type', {}), { status: 400 });
+        throw new ApiError(400, 'Unsupported file type');
       }
 
       const upload = await uploadToCloud(file);
@@ -82,13 +82,11 @@ export async function POST(req: NextRequest) {
     // LINK SUBMISSION
     if (type === 'LINK') {
       if (!githubLink || !githubLink.trim()) {
-        return NextResponse.json(new ApiResponse(400, 'GitHub link is required', {}), {
-          status: 400,
-        });
+        throw new ApiError(400, 'GitHub link is required for link submission');
       }
 
       if (!githubLink.includes('github.com')) {
-        return NextResponse.json(new ApiResponse(400, 'Invalid GitHub link', {}), { status: 400 });
+        throw new ApiError(400, 'Invalid GitHub link');
       }
 
       const submission = await createSubmission({
@@ -110,8 +108,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(new ApiResponse(400, 'Invalid submission type', {}), { status: 400 });
   } catch (error) {
-    console.error(error);
-
-    return NextResponse.json(new ApiResponse(500, 'Submission failed', {}), { status: 500 });
+    return sendError(error, 'Failed to submit assignment');
   }
 }

@@ -1,8 +1,10 @@
 import getUserDetails from '@/lib/isAuth';
 import { deleteFromCloud } from '@/services/external/cloudinary';
 import { deleteModule, getModuleById, updateModule } from '@/services/repository/module';
+import ApiError from '@/utils/api-error';
 import ApiResponse from '@/utils/api-response';
 import { checkCourseCrudAccess } from '@/utils/checkCourseCrudAccess';
+import sendError from '@/utils/send-error';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const PATCH = async (
@@ -16,7 +18,7 @@ export const PATCH = async (
     const haveAccess = await checkCourseCrudAccess({ courseId, user });
 
     if (!haveAccess) {
-      return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
+      throw new ApiError(403, 'Unauthorized to update module for this course');
     }
 
     const body = await req.json();
@@ -24,13 +26,17 @@ export const PATCH = async (
     const { title } = body;
 
     if (!title) {
-      return NextResponse.json(new ApiResponse(401, 'Provide Valid Title', {}), { status: 401 });
+      throw new ApiError(400, 'Module title is required');
+    }
+
+    if (title.length < 2 || title.length > 100) {
+      throw new ApiError(400, 'Module title must be between 2 and 100 characters long');
     }
 
     const moduleToUpdate = await getModuleById({ moduleId });
 
     if (!moduleToUpdate) {
-      return NextResponse.json(new ApiResponse(404, 'Module not Found', {}), { status: 404 });
+      throw new ApiError(404, 'Module not found');
     }
 
     const updatedModule = await updateModule({ title, moduleId });
@@ -39,12 +45,7 @@ export const PATCH = async (
       status: 200,
     });
   } catch (error) {
-    const errorMessage =
-      error instanceof Error
-        ? error.message
-        : 'Unable to update module right now. Please try again.';
-
-    return NextResponse.json(new ApiResponse(500, errorMessage, {}), { status: 500 });
+    return sendError(error, 'Failed to update module');
   }
 };
 
@@ -60,7 +61,7 @@ export const DELETE = async (
     const haveAccess = await checkCourseCrudAccess({ courseId, user });
 
     if (!haveAccess) {
-      return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
+      throw new ApiError(403, 'Unauthorized to delete module for this course');
     }
 
     const moduleData = await getModuleById({
@@ -70,9 +71,7 @@ export const DELETE = async (
     });
 
     if (!moduleData) {
-      return NextResponse.json(new ApiResponse(404, 'Please Provide Valid id', {}), {
-        status: 404,
-      });
+      throw new ApiError(404, 'Module not found');
     }
 
     const deletedFilesFromDb = await deleteModule({ moduleId });
@@ -87,9 +86,6 @@ export const DELETE = async (
       status: 200,
     });
   } catch (error) {
-    return NextResponse.json(
-      new ApiResponse(500, 'Unable to delete module right now. Please try again.', {}),
-      { status: 500 }
-    );
+    return sendError(error, 'Failed to delete module');
   }
 };

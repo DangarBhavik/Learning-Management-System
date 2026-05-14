@@ -3,6 +3,7 @@ import getUserDetails from '@/lib/isAuth';
 import ApiResponse from '@/utils/api-response';
 import { getStudentSubmissions } from '@/services/repository/submission';
 import { SubmissionStatus } from '@/types/submission';
+import sendError from '@/utils/send-error';
 
 const sendResponse = (status: number, message: string, data: unknown) =>
   NextResponse.json(new ApiResponse(status, message, data), { status });
@@ -32,8 +33,6 @@ export async function GET(req: NextRequest) {
 
     return sendResponse(200, 'Submissions fetched', paginatedResponse);
   } catch (error) {
-    console.error('GET STUDENT SUBMISSIONS ERROR:', error);
-
-    return sendResponse(500, 'Error fetching submissions', {});
+    return sendError(error, 'Failed to fetch submissions');
   }
 }

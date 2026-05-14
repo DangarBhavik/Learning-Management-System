@@ -2,8 +2,10 @@ import getUserDetails from '@/lib/isAuth';
 import { restrictCoursesForTrainee } from '@/services/repository/course';
 import { createNotification } from '@/services/repository/notification';
 import { getTraineeMentorId, getUserById } from '@/services/repository/user';
+import ApiError from '@/utils/api-error';
 import ApiResponse from '@/utils/api-response';
 import { userRoleCheck } from '@/utils/checkUserRole';
+import sendError from '@/utils/send-error';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const DELETE = async (req: NextRequest) => {
@@ -12,21 +14,21 @@ export const DELETE = async (req: NextRequest) => {
 
     const user = await getUserDetails();
 
-    if (!userId || !courseIds?.length) {
-      return NextResponse.json(new ApiResponse(400, 'Invalid payload', {}), { status: 400 });
+    if (!userId || (courseIds && courseIds.length === 0)) {
+      throw new ApiError(400, 'Invalid payload');
     }
 
     const selectedUser = await getUserById(userId);
 
     if (!selectedUser) {
-      return NextResponse.json(new ApiResponse(404, 'User not found', {}), { status: 404 });
+      throw new ApiError(404, 'User not found');
     }
 
     if (userRoleCheck.isMentor(user.role) && userRoleCheck.isTrainee(selectedUser.role)) {
       const mentorId = await getTraineeMentorId(userId);
 
       if (mentorId !== user.id) {
-        return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
+        throw new ApiError(403, 'Unauthorized to restrict courses for this trainee');
       }
     }
 
@@ -45,8 +47,6 @@ export const DELETE = async (req: NextRequest) => {
       new ApiResponse(200, 'Courses restricted successfully', deleteEnrollment)
     );
   } catch (error) {
-    console.error(error);
-
-    return NextResponse.json(new ApiResponse(500, 'Internal Server Error', {}), { status: 500 });
+    return sendError(error, 'Failed to restrict courses');
   }
 };

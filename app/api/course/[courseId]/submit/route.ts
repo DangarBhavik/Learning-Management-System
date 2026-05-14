@@ -2,8 +2,11 @@ import getUserDetails from '@/lib/isAuth';
 import { changeCourseStatusToPending } from '@/services/repository/course';
 import { createNotification } from '@/services/repository/notification';
 import { getAllAdminsID } from '@/services/repository/user';
+import ApiError from '@/utils/api-error';
 import ApiResponse from '@/utils/api-response';
 import { checkCourseCrudAccess } from '@/utils/checkCourseCrudAccess';
+import { prisma } from '@/utils/prisma-client';
+import sendError from '@/utils/send-error';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const PATCH = async (
@@ -17,7 +20,7 @@ export const PATCH = async (
     const haveAccess = await checkCourseCrudAccess({ user: user, courseId });
 
     if (!haveAccess) {
-      return NextResponse.json(new ApiResponse(403, 'Forbidden', {}), { status: 403 });
+      throw new ApiError(403, 'Unauthorized to submit course for approval');
     }
 
     const updatedCourse = await changeCourseStatusToPending({ courseId });
@@ -38,7 +41,6 @@ export const PATCH = async (
       status: 201,
     });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return NextResponse.json(new ApiResponse(401, errorMessage, {}), { status: 401 });
+    return sendError(error, 'Failed to submit course for approval');
   }
 };

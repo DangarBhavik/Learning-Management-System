@@ -4,6 +4,8 @@ import ApiResponse from '@/utils/api-response';
 import { NextRequest, NextResponse } from 'next/server';
 import { createLesson } from '@/services/repository/lesson';
 import { checkCourseCrudAccess } from '@/utils/checkCourseCrudAccess';
+import ApiError from '@/utils/api-error';
+import sendError from '@/utils/send-error';
 
 export const POST = async (
   req: NextRequest,
@@ -16,13 +18,13 @@ export const POST = async (
     const haveAccess = await checkCourseCrudAccess({ courseId, user });
 
     if (!haveAccess) {
-      return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
+      throw new ApiError(403, 'Unauthorized to create lesson for this course');
     }
 
     const moduleDetails = await getModuleById({ moduleId });
 
     if (!moduleDetails) {
-      return NextResponse.json(new ApiResponse(403, 'Module Not Found', {}), { status: 403 });
+      throw new ApiError(404, 'Module not found');
     }
 
     const body = await req.json();
@@ -30,9 +32,7 @@ export const POST = async (
     const { title, content }: { title: string; content: string } = body;
 
     if (title.trim() == '' && content.trim() == '') {
-      return NextResponse.json(new ApiResponse(403, 'Please Provide all Details', {}), {
-        status: 403,
-      });
+      throw new ApiError(400, 'Please provide all details');
     }
 
     const lesson = await createLesson({ title, content, moduleId });
@@ -41,7 +41,6 @@ export const POST = async (
       status: 201,
     });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return NextResponse.json(new ApiResponse(500, errorMessage, {}), { status: 500 });
+    return sendError(error, 'Failed to create lesson');
   }
 };

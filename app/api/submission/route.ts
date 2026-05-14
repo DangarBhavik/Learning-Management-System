@@ -8,7 +8,8 @@ import {
 } from '@/services/repository/submission';
 import { PaginationDataType } from '@/types/types';
 import { SubmissionResponse, SubmissionStatus, SubmissionWithRelations } from '@/types/submission';
-
+import ApiError from '@/utils/api-error';
+import sendError from '@/utils/send-error';
 
 type Role = 'ADMIN' | 'MENTOR';
 
@@ -80,7 +81,7 @@ export async function GET(req: NextRequest) {
     const handler = roleHandlers[user.role as Role];
 
     if (!handler) {
-      return sendResponse(403, 'Not authorised', {});
+      throw new ApiError(403, 'Not authorised');
     }
 
     const searchParams = req.nextUrl.searchParams;
@@ -90,7 +91,7 @@ export async function GET(req: NextRequest) {
 
     const pageNumber = parseInt(page, 10);
     if (isNaN(pageNumber) || pageNumber < 1) {
-      return sendResponse(400, 'Invalid page number', {});
+      throw new ApiError(400, 'Invalid page number');
     }
     const LIMIT = 10;
 
@@ -101,7 +102,6 @@ export async function GET(req: NextRequest) {
 
     return sendResponse(200, 'Submissions fetched successfully', { submissions, pagination });
   } catch (error) {
-    console.error('GET SUBMISSIONS ERROR:', error);
-    return sendResponse(500, 'Error fetching submissions', {});
+    return sendError(error, 'Failed to fetch submissions');
   }
 }

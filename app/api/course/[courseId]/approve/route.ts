@@ -3,6 +3,9 @@ import ApiResponse from '@/utils/api-response';
 import getUserDetails from '@/lib/isAuth';
 import { approveCourse } from '@/services/repository/course';
 import { createNotification } from '@/services/repository/notification';
+import sendError from '@/utils/send-error';
+import { userRoleCheck } from '@/utils/checkUserRole';
+import ApiError from '@/utils/api-error';
 
 export const PATCH = async (
   req: NextRequest,
@@ -12,8 +15,8 @@ export const PATCH = async (
     const { courseId } = await context.params;
     const user = await getUserDetails();
 
-    if (user.role != 'ADMIN') {
-      return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
+    if (userRoleCheck.isAdmin(user.role)) {
+      throw new ApiError(403, 'Unauthorized to approve course');
     }
 
     const updatedCourse = await approveCourse({ courseId });
@@ -26,7 +29,6 @@ export const PATCH = async (
 
     return NextResponse.json(new ApiResponse(200, 'Course approved successfully', updatedCourse));
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return NextResponse.json(new ApiResponse(500, errorMessage, {}), { status: 500 });
+    return sendError(error, 'Failed to approve course');
   }
 };

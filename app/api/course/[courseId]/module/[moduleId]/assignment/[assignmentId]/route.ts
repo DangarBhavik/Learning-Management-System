@@ -7,10 +7,12 @@ import {
 } from '@/services/repository/assignment';
 import { deleteFiles } from '@/services/repository/file';
 import { getModuleById } from '@/services/repository/module';
+import ApiError from '@/utils/api-error';
 import ApiResponse from '@/utils/api-response';
 import { checkCourseCrudAccess } from '@/utils/checkCourseCrudAccess';
 import { FileTypeToResourceType } from '@/utils/file-type-map';
 import { extractEmbeddedFileIds } from '@/utils/getIdsFromMarkdown';
+import sendError from '@/utils/send-error';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const DELETE = async (
@@ -25,19 +27,19 @@ export const DELETE = async (
     const haveAccess = await checkCourseCrudAccess({ courseId, user });
 
     if (!haveAccess) {
-      return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
+      throw new ApiError(403, 'Unauthorized to delete assignment for this course');
     }
 
     const moduleDetails = await getModuleById({ moduleId });
 
     if (!moduleDetails) {
-      return NextResponse.json(new ApiResponse(403, 'Module Not Found', {}), { status: 403 });
+      throw new ApiError(404, 'Module Not Found');
     }
 
     const assignmentDetails = await getAssignmentById({ assignmentId });
 
     if (!assignmentDetails) {
-      return NextResponse.json(new ApiResponse(404, 'Assignment not found', {}), { status: 404 });
+      throw new ApiError(404, 'Assignment not found');
     }
 
     const embeddedFileIds = extractEmbeddedFileIds(assignmentDetails.description);
@@ -60,8 +62,7 @@ export const DELETE = async (
       { status: 200 }
     );
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Internal Server Error';
-    return NextResponse.json(new ApiResponse(500, errorMessage, {}), { status: 500 });
+    return sendError(error, 'Failed to delete assignment');
   }
 };
 
@@ -77,13 +78,13 @@ export const PATCH = async (
     const haveAccess = await checkCourseCrudAccess({ courseId, user });
 
     if (!haveAccess) {
-      return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
+      throw new ApiError(403, 'Unauthorized to update assignment for this course');
     }
 
     const assignmentDetails = await getAssignmentById({ assignmentId });
 
     if (!assignmentDetails) {
-      return NextResponse.json(new ApiResponse(404, 'Assignment not found', {}), { status: 404 });
+      throw new ApiError(404, 'Assignment not found');
     }
 
     const body = await req.json();
@@ -127,7 +128,6 @@ export const PATCH = async (
       { status: 200 }
     );
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Internal Server Error';
-    return NextResponse.json(new ApiResponse(500, errorMessage, {}), { status: 500 });
+    return sendError(error, 'Failed to update assignment');
   }
 };

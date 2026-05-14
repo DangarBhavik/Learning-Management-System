@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import ApiResponse from '@/utils/api-response';
 import { getFormattedAssignableCourses } from '@/services/repository/course';
+import ApiError from '@/utils/api-error';
+import sendError from '@/utils/send-error';
 
 export const GET = async (req: NextRequest) => {
   try {
@@ -12,7 +14,7 @@ export const GET = async (req: NextRequest) => {
     const skip = (page - 1) * limit;
 
     if (!userId) {
-      return NextResponse.json(new ApiResponse(401, 'Trainee Id is required', {}), { status: 401 });
+      throw new ApiError(400, 'Trainee ID is required');
     }
 
     const assignableCourses = await getFormattedAssignableCourses({ userId, page, limit, skip });
@@ -24,8 +26,6 @@ export const GET = async (req: NextRequest) => {
       }
     );
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Failed to fetch assignable courses';
-    return NextResponse.json(new ApiResponse(500, errorMessage, {}), { status: 500 });
+    return sendError(error, 'Failed to fetch assignable courses');
   }
 };

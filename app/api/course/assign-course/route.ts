@@ -2,8 +2,10 @@ import getUserDetails from '@/lib/isAuth';
 import { assignCoursesToUser } from '@/services/repository/course';
 import { createNotification } from '@/services/repository/notification';
 import { getTraineeMentorId, getUserById } from '@/services/repository/user';
+import ApiError from '@/utils/api-error';
 import ApiResponse from '@/utils/api-response';
 import { userRoleCheck } from '@/utils/checkUserRole';
+import sendError from '@/utils/send-error';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const POST = async (req: NextRequest) => {
@@ -14,26 +16,24 @@ export const POST = async (req: NextRequest) => {
     const { courseIds, userId }: { courseIds: string[]; userId: string } = body;
 
     if (!userId || courseIds.length === 0) {
-      return NextResponse.json(new ApiResponse(400, 'Invalid payload', {}), { status: 400 });
+      throw new ApiError(400, 'Invalid payload');
     }
 
     const selectedUser = await getUserById(userId);
 
     if (!selectedUser) {
-      return NextResponse.json(new ApiResponse(404, 'User not found', {}), { status: 404 });
+      throw new ApiError(404, 'User not found');
     }
 
     if (userRoleCheck.isMentor(user.role) && !userRoleCheck.isTrainee(selectedUser.role)) {
-      return NextResponse.json(new ApiResponse(401, 'Mentor can assign only to trainees', {}), {
-        status: 401,
-      });
+      throw new ApiError(401, 'Mentor can assign only to trainees');
     }
 
     if (userRoleCheck.isMentor(user.role) && userRoleCheck.isTrainee(selectedUser.role)) {
       const mentorId = await getTraineeMentorId(userId);
 
       if (mentorId !== user.id) {
-        return NextResponse.json(new ApiResponse(401, 'Unauthorised', {}), { status: 401 });
+        throw new ApiError(403, 'Not authorized to assign courses to this trainee');
       }
     }
 
@@ -52,8 +52,6 @@ export const POST = async (req: NextRequest) => {
       new ApiResponse(200, 'Courses assigned successfully', assignedCourses)
     );
   } catch (error) {
-    console.error(error);
-
-    return NextResponse.json(new ApiResponse(500, 'Internal Server Error', {}), { status: 500 });
+    return sendError(error, 'Failed to assign courses to user');
   }
 };

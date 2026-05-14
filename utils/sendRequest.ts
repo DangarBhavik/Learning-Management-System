@@ -11,13 +11,13 @@ export const sendRequest = async (
         ? await axios.delete(url, { data })
         : await axios[method](url, data);
 
-    if (!response.data.success) {
-      throw new Error(response.data.message || 'Request failed');
+    return response.data;
+  } catch (error: any) {
+    if (axios.isAxiosError(error) && error.response?.data) {
+      const serverMessage = error.response.data.message || error.response.data.error;
+      throw new Error(serverMessage || 'Request failed');
     }
 
-    return response.data;
-  } catch (error) {
-    console.error('Error sending request:', error);
     throw error;
   }
 };

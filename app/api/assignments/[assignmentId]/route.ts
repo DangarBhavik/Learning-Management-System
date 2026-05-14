@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import getUserDetails from '@/lib/isAuth';
 import ApiResponse from '@/utils/api-response';
 import { getAssignmentWithSubmission } from '@/services/repository/submission';
+import ApiError from '@/utils/api-error';
+import sendError from '@/utils/send-error';
 
 export async function GET(
   req: NextRequest,
@@ -18,7 +20,7 @@ export async function GET(
     });
 
     if (!assignment) {
-      return NextResponse.json(new ApiResponse(404, 'Assignment not found', {}), { status: 404 });
+      throw new ApiError(404, 'Assignment not found');
     }
 
     let status = 'NOT_SUBMITTED';
@@ -66,10 +68,6 @@ export async function GET(
       status: 200,
     });
   } catch (error) {
-    console.error(error);
-
-    return NextResponse.json(new ApiResponse(500, 'Error fetching assignment', {}), {
-      status: 500,
-    });
+    return sendError(error, 'Error fetching assignment');
   }
 }
