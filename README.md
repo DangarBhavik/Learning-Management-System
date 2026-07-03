@@ -51,8 +51,15 @@ Create a `.env.local` file in the root directory with the following variables:
 ```env
 # Database
 DATABASE_URL="postgresql://user:password@localhost:5432/lms_db"
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+CLERK_WEBHOOK_SIGNING_SECRET=
 
-# Add any additional environment variables needed for your setup
+NEXT_PUBLIC_BASE_URL=
+
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
 ```
 
 ### 3. Setup Database
