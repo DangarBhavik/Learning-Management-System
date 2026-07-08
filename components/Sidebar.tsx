@@ -80,7 +80,6 @@ const Sidebar: React.FC<SidebarProps> = ({ show, onClick, role, user }) => {
               <span className="text-xs text-blue-600 dark:text-blue-400 capitalize">
                 {user.role?.toLowerCase()}
               </span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">{user.email}</span>
             </div>
           </div>
         )}
